@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "dgSpecHash": "PKntlfx/EtQ=",
+  "success": true,
+  "projectFilePath": "A:\\ventus\\ventus-server\\ventus-server.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Alexis\\.nuget\\packages\\system.net.websockets\\4.3.0\\system.net.websockets.4.3.0.nupkg.sha512"
+  ],
+  "logs": [
+    {
+      "code": "NU1510",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "El System.Net.WebSockets PackageReference no se eliminará. Considere la posibilidad de quitar este paquete de las dependencias, ya que es probable que no sea necesario."
+    }
+  ]
+}
