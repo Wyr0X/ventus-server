@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package protos.game.chat;
+
+message ClientMessageChat {
+  oneof message_type {
+    SendChatMessage send_chat_message = 1;
+  }
+}
+
+message SendChatMessage {
+  string message = 1;
+  int32 channel = 2; // 0 = global, 1 = privado, 2 = grupo
+}
+
+message ServerMessageChat {
+  oneof message_type {
+    ReceiveChatMessage receive_chat_message = 1;
+  }
+}
+
+message ReceiveChatMessage {
+  int32 sender_id = 1;
+  string sender_name = 2;
+  string message = 3;
+  int32 channel = 4;
+}

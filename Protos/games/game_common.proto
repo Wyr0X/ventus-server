@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package protos.game;
+
+import "Protos/games/game_movement.proto";
+import "Protos/games/game_combat.proto";
+import "Protos/games/game_chat.proto";
+import "Protos/games/game_items.proto";
+import "Protos/games/game_stats.proto";
+import "Protos/games/game_world.proto";
+import "Protos/games/game_command.proto";
+
+message ClientMessageGame {
+  oneof message_type {
+    protos.game.movement.ClientMessageMovement message_movement = 1;
+    protos.game.combat.ClientMessageCombat message_combat = 2;
+    protos.game.chat.ClientMessageChat message_chat = 3;
+    protos.game.items.ClientMessageItems message_items = 4;
+    protos.game.stats.ClientMessageStats message_stats = 5;
+    protos.game.world.ClientMessageWorld message_world = 6;
+    protos.game.command.ClientMessageCommand message_command = 7;
+
+  }
+}
+
+message ServerMessageGame {
+  oneof message_type {
+    protos.game.movement.ServerMessageMovement message_movement = 1;
+    protos.game.combat.ServerMessageCombat message_combat = 2;
+    protos.game.chat.ServerMessageChat message_chat = 3;
+    protos.game.items.ServerMessageItems message_items = 4;
+    protos.game.stats.ServerMessageStats message_stats = 5;
+    protos.game.world.ServerMessageWorld message_world = 6;
+    protos.game.command.ServerMessageCommand message_command = 7;
+  }
+}

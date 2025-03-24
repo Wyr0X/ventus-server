@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package protos.game.world;
+
+// Mensaje enviado por el cliente para actualizar la ubicación de un jugador.
+message ClientMessageLocationUpdate {
+  string player_id = 1;  // ID del jugador
+  float x = 2;  // Coordenada X
+  float y = 3;  // Coordenada Y
+}
+
+// Mensaje enviado por el cliente para interactuar con el entorno del mundo.
+message ClientMessageEnvironmentInteraction {
+  string player_id = 1;  // ID del jugador
+  string action = 2;  // Acción realizada en el entorno
+}
+
+// Respuesta del servidor sobre la actualización del estado del mundo.
+message ServerMessageWorldStateUpdate {
+  string world_state = 1;  // Descripción del estado actual del mundo
+}
+
+// Respuesta del servidor sobre el resultado de una interacción con el mundo.
+message ServerMessageWorldInteractionResult {
+  bool success = 1;  // Si la interacción fue exitosa
+  string message = 2;  // Mensaje relacionado con el resultado
+}
+
+// Encapsulando mensajes del cliente sobre el mundo del juego
+message ClientMessageWorld {
+  oneof message_type {
+    ClientMessageLocationUpdate message_location_update = 1;  // Actualización de la ubicación del jugador
+    ClientMessageEnvironmentInteraction message_environment_interaction = 2;  // Interacción con el entorno
+  }
+}
+
+// Encapsulando respuestas del servidor sobre el mundo del juego
+message ServerMessageWorld {
+  oneof message_type {
+    ServerMessageWorldStateUpdate message_world_state_update = 1;  // Actualización del estado del mundo
+    ServerMessageWorldInteractionResult message_world_interaction_result = 2;  // Resultado de la interacción con el mundo
+  }
+}

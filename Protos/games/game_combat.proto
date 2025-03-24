@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package protos.game.combat;
+
+message ClientMessageCombat {
+  oneof message_type {
+    AttackRequest attack_request = 1;
+    CastSpellRequest cast_spell_request = 2;
+  }
+}
+
+message AttackRequest {
+  int32 target_id = 1;
+}
+
+message CastSpellRequest {
+  int32 spell_id = 1;
+  int32 target_id = 2;
+}
+
+message ServerMessageCombat {
+  oneof message_type {
+    AttackResult attack_result = 1;
+    SpellResult spell_result = 2;
+    PlayerTookDamage player_took_damage = 3;
+  }
+}
+
+message AttackResult {
+  int32 attacker_id = 1;
+  int32 target_id = 2;
+  bool success = 3;
+  int32 damage = 4;
+}
+
+message SpellResult {
+  int32 caster_id = 1;
+  int32 target_id = 2;
+  int32 spell_id = 3;
+  bool success = 4;
+  int32 damage = 5;
+}
+
+message PlayerTookDamage {
+  int32 player_id = 1;
+  int32 damage = 2;
+  bool is_dead = 3;
+}

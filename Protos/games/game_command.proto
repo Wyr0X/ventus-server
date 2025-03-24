@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package protos.game.command;
+
+// Mensaje enviado por el cliente para ejecutar un comando.
+message ClientMessageExecuteCommand {
+  string command_name = 1;  // Nombre del comando
+  repeated string parameters = 2;  // Parámetros para el comando
+}
+
+// Mensaje enviado por el cliente para cambiar el estado de un jugador.
+message ClientMessageChangeState {
+  string player_id = 1;  // ID del jugador
+  string new_state = 2;  // Nuevo estado del jugador
+}
+
+// Respuesta del servidor sobre la ejecución de un comando.
+message ServerMessageCommandResult {
+  bool success = 1;  // Indica si el comando se ejecutó correctamente
+  string message = 2;  // Mensaje de resultado del comando
+}
+
+// Encapsulando mensajes de comandos para el cliente
+message ClientMessageCommand {
+  oneof message_type {
+    ClientMessageExecuteCommand message_execute_command = 1;  // Comando ejecutado por el cliente
+    ClientMessageChangeState message_change_state = 2;  // Cambiar el estado del jugador
+  }
+}
+
+// Encapsulando respuestas de comandos para el servidor
+message ServerMessageCommand {
+  oneof message_type {
+    ServerMessageCommandResult message_command_result = 1;  // Resultado del comando ejecutado
+  }
+}

@@ -25,15 +25,13 @@ namespace Messages.Auth {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "ChFQcm90b3MvYXV0aC5wcm90bxINbWVzc2FnZXMuYXV0aCIcCgtBdXRoUmVx",
-            "dWVzdBINCgV0b2tlbhgBIAEoCSKDAQoMQXV0aFJlc3BvbnNlEg8KB3N1Y2Nl",
-            "c3MYASABKAgSDwoHdXNlcl9pZBgDIAEoCRINCgVlbWFpbBgEIAEoCRIMCgRu",
-            "YW1lGAUgASgJEg8KB2NyZWRpdHMYBiABKAUSDwoHbGFzdF9pcBgHIAEoCRIS",
-            "CgpjcmVhdGVkX2F0GAggASgJYgZwcm90bzM="));
+            "dWVzdBINCgV0b2tlbhgBIAEoCSIfCgxBdXRoUmVzcG9uc2USDwoHc3VjY2Vz",
+            "cxgBIAEoCGIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Messages.Auth.AuthRequest), global::Messages.Auth.AuthRequest.Parser, new[]{ "Token" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Messages.Auth.AuthResponse), global::Messages.Auth.AuthResponse.Parser, new[]{ "Success", "UserId", "Email", "Name", "Credits", "LastIp", "CreatedAt" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Messages.Auth.AuthResponse), global::Messages.Auth.AuthResponse.Parser, new[]{ "Success" }, null, null, null, null)
           }));
     }
     #endregion
@@ -274,12 +272,6 @@ namespace Messages.Auth {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public AuthResponse(AuthResponse other) : this() {
       success_ = other.success_;
-      userId_ = other.userId_;
-      email_ = other.email_;
-      name_ = other.name_;
-      credits_ = other.credits_;
-      lastIp_ = other.lastIp_;
-      createdAt_ = other.createdAt_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -301,93 +293,6 @@ namespace Messages.Auth {
       }
     }
 
-    /// <summary>Field number for the "user_id" field.</summary>
-    public const int UserIdFieldNumber = 3;
-    private string userId_ = "";
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string UserId {
-      get { return userId_; }
-      set {
-        userId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
-    /// <summary>Field number for the "email" field.</summary>
-    public const int EmailFieldNumber = 4;
-    private string email_ = "";
-    /// <summary>
-    /// Nuevo campo: Email de la cuenta
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string Email {
-      get { return email_; }
-      set {
-        email_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
-    /// <summary>Field number for the "name" field.</summary>
-    public const int NameFieldNumber = 5;
-    private string name_ = "";
-    /// <summary>
-    /// Nuevo campo: Nombre de la cuenta
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string Name {
-      get { return name_; }
-      set {
-        name_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
-    /// <summary>Field number for the "credits" field.</summary>
-    public const int CreditsFieldNumber = 6;
-    private int credits_;
-    /// <summary>
-    /// Nuevo campo: Créditos de la cuenta
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int Credits {
-      get { return credits_; }
-      set {
-        credits_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "last_ip" field.</summary>
-    public const int LastIpFieldNumber = 7;
-    private string lastIp_ = "";
-    /// <summary>
-    /// Nuevo campo: IP de último acceso
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string LastIp {
-      get { return lastIp_; }
-      set {
-        lastIp_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
-    /// <summary>Field number for the "created_at" field.</summary>
-    public const int CreatedAtFieldNumber = 8;
-    private string createdAt_ = "";
-    /// <summary>
-    /// Nuevo campo: Fecha de creación de la cuenta
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string CreatedAt {
-      get { return createdAt_; }
-      set {
-        createdAt_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -404,12 +309,6 @@ namespace Messages.Auth {
         return true;
       }
       if (Success != other.Success) return false;
-      if (UserId != other.UserId) return false;
-      if (Email != other.Email) return false;
-      if (Name != other.Name) return false;
-      if (Credits != other.Credits) return false;
-      if (LastIp != other.LastIp) return false;
-      if (CreatedAt != other.CreatedAt) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -418,12 +317,6 @@ namespace Messages.Auth {
     public override int GetHashCode() {
       int hash = 1;
       if (Success != false) hash ^= Success.GetHashCode();
-      if (UserId.Length != 0) hash ^= UserId.GetHashCode();
-      if (Email.Length != 0) hash ^= Email.GetHashCode();
-      if (Name.Length != 0) hash ^= Name.GetHashCode();
-      if (Credits != 0) hash ^= Credits.GetHashCode();
-      if (LastIp.Length != 0) hash ^= LastIp.GetHashCode();
-      if (CreatedAt.Length != 0) hash ^= CreatedAt.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -446,30 +339,6 @@ namespace Messages.Auth {
         output.WriteRawTag(8);
         output.WriteBool(Success);
       }
-      if (UserId.Length != 0) {
-        output.WriteRawTag(26);
-        output.WriteString(UserId);
-      }
-      if (Email.Length != 0) {
-        output.WriteRawTag(34);
-        output.WriteString(Email);
-      }
-      if (Name.Length != 0) {
-        output.WriteRawTag(42);
-        output.WriteString(Name);
-      }
-      if (Credits != 0) {
-        output.WriteRawTag(48);
-        output.WriteInt32(Credits);
-      }
-      if (LastIp.Length != 0) {
-        output.WriteRawTag(58);
-        output.WriteString(LastIp);
-      }
-      if (CreatedAt.Length != 0) {
-        output.WriteRawTag(66);
-        output.WriteString(CreatedAt);
-      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -484,30 +353,6 @@ namespace Messages.Auth {
         output.WriteRawTag(8);
         output.WriteBool(Success);
       }
-      if (UserId.Length != 0) {
-        output.WriteRawTag(26);
-        output.WriteString(UserId);
-      }
-      if (Email.Length != 0) {
-        output.WriteRawTag(34);
-        output.WriteString(Email);
-      }
-      if (Name.Length != 0) {
-        output.WriteRawTag(42);
-        output.WriteString(Name);
-      }
-      if (Credits != 0) {
-        output.WriteRawTag(48);
-        output.WriteInt32(Credits);
-      }
-      if (LastIp.Length != 0) {
-        output.WriteRawTag(58);
-        output.WriteString(LastIp);
-      }
-      if (CreatedAt.Length != 0) {
-        output.WriteRawTag(66);
-        output.WriteString(CreatedAt);
-      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -520,24 +365,6 @@ namespace Messages.Auth {
       int size = 0;
       if (Success != false) {
         size += 1 + 1;
-      }
-      if (UserId.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(UserId);
-      }
-      if (Email.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(Email);
-      }
-      if (Name.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(Name);
-      }
-      if (Credits != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Credits);
-      }
-      if (LastIp.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(LastIp);
-      }
-      if (CreatedAt.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(CreatedAt);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -553,24 +380,6 @@ namespace Messages.Auth {
       }
       if (other.Success != false) {
         Success = other.Success;
-      }
-      if (other.UserId.Length != 0) {
-        UserId = other.UserId;
-      }
-      if (other.Email.Length != 0) {
-        Email = other.Email;
-      }
-      if (other.Name.Length != 0) {
-        Name = other.Name;
-      }
-      if (other.Credits != 0) {
-        Credits = other.Credits;
-      }
-      if (other.LastIp.Length != 0) {
-        LastIp = other.LastIp;
-      }
-      if (other.CreatedAt.Length != 0) {
-        CreatedAt = other.CreatedAt;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -595,30 +404,6 @@ namespace Messages.Auth {
             Success = input.ReadBool();
             break;
           }
-          case 26: {
-            UserId = input.ReadString();
-            break;
-          }
-          case 34: {
-            Email = input.ReadString();
-            break;
-          }
-          case 42: {
-            Name = input.ReadString();
-            break;
-          }
-          case 48: {
-            Credits = input.ReadInt32();
-            break;
-          }
-          case 58: {
-            LastIp = input.ReadString();
-            break;
-          }
-          case 66: {
-            CreatedAt = input.ReadString();
-            break;
-          }
         }
       }
     #endif
@@ -640,30 +425,6 @@ namespace Messages.Auth {
             break;
           case 8: {
             Success = input.ReadBool();
-            break;
-          }
-          case 26: {
-            UserId = input.ReadString();
-            break;
-          }
-          case 34: {
-            Email = input.ReadString();
-            break;
-          }
-          case 42: {
-            Name = input.ReadString();
-            break;
-          }
-          case 48: {
-            Credits = input.ReadInt32();
-            break;
-          }
-          case 58: {
-            LastIp = input.ReadString();
-            break;
-          }
-          case 66: {
-            CreatedAt = input.ReadString();
             break;
           }
         }

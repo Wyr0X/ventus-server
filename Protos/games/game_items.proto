@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package protos.game.items;
+
+message ClientMessageItems {
+  oneof message_type {
+    UseItemRequest use_item_request = 1;
+    EquipItemRequest equip_item_request = 2;
+    DropItemRequest drop_item_request = 3;
+    PickUpItemRequest pick_up_item_request = 4;
+  }
+}
+
+message UseItemRequest {
+  int32 item_id = 1;
+}
+
+message EquipItemRequest {
+  int32 item_id = 1;
+}
+
+message DropItemRequest {
+  int32 item_id = 1;
+}
+
+message PickUpItemRequest {
+  int32 item_id = 1;
+}
+
+message ServerMessageItems {
+  oneof message_type {
+    ItemUsed item_used = 1;
+    ItemEquipped item_equipped = 2;
+    ItemDropped item_dropped = 3;
+    ItemPickedUp item_picked_up = 4;
+  }
+}
+
+message ItemUsed {
+  int32 player_id = 1;
+  int32 item_id = 2;
+}
+
+message ItemEquipped {
+  int32 player_id = 1;
+  int32 item_id = 2;
+}
+
+message ItemDropped {
+  int32 player_id = 1;
+  int32 item_id = 2;
+}
+
+message ItemPickedUp {
+  int32 player_id = 1;
+  int32 item_id = 2;
+}

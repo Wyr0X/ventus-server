@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package protos.game.stats;
+
+// Encapsula los mensajes del cliente para las estadísticas
+message ClientMessageStats {
+  oneof message_type {
+    RequestStatsUpdate request_stats_update = 1;  // Solicitud de actualización de estadísticas
+  }
+}
+
+// Mensaje de solicitud para actualizar las estadísticas del jugador
+message RequestStatsUpdate {}
+
+// Encapsula los mensajes del servidor relacionados con las estadísticas
+message ServerMessageStats {
+  oneof message_type {
+    PlayerStatsUpdate player_stats_update = 1;  // Respuesta con las estadísticas actualizadas del jugador
+  }
+}
+
+// Mensaje que contiene las estadísticas actualizadas de un jugador
+message PlayerStatsUpdate {
+  int32 player_id = 1;   // ID del jugador
+  int32 level = 2;       // Nivel del jugador
+  int32 gold = 3;        // Cantidad de oro del jugador
+  int32 health = 4;      // Salud del jugador
+  int32 mana = 5;        // Mana del jugador
+  int32 experience = 6;  // Experiencia del jugador
+}
