@@ -1,57 +1,105 @@
-﻿using System;
-using System.Net;
+﻿using dotenv.net;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore;
+using System;
+using System.Collections.Concurrent;
+using System.IO;
 using System.Net.WebSockets;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
+using VentusServer;
+using VentusServer.DataAccess;
+using VentusServer.DataAccess.Postgres;
+using VentusServer.Controllers;
 
-namespace VentusServer
+DotEnv.Load();
+
+// Verificar las credenciales de Firebase
+string credentialsPath = Environment.GetEnvironmentVariable("FIREBASE_CREDENTIALS_PATH") ?? string.Empty;
+if (string.IsNullOrEmpty(credentialsPath) || !File.Exists(credentialsPath))
 {
-    class Program
+    Console.WriteLine("❌ No se encontró el archivo de credenciales de Firebase.");
+    return;
+}
+
+// Obtener las credenciales de PostgreSQL desde las variables de entorno
+string host = Environment.GetEnvironmentVariable("POSTGRES_HOST") ?? "localhost";
+string username = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "postgres";
+string password = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "password";
+string dbName = Environment.GetEnvironmentVariable("POSTGRES_DB") ?? "ventus";
+
+if (string.IsNullOrEmpty(host) || string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(dbName))
+{
+    Console.WriteLine("❌ No se encontraron las credenciales necesarias de PostgreSQL.");
+    return;
+}
+
+// Construir la cadena de conexión de PostgreSQL
+string postgresConnectionString = $"Host={host};Username={username};Password={password};Database={dbName}";
+
+// Configuración de las variables JWT desde el archivo de entorno (o se puede usar appsettings.json)
+string secretKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY") ?? "your-secret-key";
+string issuer = Environment.GetEnvironmentVariable("JWT_ISSUER") ?? "your-issuer";
+string audience = Environment.GetEnvironmentVariable("JWT_AUDIENCE") ?? "your-audience";
+
+// Configurar el contenedor de servicios de Dependency Injection
+var serviceProvider = new ServiceCollection()
+    .AddSingleton<PostgresDbService>(sp => new PostgresDbService())
+    .AddSingleton<FirebaseService>(sp => new FirebaseService(credentialsPath))
+    .AddSingleton<FirestoreService>(sp => new FirestoreService(sp.GetRequiredService<FirebaseService>()))
+    .AddScoped<IAccountDAO, PostgresAccountDAO>(sp => new PostgresAccountDAO(postgresConnectionString))
+    
+    .AddSingleton<PostgresDbService>()
+    .AddSingleton<DatabaseInitializer>()
+    .AddSingleton<ConcurrentDictionary<string, WebSocket>>()
+    .AddSingleton<AuthHandler>()
+    .AddSingleton<MessageHandler>()
+    .AddScoped<AuthController>()
+    
+    .AddSingleton<ResponseService>()  // Registrar el ResponseService
+    .AddSingleton<WebSocketServerController>()
+    .AddSingleton<JWTService>(sp => new JWTService(secretKey, issuer, audience)) // Registrar JWTService
+    .BuildServiceProvider();
+
+try
+{
+    // Obtener las instancias de servicios desde el contenedor
+    var postgresDbService = serviceProvider.GetRequiredService<PostgresDbService>();
+
+    // Verificar la conexión antes de continuar con la inicialización
+    bool isConnected = await postgresDbService.CheckConnectionAsync();
+
+    if (!isConnected)
     {
-        static async Task Main(string[] args)
-        {
-            var listener = new HttpListener();
-            listener.Prefixes.Add("http://localhost:5000/"); // URL base para WebSocket
-            listener.Start();
-            Console.WriteLine("Servidor WebSocket iniciado en ws://localhost:5000");
-
-            while (true)
-            {
-                var context = await listener.GetContextAsync();
-                if (context.Request.IsWebSocketRequest)
-                {
-                    // Establecer WebSocket
-                    WebSocket webSocket = (await context.AcceptWebSocketAsync(null)).WebSocket;
-                    Console.WriteLine("Cliente conectado");
-
-                    await HandleWebSocket(webSocket);
-                }
-                else
-                {
-                    context.Response.StatusCode = 400;
-                    context.Response.Close();
-                }
-            }
-        }
-
-        static async Task HandleWebSocket(WebSocket webSocket)
-        {
-            byte[] buffer = new byte[1024];
-            WebSocketReceiveResult result;
-            while (webSocket.State == WebSocketState.Open)
-            {
-                result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-                string message = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                Console.WriteLine($"Mensaje recibido: {message}");
-
-                // Responder al cliente
-                byte[] response = Encoding.UTF8.GetBytes("Mensaje recibido");
-                await webSocket.SendAsync(new ArraySegment<byte>(response), WebSocketMessageType.Text, true, CancellationToken.None);
-            }
-
-            webSocket.Dispose();
-            Console.WriteLine("Cliente desconectado");
-        }
+        Console.WriteLine("❌ No se pudo conectar a la base de datos.");
+        return;  // Si no se conecta, salimos del programa
     }
+
+    // Si la conexión fue exitosa, inicializamos la base de datos y el servidor
+    var databaseInitializer = serviceProvider.GetRequiredService<DatabaseInitializer>();
+    await databaseInitializer.InitializeDatabaseAsync();
+
+    Console.WriteLine("✔️ Conexión a la base de datos exitosa.");
+
+    // Obtener las instancias de otros servicios y arrancar el servidor WebSocket
+    var webSocketServerController = serviceProvider.GetRequiredService<WebSocketServerController>();
+    var webSocketServerTask = webSocketServerController.StartServerAsync(); // Hacer esto asíncrono pero no bloqueante
+
+    // Iniciar el servidor web (Kestrel)
+    var webHost = WebHost.CreateDefaultBuilder()
+        .ConfigureServices(services =>
+        {
+            services.AddSingleton(serviceProvider); // Usar el serviceProvider configurado
+        })
+        .UseStartup<Startup>() // Usar la clase Startup para configurar el servidor web
+        .Build();
+
+    // Iniciar ambos servidores (web y WebSocket)
+    await Task.WhenAny(webHost.RunAsync(), webSocketServerTask);  // Ejecutar ambos simultáneamente
+
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"❌ Error durante la inicialización: {ex.Message}");
 }

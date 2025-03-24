@@ -1,0 +1,54 @@
+# .NET Core / .NET 5 / .NET 6 / .NET 7
+bin/
+obj/
+out/
+
+# Archivos de usuario y configuraciones de Visual Studio
+.vs/
+.vscode/
+.idea/
+
+# Archivos de configuración de Visual Studio
+.vsconfig
+.vs2019/
+.vs2017/
+.vs2015/
+
+# Archivos de configuración de Rider
+.idea/
+
+# Archivos de usuario de ReSharper
+.idea/
+
+# Carpetas de dependencias locales
+packages/
+
+# Archivos de build y dependencias
+build/
+nuget/
+
+# Archivos temporales de la herramienta de desarrollo
+*.user
+*.userosscache
+*.suo
+*.userprefs
+
+# Archivos de compilación generados por ASP.NET Core
+wwwroot/
+*.tmp
+
+# Archivos del sistema operativo
+Thumbs.db
+Desktop.ini
+
+# Otros archivos temporales
+*.swp
+*.swo
+
+# Archivos de contenedor de Docker
+docker-compose.override.yml
+Dockerfile*
+
+# Archivos generados por la compilación de Azure Functions
+.local/
+Config/firebase_credentials.json

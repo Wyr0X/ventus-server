@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package protos_common;
+
+import "Protos/auth.proto";
+
+
+message ClientMessage {
+  oneof message_type {
+    ClientMessageAuth message_auth = 1;
+    ClientMessageOAuth message_oauth = 2;
+  }
+}
+
+message ClientMessageAuth {
+  string token = 1;
+  oneof message_type {
+    messages.auth.AuthRequest auth_request =2 ;
+  }
+}
+
+message ClientMessageOAuth {
+
+}
+message ServerMessage {
+  oneof message_type {
+    messages.auth.AuthResponse auth_response = 1;
+  }
+}

@@ -1,0 +1,10 @@
+syntax = "proto3";
+package messages.auth;
+
+message AuthRequest {
+  string token = 1;
+}
+
+message AuthResponse {
+  bool success = 1;
+}
