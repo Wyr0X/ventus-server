@@ -2,6 +2,7 @@ using System.Net.WebSockets;
 using System.Net;
 using System.Collections.Concurrent;
 using ProtosCommon;
+using FirebaseAdmin.Auth;
 
 namespace VentusServer
 {
@@ -72,15 +73,33 @@ namespace VentusServer
                                 var clientMessageAuth = clientMessage.MessageAuth;
 
                                 var token = clientMessageAuth.Token;
-                                userId = await ValidateTokenAndGetUserId(token, webSocket);
-                                if (string.IsNullOrEmpty(userId))
+
+                                try
                                 {
-                                    // Token inválido, cerrar conexión
-                                    await webSocket.CloseAsync(WebSocketCloseStatus.InvalidMessageType, "Invalid JWT", CancellationToken.None);
+                                    // Verificar el token de Firebase
+                                    FirebaseToken decodedToken = await _firebaseService.VerifyTokenAsync(token);
+
+                                    // Extraer el userId (Uid) del token verificado
+                                    userId = decodedToken.Uid;
+
+                                    if (string.IsNullOrEmpty(userId))
+                                    {
+                                        // Token inválido o no contiene un Uid válido
+                                        await webSocket.CloseAsync(WebSocketCloseStatus.InvalidMessageType, "Invalid Firebase Token", CancellationToken.None);
+                                        return;
+                                    }
+
+                                    // El token es válido, ahora puedes realizar la lógica de tu aplicación con el userId
+                                    // Aquí puedes cargar los datos del usuario o seguir con la lógica que corresponda
+                                }
+                                catch (Exception ex)
+                                {
+                                    // Si la verificación falla, cerrar la conexión
+                                    await webSocket.CloseAsync(WebSocketCloseStatus.InvalidMessageType, "Invalid Firebase Token", CancellationToken.None);
                                     return;
                                 }
-
                             }
+
                             // Llamamos al MessageHandler para procesar el mensaje solo si el token es válido
                             _messageHandler.HandleIncomingMessage(receivedBytes, webSocket, userId);
                         }

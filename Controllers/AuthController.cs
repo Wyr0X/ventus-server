@@ -43,7 +43,7 @@ namespace VentusServer.Controllers
 
                 var existingUser = await _accountDAO.GetAccountByUserIdAsync(userId);
                 Console.WriteLine($"Llega: Usuario {userId} encontrado en la base de datos.");
-                var token = TokenUtils.GenerateToken(userId.ToString());
+                var token = request.IdToken ; //TokenUtils.GenerateToken(userId.ToString());
 
                 if (existingUser != null)
                 {

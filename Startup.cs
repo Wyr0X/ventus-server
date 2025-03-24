@@ -59,25 +59,24 @@ namespace VentusServer
             // Registrar servicios
             services.AddScoped<IAccountDAO, PostgresAccountDAO>(sp => new PostgresAccountDAO(postgresConnectionString));
             services.AddScoped<PostgresDbService>(sp => new PostgresDbService());
-    
+
             services.AddScoped<AccountController>();
             services.AddControllers();
         }
-
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             // Middleware de CORS
             app.UseCors("AllowAll");
 
-            // Rutas que NO deben pasar por el middleware de autenticación (excluir rutas de Google/Firebase)
-          
+            // Middleware de Autenticación de Firebase (aplicado a todas las rutas excepto las públicas)
+            app.UseMiddleware<FirebaseAuthMiddleware>();
 
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                 Console.WriteLine("Endpoints configurados correctamente");
+                Console.WriteLine("Endpoints configurados correctamente");
             });
         }
     }

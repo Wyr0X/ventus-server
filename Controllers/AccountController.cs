@@ -9,38 +9,36 @@ namespace VentusServer.Controllers
 {
     [Route("account")]
     [ApiController]
-    [Authorize] // Asegura que se requiere un token para acceder a esta ruta
     public class AccountController : ControllerBase
     {
         private readonly IAccountDAO _accountDAO;
+        private readonly FirebaseService _firebaseService;
 
-        public AccountController(IAccountDAO accountDAO)
+
+        public AccountController(IAccountDAO accountDAO, FirebaseService firebaseService)
         {
             _accountDAO = accountDAO;
+            _firebaseService = firebaseService;
         }
 
         [HttpGet]
+        [FirebaseAuthRequired]
         public async Task<IActionResult> GetAccountInfo()
         {
             try
             {
-                // Obtener el token desde el encabezado Authorization
-                Console.WriteLine("Entra"); // Log del token recibido
+              
+                // Obtener el token de Bearer del encabezado Authorization
+                var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Trim();
 
-                var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                Console.WriteLine("Token recibido: 2 " + token); // Log del token recibido
-
-                // Decodificar el token y obtener el userId
-                string userId = TokenUtils.DecodeTokenAndGetUserId(token);
-                Console.WriteLine("userId decodificado: 2 " + userId); // Log del userId decodificado
-
-                if (string.IsNullOrEmpty(userId))
+                if (string.IsNullOrEmpty(token))
                 {
-                    Console.WriteLine("Token inválido o no proporcionado."); // Log de token inválido
-                    return Unauthorized("Token inválido o no proporcionado.");
+                    return Unauthorized("Token de autenticación no encontrado.");
                 }
 
-                // Buscar la cuenta en la base de datos usando el userId
+                // Verificar el token de Firebase
+                var decodedToken = await _firebaseService.VerifyTokenAsync(token);
+                var userId = decodedToken.Uid; // Obtener el userId del token
                 var account = await _accountDAO.GetAccountByUserIdAsync(userId);
                 Console.WriteLine("Cuenta encontrada: " + (account != null ? "Sí" : "No")); // Log de si la cuenta fue encontrada
 
