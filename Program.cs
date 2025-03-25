@@ -85,6 +85,7 @@ try
     // Obtener las instancias de otros servicios y arrancar el servidor WebSocket
     var webSocketServerController = serviceProvider.GetRequiredService<WebSocketServerController>();
     var webSocketServerTask = webSocketServerController.StartServerAsync(); // Hacer esto asíncrono pero no bloqueante
+    var webSocketQueueTask = Task.Run(() => webSocketServerController.StartLoop());
 
     // Iniciar el servidor web (Kestrel)
     var webHost = WebHost.CreateDefaultBuilder()
@@ -96,7 +97,7 @@ try
         .Build();
 
     // Iniciar ambos servidores (web y WebSocket)
-    await Task.WhenAny(webHost.RunAsync(), webSocketServerTask);  // Ejecutar ambos simultáneamente
+         await Task.WhenAny(webHost.RunAsync(), webSocketServerTask);  // Ejecutar ambos simultáneamente
 
 }
 catch (Exception ex)

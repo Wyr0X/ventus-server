@@ -9,6 +9,7 @@ message ClientMessage {
   oneof message_type {
     ClientMessageAuth message_auth = 1;
     ClientMessageOAuth message_oauth = 2;
+    ClientMessagePing message_ping = 3;
   }
 }
 
@@ -25,5 +26,17 @@ message ClientMessageOAuth {
 message ServerMessage {
   oneof message_type {
     messages.auth.AuthResponse auth_response = 1;
+    ServerMessagePong server_message_pong = 2;
+
   }
+}
+
+message ClientMessagePing {
+  string message = 1;
+
+}
+
+message ServerMessagePong {
+  string message = 1;
+  
 }

@@ -1,4 +1,5 @@
 using System.Net.WebSockets;
+using FirebaseAdmin.Messaging;
 using Google.Protobuf;
 using ProtosCommon;
 using VentusServer;
@@ -12,7 +13,7 @@ public class MessageHandler
         _authHandler = authHandler;
     }
 
-    public void HandleIncomingMessage(byte[] receivedBytes, WebSocket webSocket, string? userId)
+    public void HandleIncomingMessage(byte[] receivedBytes, string? userId)
     {
         try
         {
@@ -24,10 +25,7 @@ public class MessageHandler
             switch (clientMessage.MessageTypeCase)
             {
                 case ClientMessage.MessageTypeOneofCase.MessageAuth:
-                    HandleAuthMessage(clientMessage.MessageAuth, webSocket);
-                    break;
-                case ClientMessage.MessageTypeOneofCase.MessageOauth:
-                    HandleOAuthMessage(clientMessage.MessageOauth, webSocket);
+                    HandleAuthMessage(clientMessage.MessageAuth);
                     break;
                 default:
                     Console.WriteLine("❌ Mensaje recibido sin un tipo válido.");
@@ -39,32 +37,29 @@ public class MessageHandler
             Console.WriteLine("❌ No se pudo deserializar el mensaje.");
         }
     }
-    public void HandleAuthMessage(ClientMessageAuth message, WebSocket webSocket)
+    public void HandleAuthMessage(ClientMessageAuth message)
     {
         try
         {
-             switch (message.MessageTypeCase)
+            switch (message.MessageTypeCase)
             {
-                case ClientMessageAuth.MessageTypeOneofCase.AuthRequest:
-                    _ = _authHandler.HandleAuthMessage(message.AuthRequest, webSocket);
-                    break;
                 default:
                     Console.WriteLine("❌ Mensaje recibido sin un tipo válido.");
                     break;
             }
-        
+
         }
         catch (InvalidProtocolBufferException)
         {
             Console.WriteLine("❌ No se pudo deserializar el mensaje.");
         }
     }
-     public void HandleOAuthMessage(ClientMessageOAuth message, WebSocket webSocket)
+    public void HandleOAuthMessage(ClientMessageOAuth message, WebSocket webSocket)
     {
         try
         {
             Console.WriteLine("Completar");
-        
+
         }
         catch (InvalidProtocolBufferException)
         {
