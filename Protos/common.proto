@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package protos_common;
 
+import "Protos/game/game_common.proto";
 import "Protos/auth.proto";
 
 
@@ -17,16 +18,20 @@ message ClientMessageAuth {
   string token = 1;
   oneof message_type {
     messages.auth.AuthRequest auth_request =2 ;
+    
   }
 }
 
 message ClientMessageOAuth {
-
+  oneof message_type {
+    protos.game.common.ClientMessageGame client_message_game = 1 ;
+  }
 }
 message ServerMessage {
   oneof message_type {
     messages.auth.AuthResponse auth_response = 1;
     ServerMessagePong server_message_pong = 2;
+    protos.game.common.ServerMessageGame server_message_game = 3 ;
 
   }
 }

@@ -72,7 +72,7 @@ public class WebSocketServerController
 
         if (_messageQueue.TryDequeue(out var userMessagePair))
         {
-            var clientMessage = ClientMessage.Parser.ParseFrom(userMessagePair.ReceivedData);
+            var clientMessage = userMessagePair.ClientMessage;
             Console.WriteLine($"🔄 Procesando mensajes en la cola. Cantidad actual: {_messageQueue.Count}");
 
             if (clientMessage.MessageTypeCase == ClientMessage.MessageTypeOneofCase.MessagePing)
@@ -81,7 +81,8 @@ public class WebSocketServerController
             }
             else
             {
-                _messageHandler.HandleIncomingMessage(userMessagePair.ReceivedData, userMessagePair.ConnectionId);
+
+                _messageHandler.HandleIncomingMessage(userMessagePair);
 
             }
         }
@@ -186,7 +187,9 @@ public class WebSocketServerController
                 if (_authenticatedUsers.ContainsKey(connectionId))
                 {
                     // Procesar mensaje del usuario autenticado
-                    UserMessagePair messagePair = new UserMessagePair(connectionId, receivedData);
+                    var clientMessage = ClientMessage.Parser.ParseFrom(receivedData);
+
+                    UserMessagePair messagePair = new UserMessagePair(connectionId, clientMessage);
                     Console.WriteLine("Enqueue");
                     _messageQueue.Enqueue(messagePair);
 
@@ -237,11 +240,11 @@ public class WebSocketServerController
 public class UserMessagePair
 {
     public string ConnectionId { get; set; }
-    public byte[] ReceivedData { get; set; }
+    public ClientMessage ClientMessage { get; set; }
 
-    public UserMessagePair(string connectionId, byte[] receivedData)
+    public UserMessagePair(string connectionId, ClientMessage clientMessage)
     {
         ConnectionId = connectionId;
-        ReceivedData = receivedData;
+        ClientMessage = clientMessage;
     }
 }
