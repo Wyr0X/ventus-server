@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package protos.game.movement;
+
+message ClientMessageMovement {
+  oneof message_type {
+    MoveRequest move_request = 1;
+    ChangeDirectionRequest change_direction_request = 2;
+  }
+}
+
+message MoveRequest {
+  int32 x = 1;              // Coordenada X de movimiento
+  int32 y = 2;              // Coordenada Y de movimiento
+  int64 timestamp = 3;      // Timestamp de la solicitud de movimiento
+  string request_id = 4;    // Identificador único para la solicitud (opcional)
+}
+
+message ChangeDirectionRequest {
+  int32 direction = 1;      // Dirección de movimiento (0 = arriba, 1 = derecha, 2 = abajo, 3 = izquierda)
+  int64 timestamp = 2;      // Timestamp de la solicitud de cambio de dirección
+  string request_id = 3;    // Identificador único para la solicitud (opcional)
+}
+
+message ServerMessageMovement {
+  oneof message_type {
+    MoveResponse move_response = 1;
+    PlayerMoved player_moved = 2;
+    PlayerDirectionChanged player_direction_changed = 3;
+  }
+}
+
+message MoveResponse {
+  int32 x = 1;              // Coordenada X de movimiento
+  int32 y = 2;              // Coordenada Y de movimiento
+  string request_id = 3;    // Identificador único para la solicitud (opcional)
+
+  bool success = 4;         // Si el movimiento fue exitoso o no
+  string reason = 5;        // Razón en caso de fallo (colisión, fuera de límites, etc.)
+
+}
+
+message PlayerMoved {
+  int32 player_id = 1;      // ID del jugador que se movió
+  int32 x = 2;              // Nueva posición X
+  int32 y = 3;              // Nueva posición Y
+  int64 timestamp = 4;      // Timestamp del servidor para el movimiento
+}
+
+message PlayerDirectionChanged {
+  int32 player_id = 1;      // ID del jugador cuyo movimiento ha cambiado de dirección
+  int32 direction = 2;      // Nueva dirección (0 = arriba, 1 = derecha, 2 = abajo, 3 = izquierda)
+  int64 timestamp = 3;      // Timestamp del servidor para el cambio de dirección
+}

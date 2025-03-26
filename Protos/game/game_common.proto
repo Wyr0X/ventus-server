@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package protos.game.common;
+
+import "Protos/game/game_movement.proto";
+
+message ClientMessageGame {
+  oneof message_type {
+    protos.game.movement.ClientMessageMovement message_movement = 1;
+  }
+}
+
+message ServerMessageGame {
+  oneof message_type {
+    protos.game.movement.ServerMessageMovement message_movement = 1;
+  }
+}
