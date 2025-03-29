@@ -94,7 +94,7 @@ public class MessageHandler
             switch (clientMessageGame.MessageTypeCase)
             {
                 case ClientMessageGame.MessageTypeOneofCase.MessageMovement:
-                    _movementHandler.HandleMovementMessage(message.MessageMovement, );
+                    _movementHandler.HandleMovementMessage(messagePair );
                     break;
                 default:
                     Console.WriteLine("❌ Mensaje recibido sin un tipo válido.");

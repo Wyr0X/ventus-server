@@ -20,7 +20,7 @@ public class MovementHandler
         switch (movementMessage.MessageTypeCase)
         {
             case ClientMessageMovement.MessageTypeOneofCase.MoveRequest:
-                _movementManager.ProcessMoveRequest(messagePair);
+                _movementManager.HandleMoveRequest(messagePair);
                 break;
             
             default:
