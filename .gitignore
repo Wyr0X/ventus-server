@@ -9,6 +9,7 @@ out/
 .vs/
 .vscode/
 .idea/
+.config/
 
 # Archivos de configuración de Visual Studio
 .vsconfig

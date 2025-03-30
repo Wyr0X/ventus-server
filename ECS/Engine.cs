@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Numerics;
-using System.Threading;
-using System.Threading.Tasks;
 
 public abstract class Engine
 {
@@ -12,14 +8,13 @@ public abstract class Engine
 
     // Engine vars
     protected EntityManager Entities = new EntityManager();
-  //  protected Items Items = new Items();
+
+    //  protected Items Items = new Items();
     //protected GameWorld World = new GameWorld();
 
     // Loop vars
-    private int Frame = 0;
-    public double Time { get; set; } = 0 ;
+    public double Time { get; set; } = 0;
     private double AccTime = 0;
-    private bool Running = false;
     private CancellationTokenSource? LoopCancellation;
 
     // Events
@@ -30,17 +25,15 @@ public abstract class Engine
         Preload();
     }
 
-    private async void Run()
+    public async Task Run()
     {
-
-        Running = true;
         LoopCancellation = new CancellationTokenSource();
         await GameLoop(LoopCancellation.Token);
     }
 
     private async Task GameLoop(CancellationToken cancellationToken)
     {
-        while (!cancellationToken.IsCancellationRequested && Running)
+        while (!cancellationToken.IsCancellationRequested)
         {
             double newTime = GetTime();
             double dt = Math.Min(newTime - Time, MAX_DELTA_TIME);
@@ -53,34 +46,25 @@ public abstract class Engine
                 AccTime -= TIME_STEP;
             }
 
-            Render();
             await Task.Delay(16); // Aproximadamente 60fps
         }
     }
 
-    private void Stop()
+    public void Stop()
     {
-        Running = false;
         LoopCancellation?.Cancel();
     }
 
-  
-  
-
-
     public abstract void Preload();
     public abstract void Start();
-    public abstract void Render();
     public abstract void Update();
-    
-    public void Destroy()
-    {
-        if (Running) Stop();
-    }
 
     public static Vector2 ToTile(Vector2 pos)
     {
-        return new Vector2((float)Math.Floor(pos.X / TILE_SIZE), (float)Math.Floor(pos.Y / TILE_SIZE));
+        return new Vector2(
+            (float)Math.Floor(pos.X / TILE_SIZE),
+            (float)Math.Floor(pos.Y / TILE_SIZE)
+        );
     }
 
     private static double GetTime()

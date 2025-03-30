@@ -4,9 +4,15 @@ package protos.game.movement;
 
 message ClientMessageMovement {
   oneof message_type {
-    MoveRequest move_request = 1;
-    ChangeDirectionRequest change_direction_request = 2;
+    PlayerInput player_input = 1;
+    //MoveRequest move_request = 1;
+    //ChangeDirectionRequest change_direction_request = 2;
   }
+}
+
+message PlayerInput {
+  // BIT 0: Arriba, 1: Derecha, 2: Abajo, 3: Izquierda
+  repeated uint32 keys = 1;  
 }
 
 message MoveRequest {

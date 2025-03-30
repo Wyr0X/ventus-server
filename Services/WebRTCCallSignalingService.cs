@@ -39,7 +39,7 @@ public class WebRTCCallSignalingService
     private void HandleOffer(UserMessagePair messagePair, WebRTCOffer offer)
     {
         // Aquí procesas la oferta de conexión WebRTC
-        Console.WriteLine($"📞 Oferta recibida de {messagePair.ConnectionId}");
+        Console.WriteLine($"📞 Oferta recibida de {messagePair.UserId}");
         // Obtener userId
         // Enviar la respuesta de la oferta (se puede enviar a un cliente específico)
         WebRTCAnswer webRTCAnswer = new WebRTCAnswer{
@@ -51,14 +51,14 @@ public class WebRTCCallSignalingService
             Answer = webRTCAnswer
         };
         //Buscar todos los jugadores del mundo y enviarle
-        _webSocketServerController.SendServerPacketBySocket(messagePair.ConnectionId, serverMessageWebRTC);
+        _webSocketServerController.SendServerPacketBySocket(messagePair.UserId, serverMessageWebRTC);
     }
 
 
     private void HandleIceCandidate(UserMessagePair messagePair, WebRTCICECandidate iceCandidate)
     {
         // Procesar los ICE candidates
-        Console.WriteLine($"❄️ ICE Candidate recibido de {messagePair.ConnectionId}");
+        Console.WriteLine($"❄️ ICE Candidate recibido de {messagePair.UserId}");
 
         // Enviar el ICE candidate a la otra parte si es necesario
 
@@ -66,7 +66,7 @@ public class WebRTCCallSignalingService
             IceCandidate = iceCandidate
         };
         //Buscar todos los jugadores del mundo y enviarle
-        _webSocketServerController.SendServerPacketBySocket(messagePair.ConnectionId, serverMessageWebRTC);
+        _webSocketServerController.SendServerPacketBySocket(messagePair.UserId, serverMessageWebRTC);
     }
 
 }

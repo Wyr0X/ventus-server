@@ -1,44 +1,36 @@
 using System;
-using Protos.Game.Movement;
-using Protos.Game.Common;
 using System.Collections.Generic;
-using ProtosCommon;
+using Game.Models;
+using Protos.Game.Common;
+using Protos.Game.Movement;
 using Protos.Game.Session;
+using ProtosCommon;
 
 public class SessionManager
 {
+    Game _game;
     SessionLogic _sessionLogic;
-    public SessionManager(SessionLogic sessionLogic)
+
+    public SessionManager(Game game, SessionLogic sessionLogic)
     {
+        _game = game;
         _sessionLogic = sessionLogic;
     }
 
     public void HandlePlayerJoin(UserMessagePair messagePair)
     {
         ClientMessage clientMessage = messagePair.ClientMessage;
-        ClientMessageGameSession sessionMessage = clientMessage.MessageOauth.ClientMessageGame.MessageSession;
+        ClientMessageGameSession sessionMessage = clientMessage
+            .MessageOauth
+            .ClientMessageGame
+            .MessageSession;
         PlayerJoin playerJoinMessage = sessionMessage.PlayerJoin;
 
-        string playerId = playerJoinMessage.PlayerId;
-        // Recuperar Jugador del modelo - COMPLETAR
-        string Player = _sessionLogic.GetPlayerById(playerId);
-        // Corroborar que no este baneado,
-        // Corroborar que no este logeado y resolver
-
-       // Recuperar PlayerWorldPosition del jugador - Completar
-        string PlayerWorldPosition = _sessionLogic.GetPlayerWorldPositionById(playerId);
-
- 
-        // Recuperar World - Completar
-        string World = _sessionLogic.GetPlayerWorldPositionById(playerId);
-        //Chequear que no este en el maximo de jugadores para el world
-        //Chequear que el world permita entrar al usuario por nivel o permisos
-
-        // Recuperar Map
-        //Chequear que no este en el maximo de jugadores para el Map
-        string Map = _sessionLogic.GetMapById(playerId);
-
-
+        // Existirá un AccountService(userId, playerId) para saber si existe en la cuenta
+        // Validaciones -> ban, si está logueado, si el pj es de la cuenta
+        PlayerBasicModel playerBasic = playerService.GetPlayerBasicById(playerJoinMessage.PlayerId);
+        PlayerLocation playerLocation = playerService.getPlayerLocationId(playerJoinMessage.PlayerId);
+        var playerInfo = new { playerBasic, playerLocation };
+        _game.worldManager.SpawnPlayer(playerInfo);
     }
-
 }
