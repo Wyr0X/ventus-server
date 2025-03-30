@@ -9,7 +9,7 @@ public class MovementHandler
 
     public MovementHandler(MovementManager movementManager)
     {
-        _movementManager = movementManager;
+        _movementManager = movementManager;;
     }
 
     // Función que maneja los mensajes de movimiento recibidos desde el cliente

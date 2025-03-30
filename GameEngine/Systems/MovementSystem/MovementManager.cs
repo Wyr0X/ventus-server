@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public class MovementManager
 {
     // Inyectar dependencias necesarias, como servicios de validación, actualización de jugadores, etc.
-    private readonly IPlayerService _playerService;
+    private readonly IPlayerService _playerService;;
     private readonly IMapService _mapService;
     private readonly IPlayerWorldRelationService _playerWorldRelationService;
     private readonly ICollisionService _collisionService;

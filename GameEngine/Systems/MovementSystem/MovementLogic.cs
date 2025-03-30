@@ -15,7 +15,7 @@ public class MovementLogic
         // Aquí validaríamos si el movimiento es válido, sin colisiones o restricciones.
 
         // Crear la respuesta del movimiento
-        var moveResponse = new MoveResponse
+        var moveResponse = new MoveResponse;
         {
             Success = true,
             Reason = "Movimiento exitoso"
