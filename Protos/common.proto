@@ -4,6 +4,7 @@ package protos_common;
 
 import "Protos/game/game_common.proto";
 import "Protos/auth.proto";
+import "Protos/webrtc.proto";
 
 
 message ClientMessage {
@@ -11,6 +12,7 @@ message ClientMessage {
     ClientMessageAuth message_auth = 1;
     ClientMessageOAuth message_oauth = 2;
     ClientMessagePing message_ping = 3;
+    webrtc.ClientMessageWebRTC message_rtc = 4;
   }
 }
 
@@ -32,6 +34,7 @@ message ServerMessage {
     messages.auth.AuthResponse auth_response = 1;
     ServerMessagePong server_message_pong = 2;
     protos.game.common.ServerMessageGame server_message_game = 3 ;
+    webrtc.ServerMessageWebRTC message_rtc = 4;
 
   }
 }

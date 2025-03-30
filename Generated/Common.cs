@@ -25,31 +25,33 @@ namespace ProtosCommon {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "ChNQcm90b3MvY29tbW9uLnByb3RvEg1wcm90b3NfY29tbW9uGh1Qcm90b3Mv",
-            "Z2FtZS9nYW1lX2NvbW1vbi5wcm90bxoRUHJvdG9zL2F1dGgucHJvdG8izwEK",
-            "DUNsaWVudE1lc3NhZ2USOAoMbWVzc2FnZV9hdXRoGAEgASgLMiAucHJvdG9z",
-            "X2NvbW1vbi5DbGllbnRNZXNzYWdlQXV0aEgAEjoKDW1lc3NhZ2Vfb2F1dGgY",
-            "AiABKAsyIS5wcm90b3NfY29tbW9uLkNsaWVudE1lc3NhZ2VPQXV0aEgAEjgK",
-            "DG1lc3NhZ2VfcGluZxgDIAEoCzIgLnByb3Rvc19jb21tb24uQ2xpZW50TWVz",
-            "c2FnZVBpbmdIAEIOCgxtZXNzYWdlX3R5cGUiZgoRQ2xpZW50TWVzc2FnZUF1",
-            "dGgSDQoFdG9rZW4YASABKAkSMgoMYXV0aF9yZXF1ZXN0GAIgASgLMhoubWVz",
-            "c2FnZXMuYXV0aC5BdXRoUmVxdWVzdEgAQg4KDG1lc3NhZ2VfdHlwZSJqChJD",
-            "bGllbnRNZXNzYWdlT0F1dGgSRAoTY2xpZW50X21lc3NhZ2VfZ2FtZRgBIAEo",
-            "CzIlLnByb3Rvcy5nYW1lLmNvbW1vbi5DbGllbnRNZXNzYWdlR2FtZUgAQg4K",
-            "DG1lc3NhZ2VfdHlwZSLcAQoNU2VydmVyTWVzc2FnZRI0Cg1hdXRoX3Jlc3Bv",
-            "bnNlGAEgASgLMhsubWVzc2FnZXMuYXV0aC5BdXRoUmVzcG9uc2VIABI/ChNz",
-            "ZXJ2ZXJfbWVzc2FnZV9wb25nGAIgASgLMiAucHJvdG9zX2NvbW1vbi5TZXJ2",
-            "ZXJNZXNzYWdlUG9uZ0gAEkQKE3NlcnZlcl9tZXNzYWdlX2dhbWUYAyABKAsy",
-            "JS5wcm90b3MuZ2FtZS5jb21tb24uU2VydmVyTWVzc2FnZUdhbWVIAEIOCgxt",
-            "ZXNzYWdlX3R5cGUiJAoRQ2xpZW50TWVzc2FnZVBpbmcSDwoHbWVzc2FnZRgB",
-            "IAEoCSIkChFTZXJ2ZXJNZXNzYWdlUG9uZxIPCgdtZXNzYWdlGAEgASgJYgZw",
-            "cm90bzM="));
+            "Z2FtZS9nYW1lX2NvbW1vbi5wcm90bxoRUHJvdG9zL2F1dGgucHJvdG8aE1By",
+            "b3Rvcy93ZWJydGMucHJvdG8igwIKDUNsaWVudE1lc3NhZ2USOAoMbWVzc2Fn",
+            "ZV9hdXRoGAEgASgLMiAucHJvdG9zX2NvbW1vbi5DbGllbnRNZXNzYWdlQXV0",
+            "aEgAEjoKDW1lc3NhZ2Vfb2F1dGgYAiABKAsyIS5wcm90b3NfY29tbW9uLkNs",
+            "aWVudE1lc3NhZ2VPQXV0aEgAEjgKDG1lc3NhZ2VfcGluZxgDIAEoCzIgLnBy",
+            "b3Rvc19jb21tb24uQ2xpZW50TWVzc2FnZVBpbmdIABIyCgttZXNzYWdlX3J0",
+            "YxgEIAEoCzIbLndlYnJ0Yy5DbGllbnRNZXNzYWdlV2ViUlRDSABCDgoMbWVz",
+            "c2FnZV90eXBlImYKEUNsaWVudE1lc3NhZ2VBdXRoEg0KBXRva2VuGAEgASgJ",
+            "EjIKDGF1dGhfcmVxdWVzdBgCIAEoCzIaLm1lc3NhZ2VzLmF1dGguQXV0aFJl",
+            "cXVlc3RIAEIOCgxtZXNzYWdlX3R5cGUiagoSQ2xpZW50TWVzc2FnZU9BdXRo",
+            "EkQKE2NsaWVudF9tZXNzYWdlX2dhbWUYASABKAsyJS5wcm90b3MuZ2FtZS5j",
+            "b21tb24uQ2xpZW50TWVzc2FnZUdhbWVIAEIOCgxtZXNzYWdlX3R5cGUikAIK",
+            "DVNlcnZlck1lc3NhZ2USNAoNYXV0aF9yZXNwb25zZRgBIAEoCzIbLm1lc3Nh",
+            "Z2VzLmF1dGguQXV0aFJlc3BvbnNlSAASPwoTc2VydmVyX21lc3NhZ2VfcG9u",
+            "ZxgCIAEoCzIgLnByb3Rvc19jb21tb24uU2VydmVyTWVzc2FnZVBvbmdIABJE",
+            "ChNzZXJ2ZXJfbWVzc2FnZV9nYW1lGAMgASgLMiUucHJvdG9zLmdhbWUuY29t",
+            "bW9uLlNlcnZlck1lc3NhZ2VHYW1lSAASMgoLbWVzc2FnZV9ydGMYBCABKAsy",
+            "Gy53ZWJydGMuU2VydmVyTWVzc2FnZVdlYlJUQ0gAQg4KDG1lc3NhZ2VfdHlw",
+            "ZSIkChFDbGllbnRNZXNzYWdlUGluZxIPCgdtZXNzYWdlGAEgASgJIiQKEVNl",
+            "cnZlck1lc3NhZ2VQb25nEg8KB21lc3NhZ2UYASABKAliBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::Protos.Game.Common.GameCommonReflection.Descriptor, global::Messages.Auth.AuthReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::Protos.Game.Common.GameCommonReflection.Descriptor, global::Messages.Auth.AuthReflection.Descriptor, global::Webrtc.WebrtcReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::ProtosCommon.ClientMessage), global::ProtosCommon.ClientMessage.Parser, new[]{ "MessageAuth", "MessageOauth", "MessagePing" }, new[]{ "MessageType" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::ProtosCommon.ClientMessage), global::ProtosCommon.ClientMessage.Parser, new[]{ "MessageAuth", "MessageOauth", "MessagePing", "MessageRtc" }, new[]{ "MessageType" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::ProtosCommon.ClientMessageAuth), global::ProtosCommon.ClientMessageAuth.Parser, new[]{ "Token", "AuthRequest" }, new[]{ "MessageType" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::ProtosCommon.ClientMessageOAuth), global::ProtosCommon.ClientMessageOAuth.Parser, new[]{ "ClientMessageGame" }, new[]{ "MessageType" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::ProtosCommon.ServerMessage), global::ProtosCommon.ServerMessage.Parser, new[]{ "AuthResponse", "ServerMessagePong", "ServerMessageGame" }, new[]{ "MessageType" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::ProtosCommon.ServerMessage), global::ProtosCommon.ServerMessage.Parser, new[]{ "AuthResponse", "ServerMessagePong", "ServerMessageGame", "MessageRtc" }, new[]{ "MessageType" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::ProtosCommon.ClientMessagePing), global::ProtosCommon.ClientMessagePing.Parser, new[]{ "Message" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::ProtosCommon.ServerMessagePong), global::ProtosCommon.ServerMessagePong.Parser, new[]{ "Message" }, null, null, null, null)
           }));
@@ -103,6 +105,9 @@ namespace ProtosCommon {
         case MessageTypeOneofCase.MessagePing:
           MessagePing = other.MessagePing.Clone();
           break;
+        case MessageTypeOneofCase.MessageRtc:
+          MessageRtc = other.MessageRtc.Clone();
+          break;
       }
 
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -150,6 +155,18 @@ namespace ProtosCommon {
       }
     }
 
+    /// <summary>Field number for the "message_rtc" field.</summary>
+    public const int MessageRtcFieldNumber = 4;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Webrtc.ClientMessageWebRTC MessageRtc {
+      get { return messageTypeCase_ == MessageTypeOneofCase.MessageRtc ? (global::Webrtc.ClientMessageWebRTC) messageType_ : null; }
+      set {
+        messageType_ = value;
+        messageTypeCase_ = value == null ? MessageTypeOneofCase.None : MessageTypeOneofCase.MessageRtc;
+      }
+    }
+
     private object messageType_;
     /// <summary>Enum of possible cases for the "message_type" oneof.</summary>
     public enum MessageTypeOneofCase {
@@ -157,6 +174,7 @@ namespace ProtosCommon {
       MessageAuth = 1,
       MessageOauth = 2,
       MessagePing = 3,
+      MessageRtc = 4,
     }
     private MessageTypeOneofCase messageTypeCase_ = MessageTypeOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -190,6 +208,7 @@ namespace ProtosCommon {
       if (!object.Equals(MessageAuth, other.MessageAuth)) return false;
       if (!object.Equals(MessageOauth, other.MessageOauth)) return false;
       if (!object.Equals(MessagePing, other.MessagePing)) return false;
+      if (!object.Equals(MessageRtc, other.MessageRtc)) return false;
       if (MessageTypeCase != other.MessageTypeCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -201,6 +220,7 @@ namespace ProtosCommon {
       if (messageTypeCase_ == MessageTypeOneofCase.MessageAuth) hash ^= MessageAuth.GetHashCode();
       if (messageTypeCase_ == MessageTypeOneofCase.MessageOauth) hash ^= MessageOauth.GetHashCode();
       if (messageTypeCase_ == MessageTypeOneofCase.MessagePing) hash ^= MessagePing.GetHashCode();
+      if (messageTypeCase_ == MessageTypeOneofCase.MessageRtc) hash ^= MessageRtc.GetHashCode();
       hash ^= (int) messageTypeCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -232,6 +252,10 @@ namespace ProtosCommon {
         output.WriteRawTag(26);
         output.WriteMessage(MessagePing);
       }
+      if (messageTypeCase_ == MessageTypeOneofCase.MessageRtc) {
+        output.WriteRawTag(34);
+        output.WriteMessage(MessageRtc);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -254,6 +278,10 @@ namespace ProtosCommon {
         output.WriteRawTag(26);
         output.WriteMessage(MessagePing);
       }
+      if (messageTypeCase_ == MessageTypeOneofCase.MessageRtc) {
+        output.WriteRawTag(34);
+        output.WriteMessage(MessageRtc);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -272,6 +300,9 @@ namespace ProtosCommon {
       }
       if (messageTypeCase_ == MessageTypeOneofCase.MessagePing) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(MessagePing);
+      }
+      if (messageTypeCase_ == MessageTypeOneofCase.MessageRtc) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(MessageRtc);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -303,6 +334,12 @@ namespace ProtosCommon {
             MessagePing = new global::ProtosCommon.ClientMessagePing();
           }
           MessagePing.MergeFrom(other.MessagePing);
+          break;
+        case MessageTypeOneofCase.MessageRtc:
+          if (MessageRtc == null) {
+            MessageRtc = new global::Webrtc.ClientMessageWebRTC();
+          }
+          MessageRtc.MergeFrom(other.MessageRtc);
           break;
       }
 
@@ -352,6 +389,15 @@ namespace ProtosCommon {
             MessagePing = subBuilder;
             break;
           }
+          case 34: {
+            global::Webrtc.ClientMessageWebRTC subBuilder = new global::Webrtc.ClientMessageWebRTC();
+            if (messageTypeCase_ == MessageTypeOneofCase.MessageRtc) {
+              subBuilder.MergeFrom(MessageRtc);
+            }
+            input.ReadMessage(subBuilder);
+            MessageRtc = subBuilder;
+            break;
+          }
         }
       }
     #endif
@@ -396,6 +442,15 @@ namespace ProtosCommon {
             }
             input.ReadMessage(subBuilder);
             MessagePing = subBuilder;
+            break;
+          }
+          case 34: {
+            global::Webrtc.ClientMessageWebRTC subBuilder = new global::Webrtc.ClientMessageWebRTC();
+            if (messageTypeCase_ == MessageTypeOneofCase.MessageRtc) {
+              subBuilder.MergeFrom(MessageRtc);
+            }
+            input.ReadMessage(subBuilder);
+            MessageRtc = subBuilder;
             break;
           }
         }
@@ -969,6 +1024,9 @@ namespace ProtosCommon {
         case MessageTypeOneofCase.ServerMessageGame:
           ServerMessageGame = other.ServerMessageGame.Clone();
           break;
+        case MessageTypeOneofCase.MessageRtc:
+          MessageRtc = other.MessageRtc.Clone();
+          break;
       }
 
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -1016,6 +1074,18 @@ namespace ProtosCommon {
       }
     }
 
+    /// <summary>Field number for the "message_rtc" field.</summary>
+    public const int MessageRtcFieldNumber = 4;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Webrtc.ServerMessageWebRTC MessageRtc {
+      get { return messageTypeCase_ == MessageTypeOneofCase.MessageRtc ? (global::Webrtc.ServerMessageWebRTC) messageType_ : null; }
+      set {
+        messageType_ = value;
+        messageTypeCase_ = value == null ? MessageTypeOneofCase.None : MessageTypeOneofCase.MessageRtc;
+      }
+    }
+
     private object messageType_;
     /// <summary>Enum of possible cases for the "message_type" oneof.</summary>
     public enum MessageTypeOneofCase {
@@ -1023,6 +1093,7 @@ namespace ProtosCommon {
       AuthResponse = 1,
       ServerMessagePong = 2,
       ServerMessageGame = 3,
+      MessageRtc = 4,
     }
     private MessageTypeOneofCase messageTypeCase_ = MessageTypeOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1056,6 +1127,7 @@ namespace ProtosCommon {
       if (!object.Equals(AuthResponse, other.AuthResponse)) return false;
       if (!object.Equals(ServerMessagePong, other.ServerMessagePong)) return false;
       if (!object.Equals(ServerMessageGame, other.ServerMessageGame)) return false;
+      if (!object.Equals(MessageRtc, other.MessageRtc)) return false;
       if (MessageTypeCase != other.MessageTypeCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -1067,6 +1139,7 @@ namespace ProtosCommon {
       if (messageTypeCase_ == MessageTypeOneofCase.AuthResponse) hash ^= AuthResponse.GetHashCode();
       if (messageTypeCase_ == MessageTypeOneofCase.ServerMessagePong) hash ^= ServerMessagePong.GetHashCode();
       if (messageTypeCase_ == MessageTypeOneofCase.ServerMessageGame) hash ^= ServerMessageGame.GetHashCode();
+      if (messageTypeCase_ == MessageTypeOneofCase.MessageRtc) hash ^= MessageRtc.GetHashCode();
       hash ^= (int) messageTypeCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -1098,6 +1171,10 @@ namespace ProtosCommon {
         output.WriteRawTag(26);
         output.WriteMessage(ServerMessageGame);
       }
+      if (messageTypeCase_ == MessageTypeOneofCase.MessageRtc) {
+        output.WriteRawTag(34);
+        output.WriteMessage(MessageRtc);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -1120,6 +1197,10 @@ namespace ProtosCommon {
         output.WriteRawTag(26);
         output.WriteMessage(ServerMessageGame);
       }
+      if (messageTypeCase_ == MessageTypeOneofCase.MessageRtc) {
+        output.WriteRawTag(34);
+        output.WriteMessage(MessageRtc);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -1138,6 +1219,9 @@ namespace ProtosCommon {
       }
       if (messageTypeCase_ == MessageTypeOneofCase.ServerMessageGame) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(ServerMessageGame);
+      }
+      if (messageTypeCase_ == MessageTypeOneofCase.MessageRtc) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(MessageRtc);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -1169,6 +1253,12 @@ namespace ProtosCommon {
             ServerMessageGame = new global::Protos.Game.Common.ServerMessageGame();
           }
           ServerMessageGame.MergeFrom(other.ServerMessageGame);
+          break;
+        case MessageTypeOneofCase.MessageRtc:
+          if (MessageRtc == null) {
+            MessageRtc = new global::Webrtc.ServerMessageWebRTC();
+          }
+          MessageRtc.MergeFrom(other.MessageRtc);
           break;
       }
 
@@ -1218,6 +1308,15 @@ namespace ProtosCommon {
             ServerMessageGame = subBuilder;
             break;
           }
+          case 34: {
+            global::Webrtc.ServerMessageWebRTC subBuilder = new global::Webrtc.ServerMessageWebRTC();
+            if (messageTypeCase_ == MessageTypeOneofCase.MessageRtc) {
+              subBuilder.MergeFrom(MessageRtc);
+            }
+            input.ReadMessage(subBuilder);
+            MessageRtc = subBuilder;
+            break;
+          }
         }
       }
     #endif
@@ -1262,6 +1361,15 @@ namespace ProtosCommon {
             }
             input.ReadMessage(subBuilder);
             ServerMessageGame = subBuilder;
+            break;
+          }
+          case 34: {
+            global::Webrtc.ServerMessageWebRTC subBuilder = new global::Webrtc.ServerMessageWebRTC();
+            if (messageTypeCase_ == MessageTypeOneofCase.MessageRtc) {
+              subBuilder.MergeFrom(MessageRtc);
+            }
+            input.ReadMessage(subBuilder);
+            MessageRtc = subBuilder;
             break;
           }
         }

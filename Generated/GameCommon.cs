@@ -25,17 +25,21 @@ namespace Protos.Game.Common {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Ch1Qcm90b3MvZ2FtZS9nYW1lX2NvbW1vbi5wcm90bxIScHJvdG9zLmdhbWUu",
-            "Y29tbW9uGh9Qcm90b3MvZ2FtZS9nYW1lX21vdmVtZW50LnByb3RvImwKEUNs",
-            "aWVudE1lc3NhZ2VHYW1lEkcKEG1lc3NhZ2VfbW92ZW1lbnQYASABKAsyKy5w",
-            "cm90b3MuZ2FtZS5tb3ZlbWVudC5DbGllbnRNZXNzYWdlTW92ZW1lbnRIAEIO",
-            "CgxtZXNzYWdlX3R5cGUibAoRU2VydmVyTWVzc2FnZUdhbWUSRwoQbWVzc2Fn",
-            "ZV9tb3ZlbWVudBgBIAEoCzIrLnByb3Rvcy5nYW1lLm1vdmVtZW50LlNlcnZl",
-            "ck1lc3NhZ2VNb3ZlbWVudEgAQg4KDG1lc3NhZ2VfdHlwZWIGcHJvdG8z"));
+            "Y29tbW9uGh9Qcm90b3MvZ2FtZS9nYW1lX21vdmVtZW50LnByb3RvGh5Qcm90",
+            "b3MvZ2FtZS9nYW1lX3Nlc3Npb24ucHJvdG8itgEKEUNsaWVudE1lc3NhZ2VH",
+            "YW1lEkcKEG1lc3NhZ2VfbW92ZW1lbnQYASABKAsyKy5wcm90b3MuZ2FtZS5t",
+            "b3ZlbWVudC5DbGllbnRNZXNzYWdlTW92ZW1lbnRIABJICg9tZXNzYWdlX3Nl",
+            "c3Npb24YAiABKAsyLS5wcm90b3MuZ2FtZS5zZXNzaW9uLkNsaWVudE1lc3Nh",
+            "Z2VHYW1lU2Vzc2lvbkgAQg4KDG1lc3NhZ2VfdHlwZSK2AQoRU2VydmVyTWVz",
+            "c2FnZUdhbWUSRwoQbWVzc2FnZV9tb3ZlbWVudBgBIAEoCzIrLnByb3Rvcy5n",
+            "YW1lLm1vdmVtZW50LlNlcnZlck1lc3NhZ2VNb3ZlbWVudEgAEkgKD21lc3Nh",
+            "Z2Vfc2Vzc2lvbhgCIAEoCzItLnByb3Rvcy5nYW1lLnNlc3Npb24uU2VydmVy",
+            "TWVzc2FnZUdhbWVTZXNzaW9uSABCDgoMbWVzc2FnZV90eXBlYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::Protos.Game.Movement.GameMovementReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::Protos.Game.Movement.GameMovementReflection.Descriptor, global::Protos.Game.Session.GameSessionReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Game.Common.ClientMessageGame), global::Protos.Game.Common.ClientMessageGame.Parser, new[]{ "MessageMovement" }, new[]{ "MessageType" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Game.Common.ServerMessageGame), global::Protos.Game.Common.ServerMessageGame.Parser, new[]{ "MessageMovement" }, new[]{ "MessageType" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Game.Common.ClientMessageGame), global::Protos.Game.Common.ClientMessageGame.Parser, new[]{ "MessageMovement", "MessageSession" }, new[]{ "MessageType" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Game.Common.ServerMessageGame), global::Protos.Game.Common.ServerMessageGame.Parser, new[]{ "MessageMovement", "MessageSession" }, new[]{ "MessageType" }, null, null, null)
           }));
     }
     #endregion
@@ -81,6 +85,9 @@ namespace Protos.Game.Common {
         case MessageTypeOneofCase.MessageMovement:
           MessageMovement = other.MessageMovement.Clone();
           break;
+        case MessageTypeOneofCase.MessageSession:
+          MessageSession = other.MessageSession.Clone();
+          break;
       }
 
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -104,11 +111,24 @@ namespace Protos.Game.Common {
       }
     }
 
+    /// <summary>Field number for the "message_session" field.</summary>
+    public const int MessageSessionFieldNumber = 2;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Protos.Game.Session.ClientMessageGameSession MessageSession {
+      get { return messageTypeCase_ == MessageTypeOneofCase.MessageSession ? (global::Protos.Game.Session.ClientMessageGameSession) messageType_ : null; }
+      set {
+        messageType_ = value;
+        messageTypeCase_ = value == null ? MessageTypeOneofCase.None : MessageTypeOneofCase.MessageSession;
+      }
+    }
+
     private object messageType_;
     /// <summary>Enum of possible cases for the "message_type" oneof.</summary>
     public enum MessageTypeOneofCase {
       None = 0,
       MessageMovement = 1,
+      MessageSession = 2,
     }
     private MessageTypeOneofCase messageTypeCase_ = MessageTypeOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -140,6 +160,7 @@ namespace Protos.Game.Common {
         return true;
       }
       if (!object.Equals(MessageMovement, other.MessageMovement)) return false;
+      if (!object.Equals(MessageSession, other.MessageSession)) return false;
       if (MessageTypeCase != other.MessageTypeCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -149,6 +170,7 @@ namespace Protos.Game.Common {
     public override int GetHashCode() {
       int hash = 1;
       if (messageTypeCase_ == MessageTypeOneofCase.MessageMovement) hash ^= MessageMovement.GetHashCode();
+      if (messageTypeCase_ == MessageTypeOneofCase.MessageSession) hash ^= MessageSession.GetHashCode();
       hash ^= (int) messageTypeCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -172,6 +194,10 @@ namespace Protos.Game.Common {
         output.WriteRawTag(10);
         output.WriteMessage(MessageMovement);
       }
+      if (messageTypeCase_ == MessageTypeOneofCase.MessageSession) {
+        output.WriteRawTag(18);
+        output.WriteMessage(MessageSession);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -186,6 +212,10 @@ namespace Protos.Game.Common {
         output.WriteRawTag(10);
         output.WriteMessage(MessageMovement);
       }
+      if (messageTypeCase_ == MessageTypeOneofCase.MessageSession) {
+        output.WriteRawTag(18);
+        output.WriteMessage(MessageSession);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -198,6 +228,9 @@ namespace Protos.Game.Common {
       int size = 0;
       if (messageTypeCase_ == MessageTypeOneofCase.MessageMovement) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(MessageMovement);
+      }
+      if (messageTypeCase_ == MessageTypeOneofCase.MessageSession) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(MessageSession);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -217,6 +250,12 @@ namespace Protos.Game.Common {
             MessageMovement = new global::Protos.Game.Movement.ClientMessageMovement();
           }
           MessageMovement.MergeFrom(other.MessageMovement);
+          break;
+        case MessageTypeOneofCase.MessageSession:
+          if (MessageSession == null) {
+            MessageSession = new global::Protos.Game.Session.ClientMessageGameSession();
+          }
+          MessageSession.MergeFrom(other.MessageSession);
           break;
       }
 
@@ -248,6 +287,15 @@ namespace Protos.Game.Common {
             MessageMovement = subBuilder;
             break;
           }
+          case 18: {
+            global::Protos.Game.Session.ClientMessageGameSession subBuilder = new global::Protos.Game.Session.ClientMessageGameSession();
+            if (messageTypeCase_ == MessageTypeOneofCase.MessageSession) {
+              subBuilder.MergeFrom(MessageSession);
+            }
+            input.ReadMessage(subBuilder);
+            MessageSession = subBuilder;
+            break;
+          }
         }
       }
     #endif
@@ -274,6 +322,15 @@ namespace Protos.Game.Common {
             }
             input.ReadMessage(subBuilder);
             MessageMovement = subBuilder;
+            break;
+          }
+          case 18: {
+            global::Protos.Game.Session.ClientMessageGameSession subBuilder = new global::Protos.Game.Session.ClientMessageGameSession();
+            if (messageTypeCase_ == MessageTypeOneofCase.MessageSession) {
+              subBuilder.MergeFrom(MessageSession);
+            }
+            input.ReadMessage(subBuilder);
+            MessageSession = subBuilder;
             break;
           }
         }
@@ -322,6 +379,9 @@ namespace Protos.Game.Common {
         case MessageTypeOneofCase.MessageMovement:
           MessageMovement = other.MessageMovement.Clone();
           break;
+        case MessageTypeOneofCase.MessageSession:
+          MessageSession = other.MessageSession.Clone();
+          break;
       }
 
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -345,11 +405,24 @@ namespace Protos.Game.Common {
       }
     }
 
+    /// <summary>Field number for the "message_session" field.</summary>
+    public const int MessageSessionFieldNumber = 2;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Protos.Game.Session.ServerMessageGameSession MessageSession {
+      get { return messageTypeCase_ == MessageTypeOneofCase.MessageSession ? (global::Protos.Game.Session.ServerMessageGameSession) messageType_ : null; }
+      set {
+        messageType_ = value;
+        messageTypeCase_ = value == null ? MessageTypeOneofCase.None : MessageTypeOneofCase.MessageSession;
+      }
+    }
+
     private object messageType_;
     /// <summary>Enum of possible cases for the "message_type" oneof.</summary>
     public enum MessageTypeOneofCase {
       None = 0,
       MessageMovement = 1,
+      MessageSession = 2,
     }
     private MessageTypeOneofCase messageTypeCase_ = MessageTypeOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -381,6 +454,7 @@ namespace Protos.Game.Common {
         return true;
       }
       if (!object.Equals(MessageMovement, other.MessageMovement)) return false;
+      if (!object.Equals(MessageSession, other.MessageSession)) return false;
       if (MessageTypeCase != other.MessageTypeCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -390,6 +464,7 @@ namespace Protos.Game.Common {
     public override int GetHashCode() {
       int hash = 1;
       if (messageTypeCase_ == MessageTypeOneofCase.MessageMovement) hash ^= MessageMovement.GetHashCode();
+      if (messageTypeCase_ == MessageTypeOneofCase.MessageSession) hash ^= MessageSession.GetHashCode();
       hash ^= (int) messageTypeCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -413,6 +488,10 @@ namespace Protos.Game.Common {
         output.WriteRawTag(10);
         output.WriteMessage(MessageMovement);
       }
+      if (messageTypeCase_ == MessageTypeOneofCase.MessageSession) {
+        output.WriteRawTag(18);
+        output.WriteMessage(MessageSession);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -427,6 +506,10 @@ namespace Protos.Game.Common {
         output.WriteRawTag(10);
         output.WriteMessage(MessageMovement);
       }
+      if (messageTypeCase_ == MessageTypeOneofCase.MessageSession) {
+        output.WriteRawTag(18);
+        output.WriteMessage(MessageSession);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -439,6 +522,9 @@ namespace Protos.Game.Common {
       int size = 0;
       if (messageTypeCase_ == MessageTypeOneofCase.MessageMovement) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(MessageMovement);
+      }
+      if (messageTypeCase_ == MessageTypeOneofCase.MessageSession) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(MessageSession);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -458,6 +544,12 @@ namespace Protos.Game.Common {
             MessageMovement = new global::Protos.Game.Movement.ServerMessageMovement();
           }
           MessageMovement.MergeFrom(other.MessageMovement);
+          break;
+        case MessageTypeOneofCase.MessageSession:
+          if (MessageSession == null) {
+            MessageSession = new global::Protos.Game.Session.ServerMessageGameSession();
+          }
+          MessageSession.MergeFrom(other.MessageSession);
           break;
       }
 
@@ -489,6 +581,15 @@ namespace Protos.Game.Common {
             MessageMovement = subBuilder;
             break;
           }
+          case 18: {
+            global::Protos.Game.Session.ServerMessageGameSession subBuilder = new global::Protos.Game.Session.ServerMessageGameSession();
+            if (messageTypeCase_ == MessageTypeOneofCase.MessageSession) {
+              subBuilder.MergeFrom(MessageSession);
+            }
+            input.ReadMessage(subBuilder);
+            MessageSession = subBuilder;
+            break;
+          }
         }
       }
     #endif
@@ -515,6 +616,15 @@ namespace Protos.Game.Common {
             }
             input.ReadMessage(subBuilder);
             MessageMovement = subBuilder;
+            break;
+          }
+          case 18: {
+            global::Protos.Game.Session.ServerMessageGameSession subBuilder = new global::Protos.Game.Session.ServerMessageGameSession();
+            if (messageTypeCase_ == MessageTypeOneofCase.MessageSession) {
+              subBuilder.MergeFrom(MessageSession);
+            }
+            input.ReadMessage(subBuilder);
+            MessageSession = subBuilder;
             break;
           }
         }

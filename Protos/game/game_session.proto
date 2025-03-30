@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package protos.game.session;
+
+message ClientMessageGameSession {
+  oneof message_type {
+    PlayerJoin player_join = 1;
+    PlayerJoin player_exit = 2;
+
+  }
+}
+
+message PlayerJoin {
+  string player_id = 1;
+}
+
+message PlayerExit {
+    string player_id = 1;
+  }
+  
+message ServerMessageGameSession {
+  oneof message_type {
+    PlayerJoinResponse player_join_request = 1;
+    PlayerInfoBroadcast player_info_broadcast = 2;
+
+  }
+}
+
+message PlayerInfoBroadcast {
+
+}
+message PlayerJoinResponse {
+    bool success = 1;
+    World world = 2; // Información del mundo en el que entra el jugador
+    PlayersInfo players_info = 3;
+}
+message PlayersInfo {
+    World world = 2; // Información del mundo en el que entra el jugador
+}
+message World {
+    int32 world_id = 1;
+    //Informacion extra del world - COMPLETAR
+    Map map = 2; // Mapa dentro del mundo
+}
+
+message Map {
+    int32 map_id = 1;
+    //Informacion extra del MAP - COMPLETAR
+    int32 x = 2;  // Posición X del jugador en el mapa
+    int32 y = 3;  // Posición Y del jugador en el mapa
+}
+

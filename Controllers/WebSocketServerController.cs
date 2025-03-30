@@ -12,6 +12,7 @@ public class WebSocketServerController
     private readonly FirebaseService _firebaseService;
     private readonly ConcurrentDictionary<string, WebSocket> _pendingConnections; // Conexiones pendientes de autenticación
     private readonly ConcurrentDictionary<string, WebSocket> _authenticatedUsers; // Conexiones ya autenticadas
+    private readonly ConcurrentDictionary<string, WebSocket> _websocketsByUserID;
     private readonly ConcurrentQueue<UserMessagePair> _messageQueue; // Conexiones ya autenticadas
     private readonly MessageHandler _messageHandler; // Conexiones ya autenticadas
 
@@ -21,6 +22,7 @@ public class WebSocketServerController
         _firebaseService = firebaseService;
         _pendingConnections = new ConcurrentDictionary<string, WebSocket>();
         _authenticatedUsers = new ConcurrentDictionary<string, WebSocket>();
+        _websocketsByUserID = new ConcurrentDictionary<string, WebSocket>();
         _messageQueue = new ConcurrentQueue<UserMessagePair>();
         _messageHandler = messageHandler;
     }
@@ -87,11 +89,24 @@ public class WebSocketServerController
             }
         }
     }
-    public async void SendServerPacketBySocket(string userId, IMessage message)
+    public async void SendServerPacketBySocket(string connectionId, IMessage message)
     {
-        if (_authenticatedUsers.ContainsKey(userId))
+        if (_authenticatedUsers.ContainsKey(connectionId))
         {
-            WebSocket clientSocket = _authenticatedUsers[userId];
+            WebSocket clientSocket = _authenticatedUsers[connectionId];
+
+            // Serializar el mensaje a un arreglo de bytes
+            byte[] serializedMessage = message.ToByteArray();
+
+            // Enviar el mensaje serializado a través del WebSocket
+            await clientSocket.SendAsync(new ArraySegment<byte>(serializedMessage), WebSocketMessageType.Binary, true, CancellationToken.None);
+        }
+    }
+    public async void SendServerPacketByUserID(string userId, IMessage message)
+    {
+        if (_websocketsByUserID.ContainsKey(userId))
+        {
+            WebSocket clientSocket = _websocketsByUserID[userId];
 
             // Serializar el mensaje a un arreglo de bytes
             byte[] serializedMessage = message.ToByteArray();
@@ -154,6 +169,7 @@ public class WebSocketServerController
                                 if (_pendingConnections.TryRemove(connectionId, out var pendingWebSocket))
                                 {
                                     _authenticatedUsers[connectionId] = pendingWebSocket;
+                                    _websocketsByUserID[connectionId] = pendingWebSocket;
                                     Console.WriteLine($"🔗 Usuario {userId} añadido a la lista de usuarios autenticados.");
                                 }
                             }
@@ -212,6 +228,8 @@ public class WebSocketServerController
             if (!string.IsNullOrEmpty(userId))
             {
                 _authenticatedUsers.TryRemove(userId, out _);
+                _websocketsByUserID.TryRemove(userId, out _);
+
                 Console.WriteLine($"🔌 Usuario {userId} desconectado.");
             }
             // Si estaba pendiente, lo eliminamos también
@@ -223,7 +241,7 @@ public class WebSocketServerController
         }
     }
 
-    private void SendServerMessagePong( string userId, string message)
+    private void SendServerMessagePong(string userId, string message)
     {
         ServerMessagePong pongMessage = new ServerMessagePong
         {

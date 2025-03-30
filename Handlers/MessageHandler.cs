@@ -8,12 +8,12 @@ using VentusServer;
 public class MessageHandler
 {
     private readonly AuthHandler _authHandler;
-    private readonly MovementHandler _movementHandler;
+    private readonly SessionHandler _sessionHandler;
 
-    public MessageHandler(AuthHandler authHandler, MovementHandler movementHandler)
+    public MessageHandler(AuthHandler authHandler, SessionHandler sessionHandler)
     {
         _authHandler = authHandler;
-        _movementHandler = movementHandler;
+        _sessionHandler = sessionHandler;
 
     }
 
@@ -93,8 +93,11 @@ public class MessageHandler
             ClientMessageGame clientMessageGame = clientMessage.MessageOauth.ClientMessageGame;
             switch (clientMessageGame.MessageTypeCase)
             {
-                case ClientMessageGame.MessageTypeOneofCase.MessageMovement:
+                /*case ClientMessageGame.MessageTypeOneofCase.MessageMovement:
                     _movementHandler.HandleMovementMessage(messagePair );
+                    break;*/
+                case ClientMessageGame.MessageTypeOneofCase.MessageSession:
+                    _sessionHandler.HandleSessionMessage(messagePair);
                     break;
                 default:
                     Console.WriteLine("❌ Mensaje recibido sin un tipo válido.");
