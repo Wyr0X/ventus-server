@@ -18,11 +18,6 @@ namespace VentusServer.Services
             _worldService = worldService;
         }
 
-
-
-
-
-
         // Obtener la ubicación de un jugador
         public async Task<PlayerLocation?> GetPlayerLocationAsync(int playerId)
         {
@@ -51,19 +46,6 @@ namespace VentusServer.Services
             }
         }
 
-        // Eliminar la ubicación de un jugador
-        public async Task DeletePlayerLocationAsync(int playerId)
-        {
-            try
-            {
-                await _playerLocationDAO.DeletePlayerLocationAsync(playerId);
-                Console.WriteLine("✅ Ubicación del jugador eliminada correctamente.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"❌ Error al eliminar la ubicación del jugador: {ex.Message}");
-            }
-        }
 
         public async Task CreatePlayerLocation(PlayerLocation playerLocation)
         {
@@ -88,7 +70,7 @@ namespace VentusServer.Services
 
             MapModel? map = await _mapService.GetMapByIdAsync(mapId);
 
-            World? world = await _worldService.GetWorldByIdAsync(worldId);
+            WorldModel? world = await _worldService.GetWorldByIdAsync(worldId);
 
             if (world != null && map != null)
             {
@@ -106,5 +88,26 @@ namespace VentusServer.Services
             }
             return null;
         }
+        public async Task DeletePlayerLocationAsync(int playerId)
+        {
+            PlayerLocation? playerLocation = await GetPlayerLocationAsync(playerId);
+            if (playerLocation != null)
+            {
+                WorldModel? world = playerLocation.World;
+                MapModel? map = playerLocation.Map;
+
+                if (world != null)
+                {
+                    await _worldService.RemovePlayerFromWorld(playerId, world.Id);
+                }
+                if (map != null)
+                {
+                    await _mapService.RemovePlayerFromMap(playerId, map.Id);
+                }
+                await _playerLocationDAO.DeletePlayerLocationAsync(playerId);
+
+            }
+        }
+
     }
 }

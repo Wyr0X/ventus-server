@@ -84,7 +84,7 @@ var serviceProvider = new ServiceCollection()
     .AddSingleton<PlayerModel>()
     .AddSingleton<PlayerLocation>()
     .AddSingleton<MapModel>()
-    .AddSingleton<World>()
+    .AddSingleton<WorldModel>()
 
 
 

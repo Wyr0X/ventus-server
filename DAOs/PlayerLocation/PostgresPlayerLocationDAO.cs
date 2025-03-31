@@ -40,7 +40,7 @@ namespace VentusServer.DataAccess.Postgres
                 int worldId = reader.GetInt32(reader.GetInt32("world_id"));
                 int mapId = reader.GetInt32(reader.GetInt32("map_id"));
 
-                World? world = await _worldDAO.GetWorldByIdAsync(worldId);
+                WorldModel? world = await _worldDAO.GetWorldByIdAsync(worldId);
                 MapModel? map = await _mapDAO.GetMapByIdAsync(mapId);
                 PlayerModel? player = await _playerDAO.GetPlayerByIdAsync(playerId);
                 if (player == null || map == null || world == null) return null;

@@ -15,7 +15,7 @@ namespace VentusServer.DataAccess.Postgres
         {
             _connectionString = connectionString;
         }
-        public async Task<World?> CreateWorldAsync(string name, string description, int maxMaps, int MaxPlayers, int levelRequirements)
+        public async Task<WorldModel?> CreateWorldAsync(string name, string description, int maxMaps, int MaxPlayers, int levelRequirements)
         {
             await using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
@@ -40,7 +40,7 @@ namespace VentusServer.DataAccess.Postgres
             // Establecer el ID en el objeto World
             if (worldId != null)
             {
-                World world = new World
+                WorldModel world = new WorldModel
                 {
                     Id = Convert.ToInt32(worldId),
                     Name = name,
@@ -54,7 +54,7 @@ namespace VentusServer.DataAccess.Postgres
 
             return null;
         }
-        public async Task<World?> GetWorldByIdAsync(int worldId)
+        public async Task<WorldModel?> GetWorldByIdAsync(int worldId)
         {
             await using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
@@ -67,7 +67,7 @@ namespace VentusServer.DataAccess.Postgres
             if (await reader.ReadAsync())
             {
 
-                return new World
+                return new WorldModel
                 {
                     Id = reader.GetInt32(reader.GetOrdinal("id")),
                     Name = reader.GetString(reader.GetOrdinal("name")),
@@ -80,9 +80,9 @@ namespace VentusServer.DataAccess.Postgres
             return null;
         }
 
-        public async Task<List<World>> GetAllWorldsAsync()
+        public async Task<List<WorldModel>> GetAllWorldsAsync()
         {
-            var worlds = new List<World>();
+            var worlds = new List<WorldModel>();
             await using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
 
@@ -92,7 +92,7 @@ namespace VentusServer.DataAccess.Postgres
 
             while (await reader.ReadAsync())
             {
-                worlds.Add(new World
+                worlds.Add(new WorldModel
                 {
                     Id = reader.GetInt32(reader.GetOrdinal("id")),
                     Name = reader.GetString(reader.GetOrdinal("name")),

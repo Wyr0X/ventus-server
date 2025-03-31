@@ -91,7 +91,7 @@ namespace VentusServer.Controllers
 
                     if (playerLocation == null) continue;
 
-                    World world = playerLocation.World;
+                    WorldModel world = playerLocation.World;
 
                     MapModel map = playerLocation.Map;
 
@@ -118,7 +118,7 @@ namespace VentusServer.Controllers
                                 MinLevel = playerLocation.Map.MinLevel,
                                 MaxPlayers = playerLocation.Map.MaxPlayers
                             },
-                            World = new WorldDTO
+                            WorldModel = new WorldDTO
                             {
                                 Id = playerLocation.World.Id,
                                 Name = playerLocation.World.Name,

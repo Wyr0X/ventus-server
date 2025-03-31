@@ -11,6 +11,8 @@ namespace VentusServer.Services
     {
         private PostgresMapDAO _mapDAO;
 
+
+
         public MapService(PostgresMapDAO mapDAO)
         {
             _mapDAO = mapDAO;
@@ -37,6 +39,19 @@ namespace VentusServer.Services
         public async Task DeleteMapAsync(int mapId)
         {
             await _mapDAO.DeleteMapAsync(mapId);
+
+        }
+
+        public async Task RemovePlayerFromMap(int playerId, int mapId)
+        {
+            
+                MapModel? map = await GetMapByIdAsync(mapId);
+
+                if (map != null)
+                {
+                    map.RemovePlayer(playerId);
+                    await _mapDAO.SaveMapAsync(map);
+                }
 
         }
     }
