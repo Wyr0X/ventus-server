@@ -12,6 +12,8 @@ using VentusServer;
 using VentusServer.DataAccess;
 using VentusServer.DataAccess.Postgres;
 using VentusServer.Controllers;
+using VentusServer.Services;
+using Game.Models;
 
 DotEnv.Load();
 
@@ -49,13 +51,33 @@ var serviceProvider = new ServiceCollection()
     .AddSingleton<FirebaseService>(sp => new FirebaseService(credentialsPath))
     .AddSingleton<FirestoreService>(sp => new FirestoreService(sp.GetRequiredService<FirebaseService>()))
     .AddScoped<IAccountDAO, PostgresAccountDAO>(sp => new PostgresAccountDAO(postgresConnectionString))
-    
+    .AddScoped< PostgresPlayerDAO>(sp => new PostgresPlayerDAO(postgresConnectionString))
+    .AddScoped< PostgresWorldDAO>(sp => new PostgresWorldDAO(postgresConnectionString))
+    .AddScoped<PostgresMapDAO>(sp =>
+                    new PostgresMapDAO(postgresConnectionString, sp.GetRequiredService<PostgresWorldDAO>()))
+    .AddScoped< PostgresPlayerLocationDAO>(sp => new PostgresPlayerLocationDAO(postgresConnectionString, sp.GetRequiredService<PostgresWorldDAO>()
+    , sp.GetRequiredService<PostgresMapDAO>(), sp.GetRequiredService<PostgresPlayerDAO>()))
+
     .AddSingleton<PostgresDbService>()
     .AddSingleton<DatabaseInitializer>()
     .AddSingleton<ConcurrentDictionary<string, WebSocket>>()
     .AddSingleton<AuthHandler>()
     .AddSingleton<MessageHandler>()
     .AddScoped<AuthController>()
+
+    .AddSingleton<PlayerModel>()
+    .AddSingleton<PlayerLocation>()
+    .AddSingleton<MapModel>()
+    .AddSingleton<World>()
+
+
+
+
+    .AddSingleton<WorldService>()
+    .AddSingleton<MapService>()
+    .AddSingleton<PlayerService>()
+    .AddSingleton<PlayerLocationService>()
+
     
     .AddSingleton<ResponseService>()  // Registrar el ResponseService
     .AddSingleton<WebSocketServerController>()
@@ -86,6 +108,7 @@ try
     var webSocketServerController = serviceProvider.GetRequiredService<WebSocketServerController>();
     var webSocketServerTask = webSocketServerController.StartServerAsync(); // Hacer esto asíncrono pero no bloqueante
     var webSocketQueueTask = Task.Run(() => webSocketServerController.StartLoop());
+        var worldService = serviceProvider.GetRequiredService<WorldService>();
 
     // Iniciar el servidor web (Kestrel)
     var webHost = WebHost.CreateDefaultBuilder()

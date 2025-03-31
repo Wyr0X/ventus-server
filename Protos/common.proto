@@ -3,6 +3,7 @@ syntax = "proto3";
 package protos_common;
 
 import "Protos/auth.proto";
+import "Protos/player/player.proto";
 
 
 message ClientMessage {
@@ -21,7 +22,9 @@ message ClientMessageAuth {
 }
 
 message ClientMessageOAuth {
-
+  oneof message_type {
+    protos.player.ClientMessagePlayer client_message_player = 1 ;
+  }
 }
 message ServerMessage {
   oneof message_type {

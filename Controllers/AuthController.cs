@@ -43,7 +43,7 @@ namespace VentusServer.Controllers
 
                 var existingUser = await _accountDAO.GetAccountByUserIdAsync(userId);
                 Console.WriteLine($"Llega: Usuario {userId} encontrado en la base de datos.");
-                var token = request.IdToken ; //TokenUtils.GenerateToken(userId.ToString());
+                var token = request.IdToken; //TokenUtils.GenerateToken(userId.ToString());
 
                 if (existingUser != null)
                 {
@@ -76,7 +76,10 @@ namespace VentusServer.Controllers
                 Console.WriteLine($"Iniciando registro para el usuario {request.Name} con correo {request.Email}.");
 
                 // Decodificar el token para obtener el userId
-                string? userId = TokenUtils.DecodeTokenAndGetUserId(request.Token);
+                FirebaseToken decodedToken = await _firebaseService.VerifyTokenAsync(request.Token);
+
+                string userId = decodedToken.Uid;  // Usar Uid en lugar de Claims["sub"]
+
                 if (string.IsNullOrEmpty(userId))
                 {
                     return BadRequest("El token no es válido.");
