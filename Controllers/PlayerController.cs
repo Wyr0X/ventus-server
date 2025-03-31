@@ -55,6 +55,8 @@ namespace VentusServer.Controllers
 
                 // Crear el personaje
                 Console.Write($"createPlayerRequest {createPlayerRequest}");
+
+                //COMPLETAR, COMPROBAR QUE EXISTA LA CUENTA CON USERID
                 // Guardar el personaje en la base de datos
                 PlayerModel? newPlayer = await _playerService.CreatePlayer(userId, createPlayerRequest.Name, createPlayerRequest.Gender, createPlayerRequest.Race, createPlayerRequest.Class);
                 if (newPlayer != null)
@@ -82,21 +84,16 @@ namespace VentusServer.Controllers
 
                 List<PlayerModel> players = await _playerService.GetAllPlayers();
                 List<PlayerDTO> playerDTOs = new List<PlayerDTO>();
-                Console.WriteLine($"Players {players}");
-                Console.WriteLine($"Emtra 1");
 
                 foreach (var player in players)
                 {
                     PlayerLocation? playerLocation = await _playerLocationService.GetPlayerLocationAsync(player.Id);
-                Console.WriteLine($"Emtra 2 {playerLocation}");
 
                     if (playerLocation == null) continue;
 
                     World world = playerLocation.World;
-                Console.WriteLine($"Emtra 3.1 {world}");
 
                     MapModel map = playerLocation.Map;
-                Console.WriteLine($"Emtra 3 {map}");
 
                     var playerDTO = new PlayerDTO
                     {
