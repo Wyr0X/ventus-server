@@ -1,4 +1,6 @@
 
+using Game.Models;
+
 public class PlayerLocation
 {
     public int PosX { get; set; }

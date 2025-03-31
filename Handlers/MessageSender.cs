@@ -19,7 +19,7 @@ public class MessageSender
             Success = success
         };
 
-        _websocket.SendServerPacketBySocket(userId, serverMessage);
+        _websocket.SendServerPacketByUserID(userId, serverMessage);
     }
 
 }

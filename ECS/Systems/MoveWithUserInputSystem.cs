@@ -11,21 +11,21 @@ public class MoveWithUserInputSystem : ISystem
 
     public void Run(EntityManager entities)
     {
-        Position? moving = null;
+        Vec2? moving = null;
         var keys = DirectionKeyEnum.Down;
         switch (keys)
         {
             case DirectionKeyEnum.Up:
-                moving = Vec2Utils.Up;
+                moving = Vec2.Up;
                 break;
             case DirectionKeyEnum.Right:
-                moving = Vec2Utils.Right;
+                moving = Vec2.Right;
                 break;
             case DirectionKeyEnum.Down:
-                moving = Vec2Utils.Down;
+                moving = Vec2.Down;
                 break;
             case DirectionKeyEnum.Left:
-                moving = Vec2Utils.Left;
+                moving = Vec2.Left;
                 break;
             default:
                 moving = null;
@@ -46,11 +46,11 @@ public class MoveWithUserInputSystem : ISystem
                 }
 
                 Heading heading = (Heading)entity.Get(typeof(Heading));
-                if (heading.Direction.directionEnum != moving)
-                {
-                    heading.Direction = moving;
-                    entities.Dispatch(EntityEvent.ChangeHeading, entity);
-                }
+                // if (heading.Direction.directionEnum != moving)
+                // {
+                //     heading.Direction = moving;
+                //     entities.Dispatch(EntityEvent.ChangeHeading, entity);
+                // }
             }
             else if (movable.Moving)
             {

@@ -97,7 +97,7 @@ var serviceProvider = new ServiceCollection()
     
     .AddSingleton<ResponseService>()  // Registrar el ResponseService
     .AddSingleton<WebSocketServerController>()
-    .AddSingleton<Game>()
+    .AddSingleton<GameEngine>()
     .AddSingleton(sp => new JWTService(secretKey, issuer, audience)) // Registrar JWTService
     .BuildServiceProvider();
 
@@ -124,11 +124,13 @@ try
     // Obtener las instancias de otros servicios y arrancar el servidor WebSocket
     var webSocketServerController = serviceProvider.GetRequiredService<WebSocketServerController>();
     var webSocketServerTask = webSocketServerController.StartServerAsync(); // Hacer esto asíncrono pero no bloqueante
+    Console.WriteLine("✔️ Conexión a la base de datos exitosa. 1 ");
 
-    var game = serviceProvider.GetRequiredService<Game>();
-    var gameLoopTask = game.Run();
-    var webSocketQueueTask = Task.Run(() => webSocketServerController.StartLoop());
-        var worldService = serviceProvider.GetRequiredService<WorldService>();
+    // var game = serviceProvider.GetRequiredService<GameEngine>();
+    Console.WriteLine("✔️ Conexión a la base de datos exitosa. 2");
+
+    // var gameLoopTask = game.Run();
+    // var worldService = serviceProvider.GetRequiredService<WorldService>();
 
     // Iniciar el servidor web (Kestrel)
     var webHost = WebHost
@@ -141,9 +143,9 @@ try
         .Build();
 
     // Iniciar ambos servidores (web y WebSocket)
-    await Task.WhenAny(webHost.RunAsync(), webSocketServerTask, gameLoopTask); // Ejecutar ambos simultáneamente
+    await Task.WhenAny(webHost.RunAsync(), webSocketServerTask); // Ejecutar ambos simultáneamente
 }
 catch (Exception ex)
 {
-    Console.WriteLine($"❌ Error durante la inicialización: {ex.Message}");
+    Console.WriteLine($"❌ Error durante la inicialización 2: {ex.Message}");
 }
