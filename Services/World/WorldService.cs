@@ -10,18 +10,16 @@ namespace VentusServer.Services
     public class WorldService
     {
         private MapService _mapService;
-        private PlayerLocationService _playerLocationService;
 
         private PostgresWorldDAO _worldDAO;
 
 
-        public WorldService(MapService mapService, PostgresWorldDAO worldDAO, PlayerLocationService playerLocationService)
+        public WorldService(MapService mapService, PostgresWorldDAO worldDAO)
         {
             Console.WriteLine("createDefaultWorld");
 
             _mapService = mapService;
             _worldDAO = worldDAO;
-            _playerLocationService = playerLocationService;
             createDefaultWorld();
 
         }
@@ -72,19 +70,16 @@ namespace VentusServer.Services
 
         }
 
-        public async Task RemovePlayerFromWorld(int playerId)
+        public async Task RemovePlayerFromWorld(int playerId, int worldId)
         {
-            PlayerLocation? playerLocation = await _playerLocationService.GetPlayerLocationAsync(playerId);
-            if (playerLocation != null)
-            {
-                WorldModel? world = playerLocation.World;
+          
+                WorldModel? world = await GetWorldByIdAsync(worldId);
 
                 if (world != null)
                 {
                     world.RemovePlayer(playerId);
                     await _worldDAO.SaveWorldAsync(world);
                 }
-            }
 
         }
     }

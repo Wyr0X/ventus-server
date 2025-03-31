@@ -37,7 +37,7 @@ namespace VentusServer.DataAccess.Postgres
 
 
 
-            // Establecer el ID en el objeto WorldModel
+            // Establecer el ID en el objeto World
             if (worldId != null)
             {
                 WorldModel world = new WorldModel
@@ -54,7 +54,7 @@ namespace VentusServer.DataAccess.Postgres
 
             return null;
         }
-        public async Task<WorldModel?> GetWorldByIdAsync(string worldId)
+        public async Task<WorldModel?> GetWorldByIdAsync(int worldId)
         {
             await using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();

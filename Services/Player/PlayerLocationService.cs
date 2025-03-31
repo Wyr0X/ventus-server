@@ -98,11 +98,11 @@ namespace VentusServer.Services
 
                 if (world != null)
                 {
-                    await _worldService.RemovePlayerFromWorld(playerId);
+                    await _worldService.RemovePlayerFromWorld(playerId, world.Id);
                 }
                 if (map != null)
                 {
-                    await _mapService.RemovePlayerFromMap(playerId);
+                    await _mapService.RemovePlayerFromMap(playerId, map.Id);
                 }
                 await _playerLocationDAO.DeletePlayerLocationAsync(playerId);
 

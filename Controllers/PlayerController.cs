@@ -91,7 +91,7 @@ namespace VentusServer.Controllers
 
                     if (playerLocation == null) continue;
 
-                    WorldModel world = playerLocation.WorldModel;
+                    WorldModel world = playerLocation.World;
 
                     MapModel map = playerLocation.Map;
 
@@ -120,9 +120,9 @@ namespace VentusServer.Controllers
                             },
                             WorldModel = new WorldDTO
                             {
-                                Id = playerLocation.WorldModel.Id,
-                                Name = playerLocation.WorldModel.Name,
-                                Description = playerLocation.WorldModel.Description
+                                Id = playerLocation.World.Id,
+                                Name = playerLocation.World.Name,
+                                Description = playerLocation.World.Description
                             }
                         }
                     };

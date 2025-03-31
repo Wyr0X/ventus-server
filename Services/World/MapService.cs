@@ -10,14 +10,12 @@ namespace VentusServer.Services
     public class MapService
     {
         private PostgresMapDAO _mapDAO;
-        private PlayerLocationService _playerLocationService;
 
 
 
-        public MapService(PostgresMapDAO mapDAO, PlayerLocationService playerLocationService)
+        public MapService(PostgresMapDAO mapDAO)
         {
             _mapDAO = mapDAO;
-            _playerLocationService = playerLocationService;
         }
         public async Task<MapModel?> CreateMapAsync(string name, int minLevel, int maxPlayers, int worldId)
         {
@@ -44,19 +42,16 @@ namespace VentusServer.Services
 
         }
 
-        public async Task RemovePlayerFromMap(int playerId)
+        public async Task RemovePlayerFromMap(int playerId, int mapId)
         {
-            PlayerLocation? playerLocation = await _playerLocationService.GetPlayerLocationAsync(playerId);
-            if (playerLocation != null)
-            {
-                MapModel? map = playerLocation.Map;
+            
+                MapModel? map = await GetMapByIdAsync(mapId);
 
                 if (map != null)
                 {
                     map.RemovePlayer(playerId);
                     await _mapDAO.SaveMapAsync(map);
                 }
-            }
 
         }
     }
