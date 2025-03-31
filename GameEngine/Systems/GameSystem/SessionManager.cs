@@ -8,10 +8,10 @@ using ProtosCommon;
 
 public class SessionManager
 {
-    Game _game;
+    GameEngine _game;
     SessionLogic _sessionLogic;
 
-    public SessionManager(Game game, SessionLogic sessionLogic)
+    public SessionManager(GameEngine game, SessionLogic sessionLogic)
     {
         _game = game;
         _sessionLogic = sessionLogic;

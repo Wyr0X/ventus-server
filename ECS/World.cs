@@ -25,11 +25,12 @@ public class World
 
     public void SpawnPlayer(PlayerLocation playerLocation) {
         // instanciamos
-        Entities.Create(
-            new Position(playerLocation.PosX, playerLocation.PosY, playerLocation.Map.id),
-            new PlayerStats(),
-            new PlayerNetworking(),
-            //new FollowComponent(this, playerLocation)
-        );
-    }
+    //     Entities.Create(
+    //         new Position(playerLocation.PosX, playerLocation.PosY, playerLocation.Map.id),
+    //         new PlayerStats(),
+    //         new PlayerNetworking(),
+    //         //new FollowComponent(this, playerLocation)
+    //     );
+    // }
+     }
 }

@@ -105,7 +105,7 @@ namespace VentusServer.DataAccess.Postgres
             return worlds;
         }
 
-        public async Task SaveWorldAsync(World world)
+        public async Task SaveWorldAsync(WorldModel world)
         {
             await using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();

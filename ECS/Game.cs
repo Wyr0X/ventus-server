@@ -1,10 +1,10 @@
-public class Game : Engine
+public class GameEngine : Engine
 {
     public WorldManager worldManager = new WorldManager();
     private readonly WebSocketServerController _webSocketServerController;
     private bool userHasInteracted = false;
 
-    public Game(WebSocketServerController webSocketServerController)
+    public GameEngine(WebSocketServerController webSocketServerController)
     {
         _webSocketServerController = webSocketServerController;
     }

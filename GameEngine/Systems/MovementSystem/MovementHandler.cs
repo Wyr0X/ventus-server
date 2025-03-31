@@ -5,11 +5,11 @@ using ProtosCommon;
 
 public class MovementHandler
 {
-    private readonly MovementManager _movementManager;
+    // private readonly MovementManager _movementManager;
 
-    public MovementHandler(MovementManager movementManager)
+    public MovementHandler()
     {
-        _movementManager = movementManager;;
+        // _movementManager = movementManager;;
     }
 
     // Función que maneja los mensajes de movimiento recibidos desde el cliente
@@ -20,8 +20,8 @@ public class MovementHandler
         switch (movementMessage.MessageTypeCase)
         {
             case ClientMessageMovement.MessageTypeOneofCase.MoveRequest:
-                _movementManager.HandleMoveRequest(messagePair);
-                break;
+                // _movementManager.HandleMoveRequest(messagePair);
+                // break;
             
             default:
                 Console.WriteLine("❌ Tipo de mensaje de movimiento no reconocido.");

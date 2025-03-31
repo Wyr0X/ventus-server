@@ -32,15 +32,15 @@ public class WorldManager
         }
     }
 
-    public void SpawnPlayer(PlayerBasicModel playerBasic, PlayerLocation playerLocation) {
+    public void SpawnPlayer(PlayerModel playerBasic, PlayerLocation playerLocation) {
         // Buscar World
-        if (GetWorld(playerLocation.World.Id) == null) {
-            // Instanciar el World
-            CreateWorld(playerLocation.World.Id);
-        }
+        // if (GetWorld(playerLocation.World.Id) == null) {
+        //     // Instanciar el World
+        //     CreateWorld(playerLocation.World.Id);
+        // }
 
-        var world = GetWorld(playerLocation.World.Id);
-        world.SpawnPlayer(playerLocation);
+        // var world = GetWorld(playerLocation.World.Id);
+        // world.SpawnPlayer(playerLocation);
         // ingresamos el pj al world
         // el world valida que haya espacio, permisos, etc.etc
         // se crea la entidad del pj -> con todos los componentes (playerstats, movimiento, networking, etc)
