@@ -10,6 +10,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System;
 using VentusServer.Controllers;
+using VentusServer.Services;
 
 namespace VentusServer
 {
@@ -59,6 +60,21 @@ namespace VentusServer
             // Registrar servicios
             services.AddScoped<IAccountDAO, PostgresAccountDAO>(sp => new PostgresAccountDAO(postgresConnectionString));
             services.AddScoped<PostgresDbService>(sp => new PostgresDbService());
+            services.AddScoped<PostgresPlayerDAO>(sp => new PostgresPlayerDAO(postgresConnectionString));
+            services.AddScoped<PostgresWorldDAO>(sp => new PostgresWorldDAO(postgresConnectionString));
+              services.AddScoped<PostgresMapDAO>(sp =>
+                    new PostgresMapDAO(postgresConnectionString, sp.GetRequiredService<PostgresWorldDAO>()));
+            services.AddScoped<PostgresPlayerLocationDAO>(sp => new PostgresPlayerLocationDAO(postgresConnectionString, sp.GetRequiredService<PostgresWorldDAO>()
+            , sp.GetRequiredService<PostgresMapDAO>(), sp.GetRequiredService<PostgresPlayerDAO>()));
+          
+
+
+            services.AddScoped<PlayerLocationService>();
+            services.AddScoped<MapService>();
+            services.AddScoped<WorldService>();
+            services.AddScoped<PlayerController>();
+
+            services.AddScoped<PlayerService>();
 
             services.AddScoped<AccountController>();
             services.AddControllers();

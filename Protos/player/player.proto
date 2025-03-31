@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package protos.player;
+
+
+message ClientMessagePlayer {
+  oneof message_type {
+    CreatePlayer create_player = 1;
+  }
+}
+
+message ServerMessagePlayer {
+  
+}
+message CreatePlayer {
+    string Name = 1;
+    string Gender = 2;
+    string Race = 3;
+    string Class = 4;
+  }

@@ -12,6 +12,9 @@ using VentusServer;
 using VentusServer.Controllers;
 using VentusServer.DataAccess;
 using VentusServer.DataAccess.Postgres;
+using VentusServer.Controllers;
+using VentusServer.Services;
+using Game.Models;
 
 DotEnv.Load();
 
@@ -60,6 +63,15 @@ var serviceProvider = new ServiceCollection()
     .AddScoped<IAccountDAO, PostgresAccountDAO>(sp => new PostgresAccountDAO(
         postgresConnectionString
     ))
+    .AddSingleton<FirestoreService>(sp => new FirestoreService(sp.GetRequiredService<FirebaseService>()))
+    .AddScoped<IAccountDAO, PostgresAccountDAO>(sp => new PostgresAccountDAO(postgresConnectionString))
+    .AddScoped< PostgresPlayerDAO>(sp => new PostgresPlayerDAO(postgresConnectionString))
+    .AddScoped< PostgresWorldDAO>(sp => new PostgresWorldDAO(postgresConnectionString))
+    .AddScoped<PostgresMapDAO>(sp =>
+                    new PostgresMapDAO(postgresConnectionString, sp.GetRequiredService<PostgresWorldDAO>()))
+    .AddScoped< PostgresPlayerLocationDAO>(sp => new PostgresPlayerLocationDAO(postgresConnectionString, sp.GetRequiredService<PostgresWorldDAO>()
+    , sp.GetRequiredService<PostgresMapDAO>(), sp.GetRequiredService<PostgresPlayerDAO>()))
+
     .AddSingleton<PostgresDbService>()
     .AddSingleton<DatabaseInitializer>()
     .AddSingleton<ConcurrentDictionary<string, WebSocket>>()
@@ -68,6 +80,22 @@ var serviceProvider = new ServiceCollection()
     .AddSingleton<SessionManager>()
     .AddScoped<AuthController>()
     .AddSingleton<ResponseService>() // Registrar el ResponseService
+
+    .AddSingleton<PlayerModel>()
+    .AddSingleton<PlayerLocation>()
+    .AddSingleton<MapModel>()
+    .AddSingleton<World>()
+
+
+
+
+    .AddSingleton<WorldService>()
+    .AddSingleton<MapService>()
+    .AddSingleton<PlayerService>()
+    .AddSingleton<PlayerLocationService>()
+
+    
+    .AddSingleton<ResponseService>()  // Registrar el ResponseService
     .AddSingleton<WebSocketServerController>()
     .AddSingleton<Game>()
     .AddSingleton(sp => new JWTService(secretKey, issuer, audience)) // Registrar JWTService
@@ -99,6 +127,8 @@ try
 
     var game = serviceProvider.GetRequiredService<Game>();
     var gameLoopTask = game.Run();
+    var webSocketQueueTask = Task.Run(() => webSocketServerController.StartLoop());
+        var worldService = serviceProvider.GetRequiredService<WorldService>();
 
     // Iniciar el servidor web (Kestrel)
     var webHost = WebHost

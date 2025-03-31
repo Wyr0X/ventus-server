@@ -5,6 +5,7 @@ package protos_common;
 import "Protos/game/game_common.proto";
 import "Protos/auth.proto";
 import "Protos/webrtc.proto";
+import "Protos/player/player.proto";
 
 
 message ClientMessage {
@@ -27,6 +28,7 @@ message ClientMessageAuth {
 message ClientMessageOAuth {
   oneof message_type {
     protos.game.common.ClientMessageGame client_message_game = 1 ;
+    protos.player.ClientMessagePlayer client_message_player = 2 ;
   }
 }
 message ServerMessage {

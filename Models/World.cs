@@ -1,53 +1,75 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Game.Models
 {
-    public class Map
+    public class World
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public string Coordinates { get; set; }  // Ejemplo: "X: 100, Y: 200"
-        public int MinLevel { get; set; }
+        public string Description { get; set; }
+        public int MaxMaps { get; set; }
         public int MaxPlayers { get; set; }
-        public string Features { get; set; }  // Ejemplo: "PvP, Recursos Especiales"
-        public int WorldId { get; set; } // Relación con el mundo al que pertenece
+        public int LevelRequirements { get; set; }
 
-        // Relación con World
-        public World World { get; set; }
+        // Relaciones
+        public List<MapModel> Maps { get; set; }
+        public List<PlayerLocation> PlayerLocations { get; set; }
 
-        // Lista de jugadores en el mapa
-        public List<PlayerWorldRelation> PlayerWorldRelations { get; set; }  // Relación entre el jugador y el mapa
+        // Métodos para gestionar la lógica del mundo
 
-        // Lógica de negocio
-
-        // Verifica si un jugador puede acceder a este mapa
-        public bool CanAccess(int playerLevel)
+        /// <summary>
+        /// Agrega un mapa al mundo si no se ha alcanzado el límite de mapas.
+        /// </summary>
+        /// <param name="map">El mapa a agregar.</param>
+        public void AddMap(MapModel map)
         {
-            return playerLevel >= MinLevel;
-        }
-
-        // Verifica si hay espacio disponible para más jugadores
-        public bool HasSpace()
-        {
-            return PlayerWorldRelations.Count < MaxPlayers;
-        }
-
-        // Método para agregar un jugador al mapa si hay espacio y puede acceder
-        public bool TryAddPlayer(int playerLevel)
-        {
-            if (CanAccess(playerLevel) && HasSpace())
+            if (Maps.Count < MaxMaps)
             {
-                return true; // El jugador puede entrar
+                Maps.Add(map);
             }
-            return false; // El jugador no puede entrar
+            else
+            {
+                throw new InvalidOperationException("No se pueden agregar más mapas, se ha alcanzado el límite de mapas.");
+            }
         }
 
-        // Método para obtener una descripción del mapa
-        public string GetMapDescription()
+        /// <summary>
+        /// Elimina un mapa del mundo por su ID.
+        /// </summary>
+        /// <param name="mapId">ID del mapa a eliminar.</param>
+        public void RemoveMap(int mapId)
         {
-            return $"{Name} - {Coordinates} - {Features}";
+            var map = Maps.FirstOrDefault(m => m.Id == mapId);
+            if (map != null)
+            {
+                Maps.Remove(map);
+            }
+            else
+            {
+                throw new InvalidOperationException("El mapa con el ID proporcionado no existe.");
+            }
+        }
+
+        /// <summary>
+        /// Verifica si un jugador cumple con los requisitos de nivel para acceder al mundo.
+        /// </summary>
+        /// <param name="playerLevel">El nivel del jugador.</param>
+        /// <returns>Verdadero si el jugador puede acceder, de lo contrario falso.</returns>
+        public bool CanPlayerAccess(int playerLevel)
+        {
+            return playerLevel >= LevelRequirements;
+        }
+
+        /// <summary>
+        /// Verifica si hay espacio suficiente en el mundo para más jugadores.
+        /// </summary>
+        /// <param name="currentPlayerCount">El número actual de jugadores en el mundo.</param>
+        /// <returns>Verdadero si hay espacio disponible para más jugadores, de lo contrario falso.</returns>
+        public bool HasSpace(int currentPlayerCount)
+        {
+            return currentPlayerCount < MaxPlayers;
         }
     }
-}
 }
