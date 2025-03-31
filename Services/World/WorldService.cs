@@ -10,15 +10,18 @@ namespace VentusServer.Services
     public class WorldService
     {
         private MapService _mapService;
+        private PlayerLocationService _playerLocationService;
+
         private PostgresWorldDAO _worldDAO;
 
 
-        public WorldService(MapService mapService, PostgresWorldDAO worldDAO)
+        public WorldService(MapService mapService, PostgresWorldDAO worldDAO, PlayerLocationService playerLocationService)
         {
             Console.WriteLine("createDefaultWorld");
 
             _mapService = mapService;
             _worldDAO = worldDAO;
+            _playerLocationService = playerLocationService;
             createDefaultWorld();
 
         }
@@ -26,10 +29,10 @@ namespace VentusServer.Services
         private async void createDefaultWorld()
         {
 
-            World? existDefaultWorld = await this.GetWorldByIdAsync(1);
+            WorldModel? existDefaultWorld = await this.GetWorldByIdAsync(1);
             MapModel? existDefaultMap = await _mapService.GetMapByIdAsync(1);
             Console.WriteLine("createDefaultWorld");
-            World? defaultWorld;
+            WorldModel? defaultWorld;
             if (existDefaultWorld == null)
             {
 
@@ -43,22 +46,22 @@ namespace VentusServer.Services
             }
 
         }
-        public async Task<World?> CreateWorldAsync(string name, string description, int maxMaps, int MaxPlayers, int levelRequirements)
+        public async Task<WorldModel?> CreateWorldAsync(string name, string description, int maxMaps, int MaxPlayers, int levelRequirements)
         {
             return await _worldDAO.CreateWorldAsync(name, description, maxMaps, MaxPlayers, levelRequirements);
         }
-        public async Task<World?> GetWorldByIdAsync(int worldId)
+        public async Task<WorldModel?> GetWorldByIdAsync(int worldId)
         {
             return await _worldDAO.GetWorldByIdAsync(worldId);
         }
 
-        public async Task<List<World>> GetAllWorldsAsync()
+        public async Task<List<WorldModel>> GetAllWorldsAsync()
         {
             return await _worldDAO.GetAllWorldsAsync();
 
         }
 
-        public async Task SaveWorldAsync(World world)
+        public async Task SaveWorldAsync(WorldModel world)
         {
             await _worldDAO.SaveWorldAsync(world);
         }
@@ -66,6 +69,22 @@ namespace VentusServer.Services
         public async Task DeleteWorldAsync(int worldId)
         {
             await _worldDAO.DeleteWorldAsync(worldId);
+
+        }
+
+        public async Task RemovePlayerFromWorld(int playerId)
+        {
+            PlayerLocation? playerLocation = await _playerLocationService.GetPlayerLocationAsync(playerId);
+            if (playerLocation != null)
+            {
+                WorldModel? world = playerLocation.World;
+
+                if (world != null)
+                {
+                    world.RemovePlayer(playerId);
+                    await _worldDAO.SaveWorldAsync(world);
+                }
+            }
 
         }
     }

@@ -8,11 +8,12 @@ namespace Game.Models
         public int MaxPlayers { get; set; }
         public int WorldId { get; set; } // Relación con el mundo al que pertenece
 
-        // Relación con World
-        public World World { get; set; }
+        // Relación con WorldModel
+        public WorldModel WorldModel { get; set; }
 
         // Lista de jugadores en el mapa
         public List<PlayerLocation> PlayersLocation { get; set; }  // Relación entre el jugador y el mapa
+        public List<PlayerLocation> spawnedPlayers { get; set; }
 
         // Lógica de negocio
 
@@ -37,7 +38,18 @@ namespace Game.Models
             }
             return false; // El jugador no puede entrar
         }
-
+        public void RemovePlayer(int playerId)
+        {
+            var playerLocation = PlayersLocation.FirstOrDefault(p => p.Player.Id == playerId);
+            if (playerLocation != null)
+            {
+                PlayersLocation.Remove(playerLocation);
+            }
+            else
+            {
+                throw new InvalidOperationException("El jugador con el ID proporcionado no existe en este mundo.");
+            }
+        }
     
     }
 }

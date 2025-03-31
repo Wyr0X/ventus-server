@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Game.Models
 {
-    public class World
+    public class WorldModel
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -15,7 +15,7 @@ namespace Game.Models
 
         // Relaciones
         public List<MapModel> Maps { get; set; }
-        public List<PlayerLocation> PlayerLocations { get; set; }
+        public List<PlayerLocation> PlayersLocation { get; set; }
 
         // Métodos para gestionar la lógica del mundo
 
@@ -70,6 +70,18 @@ namespace Game.Models
         public bool HasSpace(int currentPlayerCount)
         {
             return currentPlayerCount < MaxPlayers;
+        }
+        public void RemovePlayer(int playerId)
+        {
+            var playerLocation = PlayersLocation.FirstOrDefault(p => p.Player.Id == playerId);
+            if (playerLocation != null)
+            {
+                PlayersLocation.Remove(playerLocation);
+            }
+            else
+            {
+                throw new InvalidOperationException("El jugador con el ID proporcionado no existe en este mundo.");
+            }
         }
     }
 }

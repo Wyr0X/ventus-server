@@ -9,7 +9,7 @@ namespace Game.DTOs
         public MapDTO Map { get; set; }
 
         // Información del mundo donde está el mapa
-        public WorldDTO World { get; set; }
+        public WorldDTO WorldModel { get; set; }
     }
 
     public class MapDTO

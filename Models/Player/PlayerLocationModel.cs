@@ -7,7 +7,7 @@ namespace Game.Models
 
         // Relaciones
         public PlayerModel Player { get; set; }
-        public World World { get; set; }
+        public WorldModel World { get; set; }
         
         public MapModel Map { get; set; }
 

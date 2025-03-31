@@ -22,7 +22,7 @@ namespace VentusServer.DataAccess.Postgres
             await using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            World? world = await _worldDAO.GetWorldByIdAsync(worldId);
+            WorldModel? world = await _worldDAO.GetWorldByIdAsync(worldId);
             if (world == null) return null;
             const string query = @"
         INSERT INTO maps (name, min_level, max_players, world_id)
@@ -47,7 +47,7 @@ namespace VentusServer.DataAccess.Postgres
                     Name = name,
                     MinLevel = minLevel,
                     MaxPlayers = maxPlayers,
-                    World = world
+                    WorldModel = world
                 };
                 return map;
             }

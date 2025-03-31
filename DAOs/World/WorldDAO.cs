@@ -8,9 +8,9 @@ namespace VentusServer.DataAccess.Postgres
 {
     public interface WorldDAO
     {
-        Task<World?> GetWorldByIdAsync(int worldId);
-        Task<List<World>> GetAllWorldsAsync();
-        Task SaveWorldAsync(World world);
+        Task<WorldModel?> GetWorldByIdAsync(int worldId);
+        Task<List<WorldModel>> GetAllWorldsAsync();
+        Task SaveWorldAsync(WorldModel world);
         Task DeleteWorldAsync(int worldId);
     }
 
