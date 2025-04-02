@@ -8,7 +8,7 @@ using VentusServer.Models;
 
 namespace VentusServer.DataAccess.Postgres
 {
-    public class PostgresPlayerDAO : IPlayerDAO
+    public class PostgresPlayerDAO
     {
         private readonly string _connectionString;
 

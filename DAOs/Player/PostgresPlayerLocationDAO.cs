@@ -7,7 +7,7 @@ using System.Data;
 namespace VentusServer.DataAccess.Postgres
 {
 
-    public class PostgresPlayerLocationDAO : IPlayerLocationDAO
+    public class PostgresPlayerLocationDAO 
     {
         private readonly string _connectionString;
         private PostgresWorldDAO _worldDAO;
