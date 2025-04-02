@@ -7,12 +7,26 @@ public class EntityManager
     private int nextId = 0;
     private readonly Dictionary<Type, List<(IComponent, Entity)>> _components = new Dictionary<Type, List<(IComponent, Entity)>>();
     private readonly Dictionary<object, List<ISystem>> _systems = new Dictionary<object, List<ISystem>>();
+    private Dictionary<string, PlayerEntity> playersEntities = new Dictionary<string, PlayerEntity>();
     private readonly Dictionary<EventType, Dictionary<Type, List<Listener<IComponent>>>> _events =
         new Dictionary<EventType, Dictionary<Type, List<Listener<IComponent>>>>();
 
     public Entity Create(IComponent[] components)
     {
         Entity entity = new Entity(nextId++);
+        AddComponents(entity, components);
+        return entity;
+    }
+    public Entity CreateUserEntity(string userId, IComponent[] components)
+    {
+        PlayerEntity entity = new PlayerEntity(nextId++, userId);
+        AddComponents(entity, components);
+        playersEntities[userId] = entity;
+        return entity;
+    }
+    public Entity CreateWorldEntity(int worldId, IComponent[] components)
+    {
+        WorldEntity entity = new WorldEntity(nextId++, worldId);
         AddComponents(entity, components);
         return entity;
     }
@@ -168,6 +182,13 @@ public class EntityManager
                 }
             }
         }
+    }
+
+    public Entity? GetPlayerByUserId(string userId){
+        return playersEntities[userId];
+    }
+     public Dictionary<string, PlayerEntity> GetPlayersEntity(){
+        return playersEntities;
     }
 }
 

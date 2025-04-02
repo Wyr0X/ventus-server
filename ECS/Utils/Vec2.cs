@@ -1,6 +1,6 @@
 using System;
 
-public class Vec2
+public class Vec2: Component
 {
     public float X { get; set; }
     public float Y { get; set; }

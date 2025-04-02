@@ -2,21 +2,20 @@ syntax = "proto3";
 
 package protos.game.common;
 
-import "Protos/game/game_movement.proto";
 import "Protos/game/game_session.proto";
+import "Protos/game/game_movement.proto";
 
 message ClientMessageGame {
   oneof message_type {
-    protos.game.movement.ClientMessageMovement message_movement = 1;
-    protos.game.session.ClientMessageGameSession message_session = 2;
+    protos.game.session.ClientMessageGameSession message_session = 1;
+    protos.game.movement.ClientMessageMovement message_movement = 2;
 
   }
 }
 
 message ServerMessageGame {
   oneof message_type {
-    protos.game.movement.ServerMessageMovement message_movement = 1;
-    protos.game.session.ServerMessageGameSession message_session = 2;
-
+    protos.game.session.ServerMessageGameSession message_session = 1;
+    protos.game.movement.ServerMessageMovement message_movement = 2;
   }
 }

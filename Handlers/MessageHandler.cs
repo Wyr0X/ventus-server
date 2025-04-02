@@ -8,12 +8,12 @@ using VentusServer;
 public class MessageHandler
 {
     private readonly AuthHandler _authHandler;
-    // private readonly SessionHandler _sessionHandler;
+    private readonly SessionHandler _sessionHandler;
 
-    public MessageHandler(AuthHandler authHandler)
+    public MessageHandler(AuthHandler authHandler, SessionHandler sessionHandler)
     {
         _authHandler = authHandler;
-        // _sessionHandler = sessionHandler;
+        _sessionHandler = sessionHandler;
 
     }
 
@@ -25,17 +25,19 @@ public class MessageHandler
 
             ClientMessage clientMessage = messagePair.ClientMessage;
 
-            Console.WriteLine($"🔹 Tipo de mensaje recibido: {clientMessage.MessageTypeCase}");
+            Console.WriteLine($"🔹 Tipo de mensaje recibido: {clientMessage.MessageTypeCase}, {ClientMessage.MessageTypeOneofCase.MessageUnAuth}");
             switch (clientMessage.MessageTypeCase)
             {
                 case ClientMessage.MessageTypeOneofCase.MessageAuth:
                     HandleAuthMessage(messagePair);
                     break;
-                case ClientMessage.MessageTypeOneofCase.MessageOauth:
+                case ClientMessage.MessageTypeOneofCase.MessageUnAuth:
+
                     HandleOAuthMessage(messagePair);
                     break;
+    
                 default:
-                    Console.WriteLine("❌ Mensaje recibido sin un tipo válido.");
+                    Console.WriteLine("❌ Mensaje recibido sin un tipo válido. 1");
                     break;
             }
         }
@@ -68,10 +70,10 @@ public class MessageHandler
         try
         {
             ClientMessage clientMessage = messagePair.ClientMessage;
-            var clientMessageOAuth = clientMessage.MessageOauth;
+            var clientMessageOAuth = clientMessage.MessageUnAuth;
             switch (clientMessageOAuth.MessageTypeCase)
             {
-                case ClientMessageOAuth.MessageTypeOneofCase.ClientMessageGame:
+                case ClientMessageUnAuth.MessageTypeOneofCase.ClientMessageGame:
                     HandleMessageGame(messagePair);
                     break;
                 default:
@@ -90,15 +92,15 @@ public class MessageHandler
         try
         {
             ClientMessage clientMessage = messagePair.ClientMessage;
-            ClientMessageGame clientMessageGame = clientMessage.MessageOauth.ClientMessageGame;
+            ClientMessageGame clientMessageGame = clientMessage.MessageUnAuth.ClientMessageGame;
             switch (clientMessageGame.MessageTypeCase)
             {
                 /*case ClientMessageGame.MessageTypeOneofCase.MessageMovement:
                     _movementHandler.HandleMovementMessage(messagePair );
                     break;*/
-                // case ClientMessageGame.MessageTypeOneofCase.MessageSession:
-                //     _sessionHandler.HandleSessionMessage(messagePair);
-                //     break;
+                case ClientMessageGame.MessageTypeOneofCase.MessageSession:
+                    _sessionHandler.HandleSessionMessage(messagePair);
+                    break;
                 default:
                     Console.WriteLine("❌ Mensaje recibido sin un tipo válido.");
                     break;

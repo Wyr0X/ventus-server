@@ -25,35 +25,21 @@ namespace Protos.Game.Movement {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Ch9Qcm90b3MvZ2FtZS9nYW1lX21vdmVtZW50LnByb3RvEhRwcm90b3MuZ2Ft",
-            "ZS5tb3ZlbWVudCK0AQoVQ2xpZW50TWVzc2FnZU1vdmVtZW50EjkKDG1vdmVf",
-            "cmVxdWVzdBgBIAEoCzIhLnByb3Rvcy5nYW1lLm1vdmVtZW50Lk1vdmVSZXF1",
-            "ZXN0SAASUAoYY2hhbmdlX2RpcmVjdGlvbl9yZXF1ZXN0GAIgASgLMiwucHJv",
-            "dG9zLmdhbWUubW92ZW1lbnQuQ2hhbmdlRGlyZWN0aW9uUmVxdWVzdEgAQg4K",
-            "DG1lc3NhZ2VfdHlwZSJKCgtNb3ZlUmVxdWVzdBIJCgF4GAEgASgFEgkKAXkY",
-            "AiABKAUSEQoJdGltZXN0YW1wGAMgASgDEhIKCnJlcXVlc3RfaWQYBCABKAki",
-            "UgoWQ2hhbmdlRGlyZWN0aW9uUmVxdWVzdBIRCglkaXJlY3Rpb24YASABKAUS",
-            "EQoJdGltZXN0YW1wGAIgASgDEhIKCnJlcXVlc3RfaWQYAyABKAki8QEKFVNl",
-            "cnZlck1lc3NhZ2VNb3ZlbWVudBI7Cg1tb3ZlX3Jlc3BvbnNlGAEgASgLMiIu",
-            "cHJvdG9zLmdhbWUubW92ZW1lbnQuTW92ZVJlc3BvbnNlSAASOQoMcGxheWVy",
-            "X21vdmVkGAIgASgLMiEucHJvdG9zLmdhbWUubW92ZW1lbnQuUGxheWVyTW92",
-            "ZWRIABJQChhwbGF5ZXJfZGlyZWN0aW9uX2NoYW5nZWQYAyABKAsyLC5wcm90",
-            "b3MuZ2FtZS5tb3ZlbWVudC5QbGF5ZXJEaXJlY3Rpb25DaGFuZ2VkSABCDgoM",
-            "bWVzc2FnZV90eXBlIlkKDE1vdmVSZXNwb25zZRIJCgF4GAEgASgFEgkKAXkY",
-            "AiABKAUSEgoKcmVxdWVzdF9pZBgDIAEoCRIPCgdzdWNjZXNzGAQgASgIEg4K",
-            "BnJlYXNvbhgFIAEoCSJJCgtQbGF5ZXJNb3ZlZBIRCglwbGF5ZXJfaWQYASAB",
-            "KAUSCQoBeBgCIAEoBRIJCgF5GAMgASgFEhEKCXRpbWVzdGFtcBgEIAEoAyJR",
-            "ChZQbGF5ZXJEaXJlY3Rpb25DaGFuZ2VkEhEKCXBsYXllcl9pZBgBIAEoBRIR",
-            "CglkaXJlY3Rpb24YAiABKAUSEQoJdGltZXN0YW1wGAMgASgDYgZwcm90bzM="));
+            "ZS5tb3ZlbWVudCJiChVDbGllbnRNZXNzYWdlTW92ZW1lbnQSOQoMcGxheWVy",
+            "X2lucHV0GAEgASgLMiEucHJvdG9zLmdhbWUubW92ZW1lbnQuUGxheWVySW5w",
+            "dXRIAEIOCgxtZXNzYWdlX3R5cGUiGwoLUGxheWVySW5wdXQSDAoEa2V5cxgB",
+            "IAMoDSJoChVTZXJ2ZXJNZXNzYWdlTW92ZW1lbnQSPwoPcGxheWVyX3Bvc2l0",
+            "aW9uGAEgASgLMiQucHJvdG9zLmdhbWUubW92ZW1lbnQuUGxheWVyUG9zaXRp",
+            "b25IAEIOCgxtZXNzYWdlX3R5cGUiTAoOUGxheWVyUG9zaXRpb24SEQoJcGxh",
+            "eWVyX2lkGAEgASgFEgkKAXgYAiABKAUSCQoBeRgDIAEoBRIRCgl0aW1lc3Rh",
+            "bXAYBCABKANiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Game.Movement.ClientMessageMovement), global::Protos.Game.Movement.ClientMessageMovement.Parser, new[]{ "MoveRequest", "ChangeDirectionRequest" }, new[]{ "MessageType" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Game.Movement.MoveRequest), global::Protos.Game.Movement.MoveRequest.Parser, new[]{ "X", "Y", "Timestamp", "RequestId" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Game.Movement.ChangeDirectionRequest), global::Protos.Game.Movement.ChangeDirectionRequest.Parser, new[]{ "Direction", "Timestamp", "RequestId" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Game.Movement.ServerMessageMovement), global::Protos.Game.Movement.ServerMessageMovement.Parser, new[]{ "MoveResponse", "PlayerMoved", "PlayerDirectionChanged" }, new[]{ "MessageType" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Game.Movement.MoveResponse), global::Protos.Game.Movement.MoveResponse.Parser, new[]{ "X", "Y", "RequestId", "Success", "Reason" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Game.Movement.PlayerMoved), global::Protos.Game.Movement.PlayerMoved.Parser, new[]{ "PlayerId", "X", "Y", "Timestamp" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Game.Movement.PlayerDirectionChanged), global::Protos.Game.Movement.PlayerDirectionChanged.Parser, new[]{ "PlayerId", "Direction", "Timestamp" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Game.Movement.ClientMessageMovement), global::Protos.Game.Movement.ClientMessageMovement.Parser, new[]{ "PlayerInput" }, new[]{ "MessageType" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Game.Movement.PlayerInput), global::Protos.Game.Movement.PlayerInput.Parser, new[]{ "Keys" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Game.Movement.ServerMessageMovement), global::Protos.Game.Movement.ServerMessageMovement.Parser, new[]{ "PlayerPosition" }, new[]{ "MessageType" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Game.Movement.PlayerPosition), global::Protos.Game.Movement.PlayerPosition.Parser, new[]{ "PlayerId", "X", "Y", "Timestamp" }, null, null, null, null)
           }));
     }
     #endregion
@@ -96,11 +82,8 @@ namespace Protos.Game.Movement {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public ClientMessageMovement(ClientMessageMovement other) : this() {
       switch (other.MessageTypeCase) {
-        case MessageTypeOneofCase.MoveRequest:
-          MoveRequest = other.MoveRequest.Clone();
-          break;
-        case MessageTypeOneofCase.ChangeDirectionRequest:
-          ChangeDirectionRequest = other.ChangeDirectionRequest.Clone();
+        case MessageTypeOneofCase.PlayerInput:
+          PlayerInput = other.PlayerInput.Clone();
           break;
       }
 
@@ -113,27 +96,15 @@ namespace Protos.Game.Movement {
       return new ClientMessageMovement(this);
     }
 
-    /// <summary>Field number for the "move_request" field.</summary>
-    public const int MoveRequestFieldNumber = 1;
+    /// <summary>Field number for the "player_input" field.</summary>
+    public const int PlayerInputFieldNumber = 1;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Protos.Game.Movement.MoveRequest MoveRequest {
-      get { return messageTypeCase_ == MessageTypeOneofCase.MoveRequest ? (global::Protos.Game.Movement.MoveRequest) messageType_ : null; }
+    public global::Protos.Game.Movement.PlayerInput PlayerInput {
+      get { return messageTypeCase_ == MessageTypeOneofCase.PlayerInput ? (global::Protos.Game.Movement.PlayerInput) messageType_ : null; }
       set {
         messageType_ = value;
-        messageTypeCase_ = value == null ? MessageTypeOneofCase.None : MessageTypeOneofCase.MoveRequest;
-      }
-    }
-
-    /// <summary>Field number for the "change_direction_request" field.</summary>
-    public const int ChangeDirectionRequestFieldNumber = 2;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Protos.Game.Movement.ChangeDirectionRequest ChangeDirectionRequest {
-      get { return messageTypeCase_ == MessageTypeOneofCase.ChangeDirectionRequest ? (global::Protos.Game.Movement.ChangeDirectionRequest) messageType_ : null; }
-      set {
-        messageType_ = value;
-        messageTypeCase_ = value == null ? MessageTypeOneofCase.None : MessageTypeOneofCase.ChangeDirectionRequest;
+        messageTypeCase_ = value == null ? MessageTypeOneofCase.None : MessageTypeOneofCase.PlayerInput;
       }
     }
 
@@ -141,8 +112,7 @@ namespace Protos.Game.Movement {
     /// <summary>Enum of possible cases for the "message_type" oneof.</summary>
     public enum MessageTypeOneofCase {
       None = 0,
-      MoveRequest = 1,
-      ChangeDirectionRequest = 2,
+      PlayerInput = 1,
     }
     private MessageTypeOneofCase messageTypeCase_ = MessageTypeOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -173,8 +143,7 @@ namespace Protos.Game.Movement {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (!object.Equals(MoveRequest, other.MoveRequest)) return false;
-      if (!object.Equals(ChangeDirectionRequest, other.ChangeDirectionRequest)) return false;
+      if (!object.Equals(PlayerInput, other.PlayerInput)) return false;
       if (MessageTypeCase != other.MessageTypeCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -183,8 +152,7 @@ namespace Protos.Game.Movement {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (messageTypeCase_ == MessageTypeOneofCase.MoveRequest) hash ^= MoveRequest.GetHashCode();
-      if (messageTypeCase_ == MessageTypeOneofCase.ChangeDirectionRequest) hash ^= ChangeDirectionRequest.GetHashCode();
+      if (messageTypeCase_ == MessageTypeOneofCase.PlayerInput) hash ^= PlayerInput.GetHashCode();
       hash ^= (int) messageTypeCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -204,13 +172,9 @@ namespace Protos.Game.Movement {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (messageTypeCase_ == MessageTypeOneofCase.MoveRequest) {
+      if (messageTypeCase_ == MessageTypeOneofCase.PlayerInput) {
         output.WriteRawTag(10);
-        output.WriteMessage(MoveRequest);
-      }
-      if (messageTypeCase_ == MessageTypeOneofCase.ChangeDirectionRequest) {
-        output.WriteRawTag(18);
-        output.WriteMessage(ChangeDirectionRequest);
+        output.WriteMessage(PlayerInput);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -222,13 +186,9 @@ namespace Protos.Game.Movement {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (messageTypeCase_ == MessageTypeOneofCase.MoveRequest) {
+      if (messageTypeCase_ == MessageTypeOneofCase.PlayerInput) {
         output.WriteRawTag(10);
-        output.WriteMessage(MoveRequest);
-      }
-      if (messageTypeCase_ == MessageTypeOneofCase.ChangeDirectionRequest) {
-        output.WriteRawTag(18);
-        output.WriteMessage(ChangeDirectionRequest);
+        output.WriteMessage(PlayerInput);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
@@ -240,11 +200,8 @@ namespace Protos.Game.Movement {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (messageTypeCase_ == MessageTypeOneofCase.MoveRequest) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(MoveRequest);
-      }
-      if (messageTypeCase_ == MessageTypeOneofCase.ChangeDirectionRequest) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ChangeDirectionRequest);
+      if (messageTypeCase_ == MessageTypeOneofCase.PlayerInput) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(PlayerInput);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -259,17 +216,11 @@ namespace Protos.Game.Movement {
         return;
       }
       switch (other.MessageTypeCase) {
-        case MessageTypeOneofCase.MoveRequest:
-          if (MoveRequest == null) {
-            MoveRequest = new global::Protos.Game.Movement.MoveRequest();
+        case MessageTypeOneofCase.PlayerInput:
+          if (PlayerInput == null) {
+            PlayerInput = new global::Protos.Game.Movement.PlayerInput();
           }
-          MoveRequest.MergeFrom(other.MoveRequest);
-          break;
-        case MessageTypeOneofCase.ChangeDirectionRequest:
-          if (ChangeDirectionRequest == null) {
-            ChangeDirectionRequest = new global::Protos.Game.Movement.ChangeDirectionRequest();
-          }
-          ChangeDirectionRequest.MergeFrom(other.ChangeDirectionRequest);
+          PlayerInput.MergeFrom(other.PlayerInput);
           break;
       }
 
@@ -293,21 +244,12 @@ namespace Protos.Game.Movement {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 10: {
-            global::Protos.Game.Movement.MoveRequest subBuilder = new global::Protos.Game.Movement.MoveRequest();
-            if (messageTypeCase_ == MessageTypeOneofCase.MoveRequest) {
-              subBuilder.MergeFrom(MoveRequest);
+            global::Protos.Game.Movement.PlayerInput subBuilder = new global::Protos.Game.Movement.PlayerInput();
+            if (messageTypeCase_ == MessageTypeOneofCase.PlayerInput) {
+              subBuilder.MergeFrom(PlayerInput);
             }
             input.ReadMessage(subBuilder);
-            MoveRequest = subBuilder;
-            break;
-          }
-          case 18: {
-            global::Protos.Game.Movement.ChangeDirectionRequest subBuilder = new global::Protos.Game.Movement.ChangeDirectionRequest();
-            if (messageTypeCase_ == MessageTypeOneofCase.ChangeDirectionRequest) {
-              subBuilder.MergeFrom(ChangeDirectionRequest);
-            }
-            input.ReadMessage(subBuilder);
-            ChangeDirectionRequest = subBuilder;
+            PlayerInput = subBuilder;
             break;
           }
         }
@@ -330,21 +272,12 @@ namespace Protos.Game.Movement {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 10: {
-            global::Protos.Game.Movement.MoveRequest subBuilder = new global::Protos.Game.Movement.MoveRequest();
-            if (messageTypeCase_ == MessageTypeOneofCase.MoveRequest) {
-              subBuilder.MergeFrom(MoveRequest);
+            global::Protos.Game.Movement.PlayerInput subBuilder = new global::Protos.Game.Movement.PlayerInput();
+            if (messageTypeCase_ == MessageTypeOneofCase.PlayerInput) {
+              subBuilder.MergeFrom(PlayerInput);
             }
             input.ReadMessage(subBuilder);
-            MoveRequest = subBuilder;
-            break;
-          }
-          case 18: {
-            global::Protos.Game.Movement.ChangeDirectionRequest subBuilder = new global::Protos.Game.Movement.ChangeDirectionRequest();
-            if (messageTypeCase_ == MessageTypeOneofCase.ChangeDirectionRequest) {
-              subBuilder.MergeFrom(ChangeDirectionRequest);
-            }
-            input.ReadMessage(subBuilder);
-            ChangeDirectionRequest = subBuilder;
+            PlayerInput = subBuilder;
             break;
           }
         }
@@ -355,16 +288,16 @@ namespace Protos.Game.Movement {
   }
 
   [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
-  public sealed partial class MoveRequest : pb::IMessage<MoveRequest>
+  public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
   #endif
   {
-    private static readonly pb::MessageParser<MoveRequest> _parser = new pb::MessageParser<MoveRequest>(() => new MoveRequest());
+    private static readonly pb::MessageParser<PlayerInput> _parser = new pb::MessageParser<PlayerInput>(() => new PlayerInput());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pb::MessageParser<MoveRequest> Parser { get { return _parser; } }
+    public static pb::MessageParser<PlayerInput> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -380,7 +313,7 @@ namespace Protos.Game.Movement {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public MoveRequest() {
+    public PlayerInput() {
       OnConstruction();
     }
 
@@ -388,99 +321,44 @@ namespace Protos.Game.Movement {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public MoveRequest(MoveRequest other) : this() {
-      x_ = other.x_;
-      y_ = other.y_;
-      timestamp_ = other.timestamp_;
-      requestId_ = other.requestId_;
+    public PlayerInput(PlayerInput other) : this() {
+      keys_ = other.keys_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public MoveRequest Clone() {
-      return new MoveRequest(this);
+    public PlayerInput Clone() {
+      return new PlayerInput(this);
     }
 
-    /// <summary>Field number for the "x" field.</summary>
-    public const int XFieldNumber = 1;
-    private int x_;
-    /// <summary>
-    /// Coordenada X de movimiento
-    /// </summary>
+    /// <summary>Field number for the "keys" field.</summary>
+    public const int KeysFieldNumber = 1;
+    private static readonly pb::FieldCodec<uint> _repeated_keys_codec
+        = pb::FieldCodec.ForUInt32(10);
+    private readonly pbc::RepeatedField<uint> keys_ = new pbc::RepeatedField<uint>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int X {
-      get { return x_; }
-      set {
-        x_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "y" field.</summary>
-    public const int YFieldNumber = 2;
-    private int y_;
-    /// <summary>
-    /// Coordenada Y de movimiento
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int Y {
-      get { return y_; }
-      set {
-        y_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "timestamp" field.</summary>
-    public const int TimestampFieldNumber = 3;
-    private long timestamp_;
-    /// <summary>
-    /// Timestamp de la solicitud de movimiento
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public long Timestamp {
-      get { return timestamp_; }
-      set {
-        timestamp_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "request_id" field.</summary>
-    public const int RequestIdFieldNumber = 4;
-    private string requestId_ = "";
-    /// <summary>
-    /// Identificador único para la solicitud (opcional)
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string RequestId {
-      get { return requestId_; }
-      set {
-        requestId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
+    public pbc::RepeatedField<uint> Keys {
+      get { return keys_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
-      return Equals(other as MoveRequest);
+      return Equals(other as PlayerInput);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(MoveRequest other) {
+    public bool Equals(PlayerInput other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (X != other.X) return false;
-      if (Y != other.Y) return false;
-      if (Timestamp != other.Timestamp) return false;
-      if (RequestId != other.RequestId) return false;
+      if(!keys_.Equals(other.keys_)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -488,10 +366,7 @@ namespace Protos.Game.Movement {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (X != 0) hash ^= X.GetHashCode();
-      if (Y != 0) hash ^= Y.GetHashCode();
-      if (Timestamp != 0L) hash ^= Timestamp.GetHashCode();
-      if (RequestId.Length != 0) hash ^= RequestId.GetHashCode();
+      hash ^= keys_.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -510,22 +385,7 @@ namespace Protos.Game.Movement {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (X != 0) {
-        output.WriteRawTag(8);
-        output.WriteInt32(X);
-      }
-      if (Y != 0) {
-        output.WriteRawTag(16);
-        output.WriteInt32(Y);
-      }
-      if (Timestamp != 0L) {
-        output.WriteRawTag(24);
-        output.WriteInt64(Timestamp);
-      }
-      if (RequestId.Length != 0) {
-        output.WriteRawTag(34);
-        output.WriteString(RequestId);
-      }
+      keys_.WriteTo(output, _repeated_keys_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -536,22 +396,7 @@ namespace Protos.Game.Movement {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (X != 0) {
-        output.WriteRawTag(8);
-        output.WriteInt32(X);
-      }
-      if (Y != 0) {
-        output.WriteRawTag(16);
-        output.WriteInt32(Y);
-      }
-      if (Timestamp != 0L) {
-        output.WriteRawTag(24);
-        output.WriteInt64(Timestamp);
-      }
-      if (RequestId.Length != 0) {
-        output.WriteRawTag(34);
-        output.WriteString(RequestId);
-      }
+      keys_.WriteTo(ref output, _repeated_keys_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -562,18 +407,7 @@ namespace Protos.Game.Movement {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (X != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(X);
-      }
-      if (Y != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Y);
-      }
-      if (Timestamp != 0L) {
-        size += 1 + pb::CodedOutputStream.ComputeInt64Size(Timestamp);
-      }
-      if (RequestId.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(RequestId);
-      }
+      size += keys_.CalculateSize(_repeated_keys_codec);
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -582,22 +416,11 @@ namespace Protos.Game.Movement {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(MoveRequest other) {
+    public void MergeFrom(PlayerInput other) {
       if (other == null) {
         return;
       }
-      if (other.X != 0) {
-        X = other.X;
-      }
-      if (other.Y != 0) {
-        Y = other.Y;
-      }
-      if (other.Timestamp != 0L) {
-        Timestamp = other.Timestamp;
-      }
-      if (other.RequestId.Length != 0) {
-        RequestId = other.RequestId;
-      }
+      keys_.Add(other.keys_);
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -617,20 +440,9 @@ namespace Protos.Game.Movement {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
+          case 10:
           case 8: {
-            X = input.ReadInt32();
-            break;
-          }
-          case 16: {
-            Y = input.ReadInt32();
-            break;
-          }
-          case 24: {
-            Timestamp = input.ReadInt64();
-            break;
-          }
-          case 34: {
-            RequestId = input.ReadString();
+            keys_.AddEntriesFrom(input, _repeated_keys_codec);
             break;
           }
         }
@@ -652,301 +464,9 @@ namespace Protos.Game.Movement {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
+          case 10:
           case 8: {
-            X = input.ReadInt32();
-            break;
-          }
-          case 16: {
-            Y = input.ReadInt32();
-            break;
-          }
-          case 24: {
-            Timestamp = input.ReadInt64();
-            break;
-          }
-          case 34: {
-            RequestId = input.ReadString();
-            break;
-          }
-        }
-      }
-    }
-    #endif
-
-  }
-
-  [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
-  public sealed partial class ChangeDirectionRequest : pb::IMessage<ChangeDirectionRequest>
-  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      , pb::IBufferMessage
-  #endif
-  {
-    private static readonly pb::MessageParser<ChangeDirectionRequest> _parser = new pb::MessageParser<ChangeDirectionRequest>(() => new ChangeDirectionRequest());
-    private pb::UnknownFieldSet _unknownFields;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pb::MessageParser<ChangeDirectionRequest> Parser { get { return _parser; } }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pbr::MessageDescriptor Descriptor {
-      get { return global::Protos.Game.Movement.GameMovementReflection.Descriptor.MessageTypes[2]; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
-      get { return Descriptor; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public ChangeDirectionRequest() {
-      OnConstruction();
-    }
-
-    partial void OnConstruction();
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public ChangeDirectionRequest(ChangeDirectionRequest other) : this() {
-      direction_ = other.direction_;
-      timestamp_ = other.timestamp_;
-      requestId_ = other.requestId_;
-      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public ChangeDirectionRequest Clone() {
-      return new ChangeDirectionRequest(this);
-    }
-
-    /// <summary>Field number for the "direction" field.</summary>
-    public const int DirectionFieldNumber = 1;
-    private int direction_;
-    /// <summary>
-    /// Dirección de movimiento (0 = arriba, 1 = derecha, 2 = abajo, 3 = izquierda)
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int Direction {
-      get { return direction_; }
-      set {
-        direction_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "timestamp" field.</summary>
-    public const int TimestampFieldNumber = 2;
-    private long timestamp_;
-    /// <summary>
-    /// Timestamp de la solicitud de cambio de dirección
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public long Timestamp {
-      get { return timestamp_; }
-      set {
-        timestamp_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "request_id" field.</summary>
-    public const int RequestIdFieldNumber = 3;
-    private string requestId_ = "";
-    /// <summary>
-    /// Identificador único para la solicitud (opcional)
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string RequestId {
-      get { return requestId_; }
-      set {
-        requestId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override bool Equals(object other) {
-      return Equals(other as ChangeDirectionRequest);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(ChangeDirectionRequest other) {
-      if (ReferenceEquals(other, null)) {
-        return false;
-      }
-      if (ReferenceEquals(other, this)) {
-        return true;
-      }
-      if (Direction != other.Direction) return false;
-      if (Timestamp != other.Timestamp) return false;
-      if (RequestId != other.RequestId) return false;
-      return Equals(_unknownFields, other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override int GetHashCode() {
-      int hash = 1;
-      if (Direction != 0) hash ^= Direction.GetHashCode();
-      if (Timestamp != 0L) hash ^= Timestamp.GetHashCode();
-      if (RequestId.Length != 0) hash ^= RequestId.GetHashCode();
-      if (_unknownFields != null) {
-        hash ^= _unknownFields.GetHashCode();
-      }
-      return hash;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override string ToString() {
-      return pb::JsonFormatter.ToDiagnosticString(this);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void WriteTo(pb::CodedOutputStream output) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      output.WriteRawMessage(this);
-    #else
-      if (Direction != 0) {
-        output.WriteRawTag(8);
-        output.WriteInt32(Direction);
-      }
-      if (Timestamp != 0L) {
-        output.WriteRawTag(16);
-        output.WriteInt64(Timestamp);
-      }
-      if (RequestId.Length != 0) {
-        output.WriteRawTag(26);
-        output.WriteString(RequestId);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(output);
-      }
-    #endif
-    }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (Direction != 0) {
-        output.WriteRawTag(8);
-        output.WriteInt32(Direction);
-      }
-      if (Timestamp != 0L) {
-        output.WriteRawTag(16);
-        output.WriteInt64(Timestamp);
-      }
-      if (RequestId.Length != 0) {
-        output.WriteRawTag(26);
-        output.WriteString(RequestId);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(ref output);
-      }
-    }
-    #endif
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int CalculateSize() {
-      int size = 0;
-      if (Direction != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Direction);
-      }
-      if (Timestamp != 0L) {
-        size += 1 + pb::CodedOutputStream.ComputeInt64Size(Timestamp);
-      }
-      if (RequestId.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(RequestId);
-      }
-      if (_unknownFields != null) {
-        size += _unknownFields.CalculateSize();
-      }
-      return size;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(ChangeDirectionRequest other) {
-      if (other == null) {
-        return;
-      }
-      if (other.Direction != 0) {
-        Direction = other.Direction;
-      }
-      if (other.Timestamp != 0L) {
-        Timestamp = other.Timestamp;
-      }
-      if (other.RequestId.Length != 0) {
-        RequestId = other.RequestId;
-      }
-      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(pb::CodedInputStream input) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      input.ReadRawMessage(this);
-    #else
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-      if ((tag & 7) == 4) {
-        // Abort on any end group tag.
-        return;
-      }
-      switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
-            break;
-          case 8: {
-            Direction = input.ReadInt32();
-            break;
-          }
-          case 16: {
-            Timestamp = input.ReadInt64();
-            break;
-          }
-          case 26: {
-            RequestId = input.ReadString();
-            break;
-          }
-        }
-      }
-    #endif
-    }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-      if ((tag & 7) == 4) {
-        // Abort on any end group tag.
-        return;
-      }
-      switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
-            break;
-          case 8: {
-            Direction = input.ReadInt32();
-            break;
-          }
-          case 16: {
-            Timestamp = input.ReadInt64();
-            break;
-          }
-          case 26: {
-            RequestId = input.ReadString();
+            keys_.AddEntriesFrom(ref input, _repeated_keys_codec);
             break;
           }
         }
@@ -971,7 +491,7 @@ namespace Protos.Game.Movement {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Protos.Game.Movement.GameMovementReflection.Descriptor.MessageTypes[3]; }
+      get { return global::Protos.Game.Movement.GameMovementReflection.Descriptor.MessageTypes[2]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -992,14 +512,8 @@ namespace Protos.Game.Movement {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public ServerMessageMovement(ServerMessageMovement other) : this() {
       switch (other.MessageTypeCase) {
-        case MessageTypeOneofCase.MoveResponse:
-          MoveResponse = other.MoveResponse.Clone();
-          break;
-        case MessageTypeOneofCase.PlayerMoved:
-          PlayerMoved = other.PlayerMoved.Clone();
-          break;
-        case MessageTypeOneofCase.PlayerDirectionChanged:
-          PlayerDirectionChanged = other.PlayerDirectionChanged.Clone();
+        case MessageTypeOneofCase.PlayerPosition:
+          PlayerPosition = other.PlayerPosition.Clone();
           break;
       }
 
@@ -1012,39 +526,15 @@ namespace Protos.Game.Movement {
       return new ServerMessageMovement(this);
     }
 
-    /// <summary>Field number for the "move_response" field.</summary>
-    public const int MoveResponseFieldNumber = 1;
+    /// <summary>Field number for the "player_position" field.</summary>
+    public const int PlayerPositionFieldNumber = 1;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Protos.Game.Movement.MoveResponse MoveResponse {
-      get { return messageTypeCase_ == MessageTypeOneofCase.MoveResponse ? (global::Protos.Game.Movement.MoveResponse) messageType_ : null; }
+    public global::Protos.Game.Movement.PlayerPosition PlayerPosition {
+      get { return messageTypeCase_ == MessageTypeOneofCase.PlayerPosition ? (global::Protos.Game.Movement.PlayerPosition) messageType_ : null; }
       set {
         messageType_ = value;
-        messageTypeCase_ = value == null ? MessageTypeOneofCase.None : MessageTypeOneofCase.MoveResponse;
-      }
-    }
-
-    /// <summary>Field number for the "player_moved" field.</summary>
-    public const int PlayerMovedFieldNumber = 2;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Protos.Game.Movement.PlayerMoved PlayerMoved {
-      get { return messageTypeCase_ == MessageTypeOneofCase.PlayerMoved ? (global::Protos.Game.Movement.PlayerMoved) messageType_ : null; }
-      set {
-        messageType_ = value;
-        messageTypeCase_ = value == null ? MessageTypeOneofCase.None : MessageTypeOneofCase.PlayerMoved;
-      }
-    }
-
-    /// <summary>Field number for the "player_direction_changed" field.</summary>
-    public const int PlayerDirectionChangedFieldNumber = 3;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Protos.Game.Movement.PlayerDirectionChanged PlayerDirectionChanged {
-      get { return messageTypeCase_ == MessageTypeOneofCase.PlayerDirectionChanged ? (global::Protos.Game.Movement.PlayerDirectionChanged) messageType_ : null; }
-      set {
-        messageType_ = value;
-        messageTypeCase_ = value == null ? MessageTypeOneofCase.None : MessageTypeOneofCase.PlayerDirectionChanged;
+        messageTypeCase_ = value == null ? MessageTypeOneofCase.None : MessageTypeOneofCase.PlayerPosition;
       }
     }
 
@@ -1052,9 +542,7 @@ namespace Protos.Game.Movement {
     /// <summary>Enum of possible cases for the "message_type" oneof.</summary>
     public enum MessageTypeOneofCase {
       None = 0,
-      MoveResponse = 1,
-      PlayerMoved = 2,
-      PlayerDirectionChanged = 3,
+      PlayerPosition = 1,
     }
     private MessageTypeOneofCase messageTypeCase_ = MessageTypeOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1085,9 +573,7 @@ namespace Protos.Game.Movement {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (!object.Equals(MoveResponse, other.MoveResponse)) return false;
-      if (!object.Equals(PlayerMoved, other.PlayerMoved)) return false;
-      if (!object.Equals(PlayerDirectionChanged, other.PlayerDirectionChanged)) return false;
+      if (!object.Equals(PlayerPosition, other.PlayerPosition)) return false;
       if (MessageTypeCase != other.MessageTypeCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -1096,9 +582,7 @@ namespace Protos.Game.Movement {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (messageTypeCase_ == MessageTypeOneofCase.MoveResponse) hash ^= MoveResponse.GetHashCode();
-      if (messageTypeCase_ == MessageTypeOneofCase.PlayerMoved) hash ^= PlayerMoved.GetHashCode();
-      if (messageTypeCase_ == MessageTypeOneofCase.PlayerDirectionChanged) hash ^= PlayerDirectionChanged.GetHashCode();
+      if (messageTypeCase_ == MessageTypeOneofCase.PlayerPosition) hash ^= PlayerPosition.GetHashCode();
       hash ^= (int) messageTypeCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -1118,17 +602,9 @@ namespace Protos.Game.Movement {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (messageTypeCase_ == MessageTypeOneofCase.MoveResponse) {
+      if (messageTypeCase_ == MessageTypeOneofCase.PlayerPosition) {
         output.WriteRawTag(10);
-        output.WriteMessage(MoveResponse);
-      }
-      if (messageTypeCase_ == MessageTypeOneofCase.PlayerMoved) {
-        output.WriteRawTag(18);
-        output.WriteMessage(PlayerMoved);
-      }
-      if (messageTypeCase_ == MessageTypeOneofCase.PlayerDirectionChanged) {
-        output.WriteRawTag(26);
-        output.WriteMessage(PlayerDirectionChanged);
+        output.WriteMessage(PlayerPosition);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -1140,17 +616,9 @@ namespace Protos.Game.Movement {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (messageTypeCase_ == MessageTypeOneofCase.MoveResponse) {
+      if (messageTypeCase_ == MessageTypeOneofCase.PlayerPosition) {
         output.WriteRawTag(10);
-        output.WriteMessage(MoveResponse);
-      }
-      if (messageTypeCase_ == MessageTypeOneofCase.PlayerMoved) {
-        output.WriteRawTag(18);
-        output.WriteMessage(PlayerMoved);
-      }
-      if (messageTypeCase_ == MessageTypeOneofCase.PlayerDirectionChanged) {
-        output.WriteRawTag(26);
-        output.WriteMessage(PlayerDirectionChanged);
+        output.WriteMessage(PlayerPosition);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
@@ -1162,14 +630,8 @@ namespace Protos.Game.Movement {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (messageTypeCase_ == MessageTypeOneofCase.MoveResponse) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(MoveResponse);
-      }
-      if (messageTypeCase_ == MessageTypeOneofCase.PlayerMoved) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(PlayerMoved);
-      }
-      if (messageTypeCase_ == MessageTypeOneofCase.PlayerDirectionChanged) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(PlayerDirectionChanged);
+      if (messageTypeCase_ == MessageTypeOneofCase.PlayerPosition) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(PlayerPosition);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -1184,23 +646,11 @@ namespace Protos.Game.Movement {
         return;
       }
       switch (other.MessageTypeCase) {
-        case MessageTypeOneofCase.MoveResponse:
-          if (MoveResponse == null) {
-            MoveResponse = new global::Protos.Game.Movement.MoveResponse();
+        case MessageTypeOneofCase.PlayerPosition:
+          if (PlayerPosition == null) {
+            PlayerPosition = new global::Protos.Game.Movement.PlayerPosition();
           }
-          MoveResponse.MergeFrom(other.MoveResponse);
-          break;
-        case MessageTypeOneofCase.PlayerMoved:
-          if (PlayerMoved == null) {
-            PlayerMoved = new global::Protos.Game.Movement.PlayerMoved();
-          }
-          PlayerMoved.MergeFrom(other.PlayerMoved);
-          break;
-        case MessageTypeOneofCase.PlayerDirectionChanged:
-          if (PlayerDirectionChanged == null) {
-            PlayerDirectionChanged = new global::Protos.Game.Movement.PlayerDirectionChanged();
-          }
-          PlayerDirectionChanged.MergeFrom(other.PlayerDirectionChanged);
+          PlayerPosition.MergeFrom(other.PlayerPosition);
           break;
       }
 
@@ -1224,30 +674,12 @@ namespace Protos.Game.Movement {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 10: {
-            global::Protos.Game.Movement.MoveResponse subBuilder = new global::Protos.Game.Movement.MoveResponse();
-            if (messageTypeCase_ == MessageTypeOneofCase.MoveResponse) {
-              subBuilder.MergeFrom(MoveResponse);
+            global::Protos.Game.Movement.PlayerPosition subBuilder = new global::Protos.Game.Movement.PlayerPosition();
+            if (messageTypeCase_ == MessageTypeOneofCase.PlayerPosition) {
+              subBuilder.MergeFrom(PlayerPosition);
             }
             input.ReadMessage(subBuilder);
-            MoveResponse = subBuilder;
-            break;
-          }
-          case 18: {
-            global::Protos.Game.Movement.PlayerMoved subBuilder = new global::Protos.Game.Movement.PlayerMoved();
-            if (messageTypeCase_ == MessageTypeOneofCase.PlayerMoved) {
-              subBuilder.MergeFrom(PlayerMoved);
-            }
-            input.ReadMessage(subBuilder);
-            PlayerMoved = subBuilder;
-            break;
-          }
-          case 26: {
-            global::Protos.Game.Movement.PlayerDirectionChanged subBuilder = new global::Protos.Game.Movement.PlayerDirectionChanged();
-            if (messageTypeCase_ == MessageTypeOneofCase.PlayerDirectionChanged) {
-              subBuilder.MergeFrom(PlayerDirectionChanged);
-            }
-            input.ReadMessage(subBuilder);
-            PlayerDirectionChanged = subBuilder;
+            PlayerPosition = subBuilder;
             break;
           }
         }
@@ -1270,30 +702,12 @@ namespace Protos.Game.Movement {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 10: {
-            global::Protos.Game.Movement.MoveResponse subBuilder = new global::Protos.Game.Movement.MoveResponse();
-            if (messageTypeCase_ == MessageTypeOneofCase.MoveResponse) {
-              subBuilder.MergeFrom(MoveResponse);
+            global::Protos.Game.Movement.PlayerPosition subBuilder = new global::Protos.Game.Movement.PlayerPosition();
+            if (messageTypeCase_ == MessageTypeOneofCase.PlayerPosition) {
+              subBuilder.MergeFrom(PlayerPosition);
             }
             input.ReadMessage(subBuilder);
-            MoveResponse = subBuilder;
-            break;
-          }
-          case 18: {
-            global::Protos.Game.Movement.PlayerMoved subBuilder = new global::Protos.Game.Movement.PlayerMoved();
-            if (messageTypeCase_ == MessageTypeOneofCase.PlayerMoved) {
-              subBuilder.MergeFrom(PlayerMoved);
-            }
-            input.ReadMessage(subBuilder);
-            PlayerMoved = subBuilder;
-            break;
-          }
-          case 26: {
-            global::Protos.Game.Movement.PlayerDirectionChanged subBuilder = new global::Protos.Game.Movement.PlayerDirectionChanged();
-            if (messageTypeCase_ == MessageTypeOneofCase.PlayerDirectionChanged) {
-              subBuilder.MergeFrom(PlayerDirectionChanged);
-            }
-            input.ReadMessage(subBuilder);
-            PlayerDirectionChanged = subBuilder;
+            PlayerPosition = subBuilder;
             break;
           }
         }
@@ -1304,21 +718,21 @@ namespace Protos.Game.Movement {
   }
 
   [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
-  public sealed partial class MoveResponse : pb::IMessage<MoveResponse>
+  public sealed partial class PlayerPosition : pb::IMessage<PlayerPosition>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
   #endif
   {
-    private static readonly pb::MessageParser<MoveResponse> _parser = new pb::MessageParser<MoveResponse>(() => new MoveResponse());
+    private static readonly pb::MessageParser<PlayerPosition> _parser = new pb::MessageParser<PlayerPosition>(() => new PlayerPosition());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pb::MessageParser<MoveResponse> Parser { get { return _parser; } }
+    public static pb::MessageParser<PlayerPosition> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Protos.Game.Movement.GameMovementReflection.Descriptor.MessageTypes[4]; }
+      get { return global::Protos.Game.Movement.GameMovementReflection.Descriptor.MessageTypes[3]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1329,7 +743,7 @@ namespace Protos.Game.Movement {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public MoveResponse() {
+    public PlayerPosition() {
       OnConstruction();
     }
 
@@ -1337,368 +751,7 @@ namespace Protos.Game.Movement {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public MoveResponse(MoveResponse other) : this() {
-      x_ = other.x_;
-      y_ = other.y_;
-      requestId_ = other.requestId_;
-      success_ = other.success_;
-      reason_ = other.reason_;
-      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public MoveResponse Clone() {
-      return new MoveResponse(this);
-    }
-
-    /// <summary>Field number for the "x" field.</summary>
-    public const int XFieldNumber = 1;
-    private int x_;
-    /// <summary>
-    /// Coordenada X de movimiento
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int X {
-      get { return x_; }
-      set {
-        x_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "y" field.</summary>
-    public const int YFieldNumber = 2;
-    private int y_;
-    /// <summary>
-    /// Coordenada Y de movimiento
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int Y {
-      get { return y_; }
-      set {
-        y_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "request_id" field.</summary>
-    public const int RequestIdFieldNumber = 3;
-    private string requestId_ = "";
-    /// <summary>
-    /// Identificador único para la solicitud (opcional)
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string RequestId {
-      get { return requestId_; }
-      set {
-        requestId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
-    /// <summary>Field number for the "success" field.</summary>
-    public const int SuccessFieldNumber = 4;
-    private bool success_;
-    /// <summary>
-    /// Si el movimiento fue exitoso o no
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Success {
-      get { return success_; }
-      set {
-        success_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "reason" field.</summary>
-    public const int ReasonFieldNumber = 5;
-    private string reason_ = "";
-    /// <summary>
-    /// Razón en caso de fallo (colisión, fuera de límites, etc.)
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string Reason {
-      get { return reason_; }
-      set {
-        reason_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override bool Equals(object other) {
-      return Equals(other as MoveResponse);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(MoveResponse other) {
-      if (ReferenceEquals(other, null)) {
-        return false;
-      }
-      if (ReferenceEquals(other, this)) {
-        return true;
-      }
-      if (X != other.X) return false;
-      if (Y != other.Y) return false;
-      if (RequestId != other.RequestId) return false;
-      if (Success != other.Success) return false;
-      if (Reason != other.Reason) return false;
-      return Equals(_unknownFields, other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override int GetHashCode() {
-      int hash = 1;
-      if (X != 0) hash ^= X.GetHashCode();
-      if (Y != 0) hash ^= Y.GetHashCode();
-      if (RequestId.Length != 0) hash ^= RequestId.GetHashCode();
-      if (Success != false) hash ^= Success.GetHashCode();
-      if (Reason.Length != 0) hash ^= Reason.GetHashCode();
-      if (_unknownFields != null) {
-        hash ^= _unknownFields.GetHashCode();
-      }
-      return hash;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override string ToString() {
-      return pb::JsonFormatter.ToDiagnosticString(this);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void WriteTo(pb::CodedOutputStream output) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      output.WriteRawMessage(this);
-    #else
-      if (X != 0) {
-        output.WriteRawTag(8);
-        output.WriteInt32(X);
-      }
-      if (Y != 0) {
-        output.WriteRawTag(16);
-        output.WriteInt32(Y);
-      }
-      if (RequestId.Length != 0) {
-        output.WriteRawTag(26);
-        output.WriteString(RequestId);
-      }
-      if (Success != false) {
-        output.WriteRawTag(32);
-        output.WriteBool(Success);
-      }
-      if (Reason.Length != 0) {
-        output.WriteRawTag(42);
-        output.WriteString(Reason);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(output);
-      }
-    #endif
-    }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (X != 0) {
-        output.WriteRawTag(8);
-        output.WriteInt32(X);
-      }
-      if (Y != 0) {
-        output.WriteRawTag(16);
-        output.WriteInt32(Y);
-      }
-      if (RequestId.Length != 0) {
-        output.WriteRawTag(26);
-        output.WriteString(RequestId);
-      }
-      if (Success != false) {
-        output.WriteRawTag(32);
-        output.WriteBool(Success);
-      }
-      if (Reason.Length != 0) {
-        output.WriteRawTag(42);
-        output.WriteString(Reason);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(ref output);
-      }
-    }
-    #endif
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int CalculateSize() {
-      int size = 0;
-      if (X != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(X);
-      }
-      if (Y != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Y);
-      }
-      if (RequestId.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(RequestId);
-      }
-      if (Success != false) {
-        size += 1 + 1;
-      }
-      if (Reason.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(Reason);
-      }
-      if (_unknownFields != null) {
-        size += _unknownFields.CalculateSize();
-      }
-      return size;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(MoveResponse other) {
-      if (other == null) {
-        return;
-      }
-      if (other.X != 0) {
-        X = other.X;
-      }
-      if (other.Y != 0) {
-        Y = other.Y;
-      }
-      if (other.RequestId.Length != 0) {
-        RequestId = other.RequestId;
-      }
-      if (other.Success != false) {
-        Success = other.Success;
-      }
-      if (other.Reason.Length != 0) {
-        Reason = other.Reason;
-      }
-      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(pb::CodedInputStream input) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      input.ReadRawMessage(this);
-    #else
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-      if ((tag & 7) == 4) {
-        // Abort on any end group tag.
-        return;
-      }
-      switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
-            break;
-          case 8: {
-            X = input.ReadInt32();
-            break;
-          }
-          case 16: {
-            Y = input.ReadInt32();
-            break;
-          }
-          case 26: {
-            RequestId = input.ReadString();
-            break;
-          }
-          case 32: {
-            Success = input.ReadBool();
-            break;
-          }
-          case 42: {
-            Reason = input.ReadString();
-            break;
-          }
-        }
-      }
-    #endif
-    }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-      if ((tag & 7) == 4) {
-        // Abort on any end group tag.
-        return;
-      }
-      switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
-            break;
-          case 8: {
-            X = input.ReadInt32();
-            break;
-          }
-          case 16: {
-            Y = input.ReadInt32();
-            break;
-          }
-          case 26: {
-            RequestId = input.ReadString();
-            break;
-          }
-          case 32: {
-            Success = input.ReadBool();
-            break;
-          }
-          case 42: {
-            Reason = input.ReadString();
-            break;
-          }
-        }
-      }
-    }
-    #endif
-
-  }
-
-  [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
-  public sealed partial class PlayerMoved : pb::IMessage<PlayerMoved>
-  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      , pb::IBufferMessage
-  #endif
-  {
-    private static readonly pb::MessageParser<PlayerMoved> _parser = new pb::MessageParser<PlayerMoved>(() => new PlayerMoved());
-    private pb::UnknownFieldSet _unknownFields;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pb::MessageParser<PlayerMoved> Parser { get { return _parser; } }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pbr::MessageDescriptor Descriptor {
-      get { return global::Protos.Game.Movement.GameMovementReflection.Descriptor.MessageTypes[5]; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
-      get { return Descriptor; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public PlayerMoved() {
-      OnConstruction();
-    }
-
-    partial void OnConstruction();
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public PlayerMoved(PlayerMoved other) : this() {
+    public PlayerPosition(PlayerPosition other) : this() {
       playerId_ = other.playerId_;
       x_ = other.x_;
       y_ = other.y_;
@@ -1708,8 +761,8 @@ namespace Protos.Game.Movement {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public PlayerMoved Clone() {
-      return new PlayerMoved(this);
+    public PlayerPosition Clone() {
+      return new PlayerPosition(this);
     }
 
     /// <summary>Field number for the "player_id" field.</summary>
@@ -1775,12 +828,12 @@ namespace Protos.Game.Movement {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
-      return Equals(other as PlayerMoved);
+      return Equals(other as PlayerPosition);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(PlayerMoved other) {
+    public bool Equals(PlayerPosition other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
@@ -1892,7 +945,7 @@ namespace Protos.Game.Movement {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(PlayerMoved other) {
+    public void MergeFrom(PlayerPosition other) {
       if (other == null) {
         return;
       }
@@ -1975,287 +1028,6 @@ namespace Protos.Game.Movement {
             break;
           }
           case 32: {
-            Timestamp = input.ReadInt64();
-            break;
-          }
-        }
-      }
-    }
-    #endif
-
-  }
-
-  [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
-  public sealed partial class PlayerDirectionChanged : pb::IMessage<PlayerDirectionChanged>
-  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      , pb::IBufferMessage
-  #endif
-  {
-    private static readonly pb::MessageParser<PlayerDirectionChanged> _parser = new pb::MessageParser<PlayerDirectionChanged>(() => new PlayerDirectionChanged());
-    private pb::UnknownFieldSet _unknownFields;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pb::MessageParser<PlayerDirectionChanged> Parser { get { return _parser; } }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pbr::MessageDescriptor Descriptor {
-      get { return global::Protos.Game.Movement.GameMovementReflection.Descriptor.MessageTypes[6]; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
-      get { return Descriptor; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public PlayerDirectionChanged() {
-      OnConstruction();
-    }
-
-    partial void OnConstruction();
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public PlayerDirectionChanged(PlayerDirectionChanged other) : this() {
-      playerId_ = other.playerId_;
-      direction_ = other.direction_;
-      timestamp_ = other.timestamp_;
-      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public PlayerDirectionChanged Clone() {
-      return new PlayerDirectionChanged(this);
-    }
-
-    /// <summary>Field number for the "player_id" field.</summary>
-    public const int PlayerIdFieldNumber = 1;
-    private int playerId_;
-    /// <summary>
-    /// ID del jugador cuyo movimiento ha cambiado de dirección
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int PlayerId {
-      get { return playerId_; }
-      set {
-        playerId_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "direction" field.</summary>
-    public const int DirectionFieldNumber = 2;
-    private int direction_;
-    /// <summary>
-    /// Nueva dirección (0 = arriba, 1 = derecha, 2 = abajo, 3 = izquierda)
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int Direction {
-      get { return direction_; }
-      set {
-        direction_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "timestamp" field.</summary>
-    public const int TimestampFieldNumber = 3;
-    private long timestamp_;
-    /// <summary>
-    /// Timestamp del servidor para el cambio de dirección
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public long Timestamp {
-      get { return timestamp_; }
-      set {
-        timestamp_ = value;
-      }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override bool Equals(object other) {
-      return Equals(other as PlayerDirectionChanged);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(PlayerDirectionChanged other) {
-      if (ReferenceEquals(other, null)) {
-        return false;
-      }
-      if (ReferenceEquals(other, this)) {
-        return true;
-      }
-      if (PlayerId != other.PlayerId) return false;
-      if (Direction != other.Direction) return false;
-      if (Timestamp != other.Timestamp) return false;
-      return Equals(_unknownFields, other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override int GetHashCode() {
-      int hash = 1;
-      if (PlayerId != 0) hash ^= PlayerId.GetHashCode();
-      if (Direction != 0) hash ^= Direction.GetHashCode();
-      if (Timestamp != 0L) hash ^= Timestamp.GetHashCode();
-      if (_unknownFields != null) {
-        hash ^= _unknownFields.GetHashCode();
-      }
-      return hash;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override string ToString() {
-      return pb::JsonFormatter.ToDiagnosticString(this);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void WriteTo(pb::CodedOutputStream output) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      output.WriteRawMessage(this);
-    #else
-      if (PlayerId != 0) {
-        output.WriteRawTag(8);
-        output.WriteInt32(PlayerId);
-      }
-      if (Direction != 0) {
-        output.WriteRawTag(16);
-        output.WriteInt32(Direction);
-      }
-      if (Timestamp != 0L) {
-        output.WriteRawTag(24);
-        output.WriteInt64(Timestamp);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(output);
-      }
-    #endif
-    }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (PlayerId != 0) {
-        output.WriteRawTag(8);
-        output.WriteInt32(PlayerId);
-      }
-      if (Direction != 0) {
-        output.WriteRawTag(16);
-        output.WriteInt32(Direction);
-      }
-      if (Timestamp != 0L) {
-        output.WriteRawTag(24);
-        output.WriteInt64(Timestamp);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(ref output);
-      }
-    }
-    #endif
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int CalculateSize() {
-      int size = 0;
-      if (PlayerId != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(PlayerId);
-      }
-      if (Direction != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Direction);
-      }
-      if (Timestamp != 0L) {
-        size += 1 + pb::CodedOutputStream.ComputeInt64Size(Timestamp);
-      }
-      if (_unknownFields != null) {
-        size += _unknownFields.CalculateSize();
-      }
-      return size;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(PlayerDirectionChanged other) {
-      if (other == null) {
-        return;
-      }
-      if (other.PlayerId != 0) {
-        PlayerId = other.PlayerId;
-      }
-      if (other.Direction != 0) {
-        Direction = other.Direction;
-      }
-      if (other.Timestamp != 0L) {
-        Timestamp = other.Timestamp;
-      }
-      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(pb::CodedInputStream input) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      input.ReadRawMessage(this);
-    #else
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-      if ((tag & 7) == 4) {
-        // Abort on any end group tag.
-        return;
-      }
-      switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
-            break;
-          case 8: {
-            PlayerId = input.ReadInt32();
-            break;
-          }
-          case 16: {
-            Direction = input.ReadInt32();
-            break;
-          }
-          case 24: {
-            Timestamp = input.ReadInt64();
-            break;
-          }
-        }
-      }
-    #endif
-    }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-      if ((tag & 7) == 4) {
-        // Abort on any end group tag.
-        return;
-      }
-      switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
-            break;
-          case 8: {
-            PlayerId = input.ReadInt32();
-            break;
-          }
-          case 16: {
-            Direction = input.ReadInt32();
-            break;
-          }
-          case 24: {
             Timestamp = input.ReadInt64();
             break;
           }

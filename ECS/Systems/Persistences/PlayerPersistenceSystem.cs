@@ -13,12 +13,14 @@ public class PlayerPersistenceSystem
         _playerLocationService = playerLocationService;
     }
 
-    public async void SavePlayerData(PlayerModel player, PlayerLocation playerLocationModel)
-    {
-        await _playerLocationService.SavePlayerLocationAsync(playerLocationModel);
-       await _playerService.SavePlayerAsync(player);
+    // public void SavePlayerData()
+    // {
+    //     //PlayerModel playerModel;
+    //    // PlayerLocation playerLocationModel;
+    //    // await _playerLocationService.SavePlayerLocationAsync(playerLocationModel);
+    //    //await _playerService.SavePlayerAsync(player);
 
+    //     Console.WriteLine("A definir");
 
-
-    }
+    // }
 }

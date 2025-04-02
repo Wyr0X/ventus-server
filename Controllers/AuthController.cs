@@ -33,7 +33,7 @@ namespace VentusServer.Controllers
 
                 // Obtén el userId real desde la propiedad Uid del token de Firebase
                 string userId = decodedToken.Uid;  // Usar Uid en lugar de Claims["sub"]
-                string userEmail = decodedToken.Claims["email"]?.ToString();
+                string? userEmail = decodedToken.Claims["email"]?.ToString();
                 Console.WriteLine($"Llega: Email extraído: {userEmail}, UserId: {userId}");
 
                 if (string.IsNullOrEmpty(userEmail))

@@ -1,15 +1,14 @@
-﻿using System;
+﻿using dotenv.net;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore;
+using System;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
-using dotenv.net;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using VentusServer;
-using VentusServer.Controllers;
 using VentusServer.DataAccess;
 using VentusServer.DataAccess.Postgres;
 using VentusServer.Controllers;
@@ -19,8 +18,7 @@ using Game.Models;
 DotEnv.Load();
 
 // Verificar las credenciales de Firebase
-string credentialsPath =
-    Environment.GetEnvironmentVariable("FIREBASE_CREDENTIALS_PATH") ?? string.Empty;
+string credentialsPath = Environment.GetEnvironmentVariable("FIREBASE_CREDENTIALS_PATH") ?? string.Empty;
 if (string.IsNullOrEmpty(credentialsPath) || !File.Exists(credentialsPath))
 {
     Console.WriteLine("❌ No se encontró el archivo de credenciales de Firebase.");
@@ -33,20 +31,14 @@ string username = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "postgr
 string password = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "password";
 string dbName = Environment.GetEnvironmentVariable("POSTGRES_DB") ?? "ventus";
 
-if (
-    string.IsNullOrEmpty(host)
-    || string.IsNullOrEmpty(username)
-    || string.IsNullOrEmpty(password)
-    || string.IsNullOrEmpty(dbName)
-)
+if (string.IsNullOrEmpty(host) || string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(dbName))
 {
     Console.WriteLine("❌ No se encontraron las credenciales necesarias de PostgreSQL.");
     return;
 }
 
 // Construir la cadena de conexión de PostgreSQL
-string postgresConnectionString =
-    $"Host={host};Username={username};Password={password};Database={dbName}";
+string postgresConnectionString = $"Host={host};Username={username};Password={password};Database={dbName}";
 
 // Configuración de las variables JWT desde el archivo de entorno (o se puede usar appsettings.json)
 string secretKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY") ?? "your-secret-key";
@@ -57,12 +49,6 @@ string audience = Environment.GetEnvironmentVariable("JWT_AUDIENCE") ?? "your-au
 var serviceProvider = new ServiceCollection()
     .AddSingleton<PostgresDbService>(sp => new PostgresDbService())
     .AddSingleton<FirebaseService>(sp => new FirebaseService(credentialsPath))
-    .AddSingleton<FirestoreService>(sp => new FirestoreService(
-        sp.GetRequiredService<FirebaseService>()
-    ))
-    .AddScoped<IAccountDAO, PostgresAccountDAO>(sp => new PostgresAccountDAO(
-        postgresConnectionString
-    ))
     .AddSingleton<FirestoreService>(sp => new FirestoreService(sp.GetRequiredService<FirebaseService>()))
     .AddScoped<IAccountDAO, PostgresAccountDAO>(sp => new PostgresAccountDAO(postgresConnectionString))
     .AddScoped< PostgresPlayerDAO>(sp => new PostgresPlayerDAO(postgresConnectionString))
@@ -71,15 +57,23 @@ var serviceProvider = new ServiceCollection()
                     new PostgresMapDAO(postgresConnectionString, sp.GetRequiredService<PostgresWorldDAO>()))
     .AddScoped< PostgresPlayerLocationDAO>(sp => new PostgresPlayerLocationDAO(postgresConnectionString, sp.GetRequiredService<PostgresWorldDAO>()
     , sp.GetRequiredService<PostgresMapDAO>(), sp.GetRequiredService<PostgresPlayerDAO>()))
+   .AddSingleton<MessageSender>()
+
+
+    .AddSingleton(provider => new Lazy<MessageSender>(provider.GetRequiredService<MessageSender>))
+
+    .AddSingleton<GameEngine>()
+
+    .AddSingleton<SessionManager>()
+    .AddSingleton<SessionHandler>()
 
     .AddSingleton<PostgresDbService>()
     .AddSingleton<DatabaseInitializer>()
     .AddSingleton<ConcurrentDictionary<string, WebSocket>>()
     .AddSingleton<AuthHandler>()
     .AddSingleton<MessageHandler>()
-    .AddSingleton<SessionManager>()
+
     .AddScoped<AuthController>()
-    .AddSingleton<ResponseService>() // Registrar el ResponseService
 
     .AddSingleton<PlayerModel>()
     .AddSingleton<PlayerLocation>()
@@ -97,8 +91,7 @@ var serviceProvider = new ServiceCollection()
     
     .AddSingleton<ResponseService>()  // Registrar el ResponseService
     .AddSingleton<WebSocketServerController>()
-    .AddSingleton<GameEngine>()
-    .AddSingleton(sp => new JWTService(secretKey, issuer, audience)) // Registrar JWTService
+    .AddSingleton<JWTService>(sp => new JWTService(secretKey, issuer, audience)) // Registrar JWTService
     .BuildServiceProvider();
 
 try
@@ -112,7 +105,7 @@ try
     if (!isConnected)
     {
         Console.WriteLine("❌ No se pudo conectar a la base de datos.");
-        return; // Si no se conecta, salimos del programa
+        return;  // Si no se conecta, salimos del programa
     }
 
     // Si la conexión fue exitosa, inicializamos la base de datos y el servidor
@@ -124,17 +117,12 @@ try
     // Obtener las instancias de otros servicios y arrancar el servidor WebSocket
     var webSocketServerController = serviceProvider.GetRequiredService<WebSocketServerController>();
     var webSocketServerTask = webSocketServerController.StartServerAsync(); // Hacer esto asíncrono pero no bloqueante
-    Console.WriteLine("✔️ Conexión a la base de datos exitosa. 1 ");
+    var worldService = serviceProvider.GetRequiredService<WorldService>();
+    var webSocketQueueTask = Task.Run(() => webSocketServerController.StartLoop());
 
-    // var game = serviceProvider.GetRequiredService<GameEngine>();
-    Console.WriteLine("✔️ Conexión a la base de datos exitosa. 2");
-
-    // var gameLoopTask = game.Run();
-    // var worldService = serviceProvider.GetRequiredService<WorldService>();
 
     // Iniciar el servidor web (Kestrel)
-    var webHost = WebHost
-        .CreateDefaultBuilder()
+    var webHost = WebHost.CreateDefaultBuilder()
         .ConfigureServices(services =>
         {
             services.AddSingleton(serviceProvider); // Usar el serviceProvider configurado
@@ -143,9 +131,12 @@ try
         .Build();
 
     // Iniciar ambos servidores (web y WebSocket)
-    await Task.WhenAny(webHost.RunAsync(), webSocketServerTask); // Ejecutar ambos simultáneamente
+         await Task.WhenAny(webHost.RunAsync(), webSocketServerTask);  // Ejecutar ambos simultáneamente
+
 }
 catch (Exception ex)
 {
-    Console.WriteLine($"❌ Error durante la inicialización 2: {ex.Message}");
+    Console.WriteLine($"❌ Error durante la inicialización: {ex.Message}");
+        Console.WriteLine($"📌 StackTrace: {ex.StackTrace}");
+
 }

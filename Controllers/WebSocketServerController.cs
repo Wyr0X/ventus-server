@@ -56,15 +56,22 @@ public class WebSocketServerController
             }
         }
     }
+    public async Task StartLoop()
+    {
 
-    public void ProcessQueue()
+        while (true)
+        {
+            ProcessQueue();
+            await Task.Delay(100); // Espera de 100 ms (equivalente a 10 FPS, ajusta según sea necesario)
+        }
+    }
+    public async void ProcessQueue()
     {
         // Intentamos sacar un mensaje de la cola
-
-        if (_messageQueue.TryDequeue(out var userMessagePair))
-        {
-            _messageHandler.HandleIncomingMessage(userMessagePair);
-        }
+            if (_messageQueue.TryDequeue(out var userMessagePair))
+            {
+                _messageHandler.HandleIncomingMessage(userMessagePair);
+            }
     }
 
     public async void SendServerPacketByUserID(string userId, IMessage message)
@@ -75,7 +82,6 @@ public class WebSocketServerController
 
             // Serializar el mensaje a un arreglo de bytes
             byte[] serializedMessage = message.ToByteArray();
-
             // Enviar el mensaje serializado a través del WebSocket
             await clientSocket.SendAsync(
                 new ArraySegment<byte>(serializedMessage),
@@ -244,14 +250,3 @@ public class WebSocketServerController
     }
 }
 
-public class UserMessagePair
-{
-    public string UserId { get; set; }
-    public ClientMessage ClientMessage { get; set; }
-
-    public UserMessagePair(string userId, ClientMessage clientMessage)
-    {
-        UserId = userId;
-        ClientMessage = clientMessage;
-    }
-}

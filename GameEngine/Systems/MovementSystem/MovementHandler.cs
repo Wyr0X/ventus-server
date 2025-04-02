@@ -5,24 +5,27 @@ using ProtosCommon;
 
 public class MovementHandler
 {
-    // private readonly MovementManager _movementManager;
+     private readonly MovementManager _movementManager;
 
-    public MovementHandler()
+    public MovementHandler(MovementManager movementManager)
     {
-        // _movementManager = movementManager;;
+         _movementManager = movementManager;;
     }
 
     // Función que maneja los mensajes de movimiento recibidos desde el cliente
+
+    
     public void HandleMovementMessage(UserMessagePair messagePair)
     {
-        ClientMessage clientMessage = messagePair.ClientMessage;
-        ClientMessageMovement movementMessage = clientMessage.MessageOauth.ClientMessageGame.MessageMovement;
+        ClientMessageGame? clientMessageGame = messagePair.GetClientMessageGame();
+        if (clientMessageGame == null) return;
+        ClientMessageMovement movementMessage = clientMessageGame.MessageMovement;
         switch (movementMessage.MessageTypeCase)
         {
-            case ClientMessageMovement.MessageTypeOneofCase.MoveRequest:
-                // _movementManager.HandleMoveRequest(messagePair);
-                // break;
-            
+            case ClientMessageMovement.MessageTypeOneofCase.PlayerInput:
+                _movementManager.HandlePlayerInput(messagePair.UserId, movementMessage.PlayerInput);
+                break;
+
             default:
                 Console.WriteLine("❌ Tipo de mensaje de movimiento no reconocido.");
                 break;

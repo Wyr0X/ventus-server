@@ -3,17 +3,17 @@ namespace Game.Models
     public class MapModel
     {
         public int Id { get; set; }
-        public string Name { get; set; }
+        public required string Name { get; set; }
         public int MinLevel { get; set; }
         public int MaxPlayers { get; set; }
         public int WorldId { get; set; } // Relación con el mundo al que pertenece
 
         // Relación con WorldModel
-        public WorldModel WorldModel { get; set; }
+        public WorldModel? WorldModel { get; set; }
 
         // Lista de jugadores en el mapa
-        public List<PlayerLocation> PlayersLocation { get; set; }  // Relación entre el jugador y el mapa
-        public List<PlayerLocation> spawnedPlayers { get; set; }
+        public List<PlayerLocation> PlayersLocation { get; set; } = new List<PlayerLocation>();  // Relación entre el jugador y el mapa
+        public List<PlayerLocation> spawnedPlayers { get; set; }  = new List<PlayerLocation>();
 
         // Lógica de negocio
 

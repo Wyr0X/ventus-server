@@ -11,7 +11,7 @@ message ClientMessageGameSession {
 }
 
 message PlayerJoin {
-  string player_id = 1;
+  int32 player_id = 1;
 }
 
 message PlayerExit {
@@ -20,33 +20,22 @@ message PlayerExit {
   
 message ServerMessageGameSession {
   oneof message_type {
-    PlayerJoinResponse player_join_request = 1;
-    PlayerInfoBroadcast player_info_broadcast = 2;
+    PlayerSpawn player_spawn = 1;
+    PlayerPosition PlayerPosition = 2;
 
   }
 }
 
-message PlayerInfoBroadcast {
-
-}
-message PlayerJoinResponse {
-    bool success = 1;
-    World world = 2; // Información del mundo en el que entra el jugador
-    PlayersInfo players_info = 3;
-}
-message PlayersInfo {
-    World world = 2; // Información del mundo en el que entra el jugador
-}
-message World {
-    int32 world_id = 1;
-    //Informacion extra del world - COMPLETAR
-    Map map = 2; // Mapa dentro del mundo
+message PlayerPosition {
+  int32 player_id = 1;
+  float x = 2;  // Posición X del jugador en el mapa
+  float y = 3;  // Posición Y del jugador en el mapa
 }
 
-message Map {
-    int32 map_id = 1;
-    //Informacion extra del MAP - COMPLETAR
-    int32 x = 2;  // Posición X del jugador en el mapa
-    int32 y = 3;  // Posición Y del jugador en el mapa
+message PlayerSpawn {
+  int32 player_id = 1;
+  //Informacion extra del MAP - COMPLETAR
+  float x = 2;  // Posición X del jugador en el mapa
+  float y = 3;  // Posición Y del jugador en el mapa
 }
 

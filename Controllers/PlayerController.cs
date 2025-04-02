@@ -150,9 +150,9 @@ namespace VentusServer.Controllers
     // Clase de request para crear un personaje
     public class CreatePlayerRequest
     {
-        public string Name { get; set; }
-        public string Gender { get; set; }
-        public string Race { get; set; }
-        public string Class { get; set; }
+        public required string Name { get; set; }
+        public required string Gender { get; set; }
+        public required string Race { get; set; }
+        public required string Class { get; set; }
     }
 }

@@ -5,13 +5,12 @@ package protos_common;
 import "Protos/game/game_common.proto";
 import "Protos/auth.proto";
 import "Protos/webrtc.proto";
-import "Protos/player/player.proto";
 
 
 message ClientMessage {
   oneof message_type {
     ClientMessageAuth message_auth = 1;
-    ClientMessageOAuth message_oauth = 2;
+    ClientMessageUnAuth message_un_auth = 2;
     ClientMessagePing message_ping = 3;
     webrtc.ClientMessageWebRTC message_rtc = 4;
   }
@@ -25,10 +24,9 @@ message ClientMessageAuth {
   }
 }
 
-message ClientMessageOAuth {
+message ClientMessageUnAuth {
   oneof message_type {
     protos.game.common.ClientMessageGame client_message_game = 1 ;
-    protos.player.ClientMessagePlayer client_message_player = 2 ;
   }
 }
 message ServerMessage {

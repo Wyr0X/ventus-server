@@ -30,7 +30,7 @@ namespace VentusServer
             string username = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "postgres";
             string password = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "password";
             string dbName = Environment.GetEnvironmentVariable("POSTGRES_DB") ?? "ventus";
-
+    Console.WriteLine("🚀 Iniciando configuración de servicios...");
             if (string.IsNullOrEmpty(host) || string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(dbName))
             {
                 Console.WriteLine("❌ No se encontraron las credenciales necesarias de PostgreSQL.");

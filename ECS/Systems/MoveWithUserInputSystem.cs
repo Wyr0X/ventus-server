@@ -32,32 +32,34 @@ public class MoveWithUserInputSystem : ISystem
                 break;
         }
 
-          foreach (var (component, entity) in entities.Get(typeof(FollowComponent)))
+        foreach (var (component, entity) in entities.Get(typeof(FollowComponent)))
         {
-            Movable movable = (Movable)entity.Get(typeof(Movable));
+            Movable? movable = (Movable?)entity.Get(typeof(Movable));
 
-            if (moving != null)
+            if (movable != null)
             {
                 if (!movable.Moving)
                 {
                     movable.Moving = true;
                     entity.Add(new Moving());
                     entities.Dispatch(EntityEvent.StartMoving, entity);
+                   // Heading heading = (Heading)entity.Get(typeof(Heading));
+
+                }
+                else if (movable.Moving)
+                {
+                    movable.Moving = false;
+                    entities.RemoveComponent(entity, typeof(Moving));
+                    entities.Dispatch(EntityEvent.StopMoving, entity);
                 }
 
-                Heading heading = (Heading)entity.Get(typeof(Heading));
                 // if (heading.Direction.directionEnum != moving)
                 // {
                 //     heading.Direction = moving;
                 //     entities.Dispatch(EntityEvent.ChangeHeading, entity);
                 // }
             }
-            else if (movable.Moving)
-            {
-                movable.Moving = false;
-                entities.RemoveComponent(entity, typeof(Moving));
-                entities.Dispatch(EntityEvent.StopMoving, entity);
-            }
+
         }
     }
 }

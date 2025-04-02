@@ -20,7 +20,7 @@ public class SessionHandler
     public void HandleSessionMessage(UserMessagePair messagePair)
     {
         ClientMessage clientMessage = messagePair.ClientMessage;
-        ClientMessageGameSession sessionMessage = clientMessage.MessageOauth.ClientMessageGame.MessageSession;
+        ClientMessageGameSession sessionMessage = clientMessage.MessageUnAuth.ClientMessageGame.MessageSession;
         switch (sessionMessage.MessageTypeCase)
         {
             case ClientMessageGameSession.MessageTypeOneofCase.PlayerJoin:

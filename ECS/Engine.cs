@@ -22,7 +22,6 @@ public abstract class Engine
 
     protected Engine()
     {
-        Preload();
     }
 
     public async Task Run()
@@ -55,7 +54,6 @@ public abstract class Engine
         LoopCancellation?.Cancel();
     }
 
-    public abstract void Preload();
     public abstract void Start();
     public abstract void Update();
 

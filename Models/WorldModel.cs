@@ -7,22 +7,16 @@ namespace Game.Models
     public class WorldModel
     {
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
+        public required string Name { get; set; }
+        public required string Description { get; set; }
         public int MaxMaps { get; set; }
         public int MaxPlayers { get; set; }
         public int LevelRequirements { get; set; }
 
         // Relaciones
-        public List<MapModel> Maps { get; set; }
-        public List<PlayerLocation> PlayersLocation { get; set; }
-
-        // Métodos para gestionar la lógica del mundo
-
-        /// <summary>
-        /// Agrega un mapa al mundo si no se ha alcanzado el límite de mapas.
-        /// </summary>
-        /// <param name="map">El mapa a agregar.</param>
+        public List<MapModel> Maps { get; set; }  = new List<MapModel>();
+        public List<PlayerLocation> PlayersLocation { get; set; }  = new List<PlayerLocation>();
+        public List<PlayerLocation> spawnedPlayers { get; set; }  = new List<PlayerLocation>();
         public void AddMap(MapModel map)
         {
             if (Maps.Count < MaxMaps)
