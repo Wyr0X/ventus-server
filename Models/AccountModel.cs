@@ -2,9 +2,8 @@ using System;
 
 public class Account
 {
-    public string UserId { get; set; } = string.Empty; // 🔹 Clave primaria en PostgreSQL
+    public Guid AccountId { get; set; } = Guid.NewGuid();
     public required string Name { get; set; } // Nuevo campo
-
 
     public required string Email { get; set; }
 
@@ -21,5 +20,4 @@ public class Account
     public DateTime LastLogin { get; set; } = DateTime.UtcNow;
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
 }

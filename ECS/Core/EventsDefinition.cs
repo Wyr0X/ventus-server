@@ -3,19 +3,19 @@ using static GameUtils;
 
 public class GameEvent
 {
-    string UserId { get; set; }
+    Guid AccountId { get; set; }
 
 
     int PlayerId { get; set; }
-    public GameEvent(string userId, int playerId)
+    public GameEvent(Guid accountId, int playerId)
     {
-        UserId = userId;
+        AccountId = accountId;
         PlayerId = playerId;
     }
 
-    public string GetUserId()
+    public Guid GetUserId()
     {
-        return UserId;
+        return AccountId;
     }
 }
 
@@ -24,7 +24,7 @@ public class InputsKeyEvent : GameEvent
 {
     List<KeyEnum> Keys { get; set; }
 
-    public InputsKeyEvent(string userId, int playerId, List<KeyEnum> keys) : base(userId, playerId)
+    public InputsKeyEvent(Guid accountId, int playerId, List<KeyEnum> keys) : base(accountId, playerId)
     {
         Keys = keys;
     }

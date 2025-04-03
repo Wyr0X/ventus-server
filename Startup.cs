@@ -11,6 +11,7 @@ using System.Linq;
 using System;
 using VentusServer.Controllers;
 using VentusServer.Services;
+using VentusServer.Auth;
 
 namespace VentusServer
 {
@@ -30,7 +31,7 @@ namespace VentusServer
             string username = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "postgres";
             string password = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "password";
             string dbName = Environment.GetEnvironmentVariable("POSTGRES_DB") ?? "ventus";
-    Console.WriteLine("🚀 Iniciando configuración de servicios...");
+            Console.WriteLine("🚀 Iniciando configuración de servicios...");
             if (string.IsNullOrEmpty(host) || string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(dbName))
             {
                 Console.WriteLine("❌ No se encontraron las credenciales necesarias de PostgreSQL.");
@@ -58,25 +59,29 @@ namespace VentusServer
             });
 
             // Registrar servicios
-            services.AddScoped<IAccountDAO, PostgresAccountDAO>(sp => new PostgresAccountDAO(postgresConnectionString));
-            services.AddScoped<PostgresDbService>(sp => new PostgresDbService());
-            services.AddScoped<PostgresPlayerDAO>(sp => new PostgresPlayerDAO(postgresConnectionString));
-            services.AddScoped<PostgresWorldDAO>(sp => new PostgresWorldDAO(postgresConnectionString));
-              services.AddScoped<PostgresMapDAO>(sp =>
-                    new PostgresMapDAO(postgresConnectionString, sp.GetRequiredService<PostgresWorldDAO>()));
-            services.AddScoped<PostgresPlayerLocationDAO>(sp => new PostgresPlayerLocationDAO(postgresConnectionString, sp.GetRequiredService<PostgresWorldDAO>()
+            services.AddSingleton<JwtService>(); // Registrar JWTService
+            services.AddSingleton<JwtAuthRequiredAttribute>(); // Registrar JWTService
+            services.AddSingleton<PasswordService>();
+
+            services.AddSingleton<PostgresAccountDAO>(sp => new PostgresAccountDAO(postgresConnectionString));
+            services.AddSingleton<PostgresDbService>(sp => new PostgresDbService());
+            services.AddSingleton<PostgresPlayerDAO>(sp => new PostgresPlayerDAO(postgresConnectionString));
+            services.AddSingleton<PostgresWorldDAO>(sp => new PostgresWorldDAO(postgresConnectionString));
+            services.AddSingleton<PostgresMapDAO>(sp =>
+                  new PostgresMapDAO(postgresConnectionString, sp.GetRequiredService<PostgresWorldDAO>()));
+            services.AddSingleton<PostgresPlayerLocationDAO>(sp => new PostgresPlayerLocationDAO(postgresConnectionString, sp.GetRequiredService<PostgresWorldDAO>()
             , sp.GetRequiredService<PostgresMapDAO>(), sp.GetRequiredService<PostgresPlayerDAO>()));
-          
 
 
-            services.AddScoped<PlayerLocationService>();
-            services.AddScoped<MapService>();
-            services.AddScoped<WorldService>();
-            services.AddScoped<PlayerController>();
 
-            services.AddScoped<PlayerService>();
+            services.AddSingleton<PlayerLocationService>();
+            services.AddSingleton<MapService>();
+            services.AddSingleton<WorldService>();
+            services.AddSingleton<PlayerController>();
 
-            services.AddScoped<AccountController>();
+            services.AddSingleton<PlayerService>();
+
+            services.AddSingleton<AccountController>();
             services.AddControllers();
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -85,7 +90,7 @@ namespace VentusServer
             app.UseCors("AllowAll");
 
             // Middleware de Autenticación de Firebase (aplicado a todas las rutas excepto las públicas)
-            app.UseMiddleware<FirebaseAuthMiddleware>();
+       //     app.UseMiddleware<FirebaseAuthMiddleware>();
 
             app.UseRouting();
 

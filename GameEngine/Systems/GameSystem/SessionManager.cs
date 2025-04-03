@@ -46,7 +46,7 @@ public class SessionManager
         if (playerLocation != null && playerModel != null)
         {
             Console.WriteLine($"Player {playerModel.Id} joined the game");
-            _game.SpawnPlayer(messagePair.UserId, playerModel, playerLocation);
+            _game.SpawnPlayer(messagePair.AccountId, playerModel, playerLocation);
         }
         //Aca te va a llegar data , vas a buscar la info necesaria y lo vas a meter en el eventsbuffer
 

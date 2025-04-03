@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public class PlayerModel
 {
     public int Id { get; set; }
-    public string UserId { get; set; }  // Relación con la cuenta
+    public Guid AccountId { get; set; }  // Relación con la cuenta
     public string Name { get; set; }
     public string Gender { get; set; }
     public string Race { get; set; }
@@ -15,10 +15,10 @@ public class PlayerModel
     public string Status { get; private set; } // Estado: "Online", "Offline", "Banned"
 
 
-    public PlayerModel(int id, string userId, string name, string gender, string race, int level, string playerClass)
+    public PlayerModel(int id, Guid accountId, string name, string gender, string race, int level, string playerClass)
     {
         Id = id;
-        UserId = userId;
+        AccountId = accountId;
         Name = name;
         Gender = gender;
         Race = race;

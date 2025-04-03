@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using VentusServer.DataAccess;
-using FirebaseAdmin.Auth;
 using System.Threading.Tasks;
 using VentusServer.Models;
 using System;
-using Microsoft.Extensions.Configuration;
+using VentusServer.DataAccess.Postgres;
 
 namespace VentusServer.Controllers
 {
@@ -12,150 +11,144 @@ namespace VentusServer.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IAccountDAO _accountDAO;
-        private readonly FirebaseService _firebaseService;
+        private readonly PostgresAccountDAO _accountDAO;
+        private readonly JwtService _jwtService;
+        private readonly PasswordService _passwordService;
 
-        public AuthController(IAccountDAO accountDAO, FirebaseService firebaseService)
+        public AuthController(
+            PostgresAccountDAO accountDAO,
+            JwtService jwtService,
+            PasswordService passwordService)
         {
             _accountDAO = accountDAO;
-            _firebaseService = firebaseService;
+            _jwtService = jwtService;
+            _passwordService = passwordService;
         }
 
-        [HttpPost("google")]
-        public async Task<IActionResult> GoogleAuth([FromBody] GoogleAuthRequest request)
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             try
             {
-                Console.WriteLine("Llega al inicio de la autenticación de Google.");
+                Console.WriteLine("[Login] Iniciando proceso de autenticación para: " + request.Email);
+                var user = await _accountDAO.GetAccountByEmailAsync(request.Email);
 
-                FirebaseToken decodedToken = await _firebaseService.VerifyTokenAsync(request.IdToken);
-                Console.WriteLine("Llega después de verificar el token.");
-
-                // Obtén el userId real desde la propiedad Uid del token de Firebase
-                string userId = decodedToken.Uid;  // Usar Uid en lugar de Claims["sub"]
-                string? userEmail = decodedToken.Claims["email"]?.ToString();
-                Console.WriteLine($"Llega: Email extraído: {userEmail}, UserId: {userId}");
-
-                if (string.IsNullOrEmpty(userEmail))
+                if (user == null)
                 {
-                    return BadRequest("Email not found in the token.");
+                    Console.WriteLine("[Login] Usuario no encontrado.");
+                    return Unauthorized("Correo o contraseña incorrectos.");
                 }
 
-                var existingUser = await _accountDAO.GetAccountByUserIdAsync(userId);
-                Console.WriteLine($"Llega: Usuario {userId} encontrado en la base de datos.");
-                var token = request.IdToken; //TokenUtils.GenerateToken(userId.ToString());
-
-                if (existingUser != null)
+                if (!_passwordService.VerifyPassword(request.Password, user.Password))
                 {
-                    return Ok(new
-                    {
-                        login = true,
-                        token
-                    });
+                    Console.WriteLine("[Login] Contraseña incorrecta.");
+                    return Unauthorized("Correo o contraseña incorrectos.");
                 }
 
-                return Ok(new
-                {
-                    message = "User found in Firebase but not registered in the database. Please complete your registration.",
-                    redirectToRegister = true,
-                    token
-                });
+                var token = _jwtService.GenerateToken(user.AccountId, user.Email);
+                Console.WriteLine("[Login] Usuario autenticado correctamente.");
+                return Ok(new { login = true, token });
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error durante la autenticación de Google: {ex.Message}");
-                return BadRequest($"Error: {ex.Message}");
+                Console.WriteLine("[Login] Error: " + ex.Message);
+                return BadRequest("Error en Login: " + ex.Message);
             }
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            Console.WriteLine("[Register] Iniciando proceso de registro para: " + request.Email);
+
+            var existingUser = await _accountDAO.GetAccountByEmailAsync(request.Email);
+            if (existingUser != null)
+            {
+                Console.WriteLine("[Register] Error: Correo ya en uso.");
+                return BadRequest("El correo ya está en uso.");
+            }
+
+            var accountId = Guid.NewGuid();
+
+            var hashedPassword = _passwordService.HashPassword(request.Password);
+
+            var newUser = new Account
+            {
+                AccountId = accountId,
+                Email = request.Email,
+                Name = request.Name,
+                Password = hashedPassword,
+                CreatedAt = DateTime.UtcNow,
+                IsBanned = false,
+                LastIp = "test",
+                Credits = 0
+            };
+
+            await _accountDAO.CreateAccountAsync(newUser);
+            Console.WriteLine("[Register] Usuario registrado con éxito: " + request.Email);
+
+            var token = _jwtService.GenerateToken(accountId, request.Email);
+            return Ok(new { message = "Registro exitoso. Ahora puedes conectarte.", token });
+        }
+        [HttpGet("validate")]
+        public async Task<IActionResult> ValidateToken()
+        {
             try
             {
-                Console.WriteLine($"Iniciando registro para el usuario {request.Name} con correo {request.Email}.");
+                Console.WriteLine("[ValidateToken] Iniciando validación de token...");
 
-                // Decodificar el token para obtener el userId
-                FirebaseToken decodedToken = await _firebaseService.VerifyTokenAsync(request.Token);
+                // Intentar obtener el token desde las cookies
+                var token = Request.Cookies["authToken"];
 
-                string userId = decodedToken.Uid;  // Usar Uid en lugar de Claims["sub"]
-
-                if (string.IsNullOrEmpty(userId))
+                // Si no hay token en las cookies, intentar obtenerlo desde el header de autorización
+                if (string.IsNullOrEmpty(token) && Request.Headers.ContainsKey("Authorization"))
                 {
-                    return BadRequest("El token no es válido.");
+                    var authHeader = Request.Headers["Authorization"].ToString();
+                    if (authHeader.StartsWith("Bearer "))
+                    {
+                        token = authHeader.Substring("Bearer ".Length).Trim();
+                    }
                 }
 
-                // Verificar si el usuario ya está registrado (por userId)
-                var existingUserByUserId = await _accountDAO.GetAccountByUserIdAsync(userId);
-                if (existingUserByUserId != null)
+                // Si sigue sin haber token, rechazar la petición
+                if (string.IsNullOrEmpty(token))
                 {
-                    return BadRequest("El usuario ya está registrado.");
+                    Console.WriteLine("[ValidateToken] ❌ Token no encontrado.");
+                    return Unauthorized(new { message = "Token no encontrado" });
                 }
 
-                // Verificar si ya existe un usuario con el mismo email
-                var existingUserByEmail = await _accountDAO.GetAccountByEmailAsync(request.Email);
-                if (existingUserByEmail != null)
+                // Validar el token
+                var validatedAccountIdStr = _jwtService.ValidateToken(token);
+
+                // Verificar si el accountId es un UUID válido
+                if (!Guid.TryParse(validatedAccountIdStr, out Guid validatedAccountId))
                 {
-                    return BadRequest("El correo electrónico ya está en uso.");
+                    Console.WriteLine("[ValidateToken] ❌ Token inválido: no es un UUID válido.");
+                    return Unauthorized(new { message = "Token inválido o expirado" });
                 }
 
-                // Verificar si ya existe un usuario con el mismo nombre
-                var existingUserByName = await _accountDAO.GetAccountByNameAsync(request.Name);
-                if (existingUserByName != null)
+                // Buscar el usuario en la base de datos
+                var user = await _accountDAO.GetAccountByAccountIdAsync(validatedAccountId);
+                if (user == null)
                 {
-                    return BadRequest("El nombre ya está en uso.");
+                    Console.WriteLine("[ValidateToken] ❌ Usuario no encontrado.");
+                    return Unauthorized(new { message = "Usuario no encontrado" });
                 }
 
-                // Verificar que se proporcione una contraseña
-                if (string.IsNullOrEmpty(request.Password))
-                {
-                    return BadRequest("Se requiere una contraseña.");
-                }
-
-                // Hashear la contraseña recibida
-                var hashedPassword = HashPassword(request.Password);
-
-                // Crear un nuevo objeto Account con los datos del usuario
-                var newUser = new Account
-                {
-                    UserId = userId,
-                    Email = request.Email,
-                    Name = request.Name,
-                    Password = hashedPassword,
-                    CreatedAt = DateTime.UtcNow,
-                    IsBanned = false,
-                    LastIp = "test", // Aquí podrías obtener la IP real del cliente
-                    Credits = 0
-                };
-
-                // Crear el usuario en la base de datos
-                await _accountDAO.CreateAccountAsync(newUser);
-                Console.WriteLine($"Registro exitoso para el usuario {request.Name}.");
-
-                // Generar un token para el usuario registrado (si es necesario)
-                var token = TokenUtils.GenerateToken(userId);
-
-                return Ok(new
-                {
-                    Message = "Registro exitoso. Ahora puedes conectarte vía WebSocket.",
-                    Token = token
-                });
+                Console.WriteLine($"[ValidateToken] ✅ Token válido para {user.Email}");
+                return Ok(new { accountId = user.AccountId, email = user.Email, name = user.Name });
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error durante el registro: {ex.Message}");
-                return BadRequest($"Error: {ex.Message}");
+                Console.WriteLine($"[ValidateToken] ⚠️ Error: {ex.Message}");
+                return BadRequest(new { message = "Error en validación: " + ex.Message });
             }
         }
 
-        private string HashPassword(string password)
-        {
-            using (var sha256 = System.Security.Cryptography.SHA256.Create())
-            {
-                byte[] passwordBytes = System.Text.Encoding.UTF8.GetBytes(password);
-                byte[] hashBytes = sha256.ComputeHash(passwordBytes);
-                return Convert.ToBase64String(hashBytes);
-            }
-        }
     }
 }

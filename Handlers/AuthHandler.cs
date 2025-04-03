@@ -3,16 +3,17 @@ using Messages.Auth;
 using ProtosCommon;
 using VentusServer;
 using VentusServer.DataAccess;
+using VentusServer.DataAccess.Postgres;
 
 public class AuthHandler
 {
-    private readonly FirebaseService _firebaseService;
-    private readonly IAccountDAO _accountDAO;
+    private readonly JwtService _jwtService;
+    private readonly PostgresAccountDAO _accountDAO;
     private readonly ResponseService _responseService;
 
-    public AuthHandler(FirebaseService firebaseService, IAccountDAO accountDAO, ResponseService responseService)
+    public AuthHandler(JwtService jwtService, PostgresAccountDAO accountDAO, ResponseService responseService)
     {
-        _firebaseService = firebaseService;
+        _jwtService = jwtService;
         _accountDAO = accountDAO;
         _responseService = responseService;
     }
@@ -23,14 +24,11 @@ public class AuthHandler
 
         try
         {
-            // Verificación del token de Firebase
-            var userId = TokenUtils.DecodeTokenAndGetUserId(authMessage.Token);
-            Console.WriteLine($"🔹 Usuario autenticado: {userId}");
-
-            // Si no se pudo obtener el user_id, el proceso de autenticación falla
-            if (string.IsNullOrEmpty(userId))
+            // Verificar el token JWT
+            var validatedAccountIdStr = _jwtService.ValidateToken(authMessage.Token);
+            if (!Guid.TryParse(validatedAccountIdStr, out Guid accountId))
             {
-                Console.WriteLine("⚠ No se pudo obtener el user_id.");
+                Console.WriteLine("⚠ Token inválido.");
                 await _responseService.SendMessageAsync(webSocket, new ServerMessage
                 {
                     AuthResponse = new AuthResponse { Success = false }
@@ -39,34 +37,32 @@ public class AuthHandler
             }
 
             // Intentar obtener la cuenta en la base de datos
-            var existingAccount = await _accountDAO.GetAccountByUserIdAsync(userId);
+            var existingAccount = await _accountDAO.GetAccountByAccountIdAsync(accountId);
 
             if (existingAccount != null)
             {
                 // Si existe la cuenta, actualizar el último login
                 existingAccount.LastLogin = DateTime.UtcNow;
-
                 await _accountDAO.SaveAccountAsync(existingAccount);
-                Console.WriteLine($"✅ Último login actualizado para el usuario: {userId}");
+                Console.WriteLine($"✅ Último login actualizado para el usuario: {accountId}");
 
-                // Respuesta con autenticación exitosa y cuenta encontrada
+                // Respuesta con autenticación exitosa
                 await _responseService.SendMessageAsync(webSocket, new AuthResponse { Success = true });
-                return userId;
+                return accountId.ToString();
             }
             else
             {
-                // Si no existe la cuenta, informar al usuario para que complete el registro
-                Console.WriteLine($"📝 Cuenta no encontrada. Redirigiendo al registro... {userId}");
-
-                var authResponse = new AuthResponse { Success = true };
-
-                await _responseService.SendMessageAsync(webSocket, authResponse);
-                return null; // Indicar que el usuario debe completar el registro
+                // Si no existe la cuenta, rechazar la autenticación
+                Console.WriteLine("⚠ Usuario no encontrado.");
+                await _responseService.SendMessageAsync(webSocket, new ServerMessage
+                {
+                    AuthResponse = new AuthResponse { Success = false }
+                });
+                return null;
             }
         }
         catch (Exception ex)
         {
-            // Si ocurrió un error al intentar autenticar con Firebase
             Console.WriteLine($"❌ Error en autenticación: {ex.Message}");
             await _responseService.SendMessageAsync(webSocket, new ServerMessage
             {

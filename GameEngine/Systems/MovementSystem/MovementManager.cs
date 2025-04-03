@@ -24,14 +24,14 @@ public class MovementManager
 
     }
 
-    public async void HandlePlayerInput(string userId, PlayerInput playerInput)
+    public async void HandlePlayerInput(Guid accountId, PlayerInput playerInput)
     {
         RepeatedField<uint> protoKeys = playerInput.Keys; // Ejemplo de entrada
 
         List<KeyEnum> keys = GameUtils.ParseKeys(protoKeys);
        
        int playerId = 0;
-       InputsKeyEvent InputsKeyEvent = new InputsKeyEvent(userId, playerId, keys);
+       InputsKeyEvent InputsKeyEvent = new InputsKeyEvent(accountId, playerId, keys);
        _game.EnqueuEvent(InputsKeyEvent);
     }
 

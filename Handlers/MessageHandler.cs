@@ -28,9 +28,9 @@ public class MessageHandler
             Console.WriteLine($"🔹 Tipo de mensaje recibido: {clientMessage.MessageTypeCase}, {ClientMessage.MessageTypeOneofCase.MessageUnAuth}");
             switch (clientMessage.MessageTypeCase)
             {
-                case ClientMessage.MessageTypeOneofCase.MessageAuth:
-                    HandleAuthMessage(messagePair);
-                    break;
+                // case ClientMessage.MessageTypeOneofCase.MessageAuth:
+                //     HandleAuthMessage(messagePair);
+                //     break;
                 case ClientMessage.MessageTypeOneofCase.MessageUnAuth:
 
                     HandleOAuthMessage(messagePair);

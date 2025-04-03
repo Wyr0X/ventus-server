@@ -10,17 +10,17 @@ public class SyncSystem
         this.messageSender = messageSender;
     }
 
-    public void UpdatePosition(string userId, int playerId, float x, float y)
+    public void UpdatePosition(Guid accountId, int playerId, float x, float y)
     {
 
-       messageSender.Value.SendPlayerPosition(userId, playerId, x, y);
+       messageSender.Value.SendPlayerPosition(accountId, playerId, x, y);
 
     }
-    public void SpawnPlayer(string userId, int playerId, float x, float y)
+    public void SpawnPlayer(Guid accountId, int playerId, float x, float y)
     {
 
 
-       messageSender.Value.SpawnPlayer(userId, playerId, x, y);
+       messageSender.Value.SpawnPlayer(accountId, playerId, x, y);
 
     }
 }

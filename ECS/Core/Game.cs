@@ -82,12 +82,12 @@ public class GameEngine : Engine
         }
 
     }
-    public void SpawnPlayer(string userId, PlayerModel playerModel, PlayerLocation playerLocation)
+    public void SpawnPlayer(Guid accountId, PlayerModel playerModel, PlayerLocation playerLocation)
     {
 
         EventBuffer eventBuffer = new EventBuffer();
         Position playerPosition = new Position(playerLocation.PosX, playerLocation.PosY);
-        Character character = new Character(userId, playerModel.Id, playerLocation.World.Id, playerLocation.Map.Id);
+        Character character = new Character(accountId, playerModel.Id, playerLocation.World.Id, playerLocation.Map.Id);
 
 
         WorldEntity world = (WorldEntity)_worldManager.GetOrCreateWorld(playerLocation.World.Id);
@@ -106,7 +106,7 @@ public class GameEngine : Engine
                 mapComponent
             ];
 
-            PlayerEntity playerEntity = (PlayerEntity)Entities.CreateUserEntity(userId, components);
+            PlayerEntity playerEntity = (PlayerEntity)Entities.CreateUserEntity(accountId, components);
             _worldManager.SpawnPlayer(worldComponent.GetWorldId(), playerEntity, character, playerPosition);
         }
 

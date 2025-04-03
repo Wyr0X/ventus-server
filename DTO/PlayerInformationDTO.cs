@@ -30,7 +30,7 @@ namespace Game.DTOs
     public class PlayerDTO
     {
         public int Id { get; set; }
-        public required string UserId { get; set; }
+        public required Guid AccountId { get; set; }
         public required string Name { get; set; }
         public required string Gender { get; set; }
         public required string Race { get; set; }

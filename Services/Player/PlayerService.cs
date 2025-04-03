@@ -71,11 +71,11 @@ namespace VentusServer.Services
                 return false;
             }
         }
-        public async Task<PlayerModel?> CreatePlayer(string userId, string name, string gender, string race, string playerClass)
+        public async Task<PlayerModel?> CreatePlayer(Guid accountId, string name, string gender, string race, string playerClass)
         {
             try
             {
-                PlayerModel player = await _playerDAO.CreatePlayerAsync(userId, name, gender, race, playerClass);
+                PlayerModel player = await _playerDAO.CreatePlayerAsync(accountId, name, gender, race, playerClass);
                 await _playerLocationService.CreateDefaultPlayerLocation(player);
                 return player;
 
@@ -87,14 +87,19 @@ namespace VentusServer.Services
             }
         }
 
-        public async Task<List<PlayerModel>> GetAllPlayers(){
+        public async Task<List<PlayerModel>> GetAllPlayers()
+        {
             return await _playerDAO.GetAllPlayersAsync();
         }
 
-        public async Task<List<PlayerModel>> GetPlayerWithCompleteInfo(){
+        public async Task<List<PlayerModel>> GetPlayerWithCompleteInfo()
+        {
             return await _playerDAO.GetAllPlayersAsync();
         }
 
-
+        public async Task<List<PlayerModel>> GetPlayersByAccountId(Guid accountId)
+        {
+            return await _playerDAO.GetPlayersByAccountIdAsync(accountId);
+        }
     }
 }

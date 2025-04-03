@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using VentusServer.DataAccess;
 using VentusServer.Models;
-using Microsoft.AspNetCore.Authorization;
-using System.Threading.Tasks;
 using System;
+using System.Threading.Tasks;
+using VentusServer.Auth;
+using VentusServer.DataAccess.Postgres;
 
 namespace VentusServer.Controllers
 {
@@ -11,45 +12,31 @@ namespace VentusServer.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private readonly IAccountDAO _accountDAO;
-        private readonly FirebaseService _firebaseService;
+        private readonly PostgresAccountDAO _accountDAO;
 
-
-        public AccountController(IAccountDAO accountDAO, FirebaseService firebaseService)
+        public AccountController(PostgresAccountDAO accountDAO)
         {
             _accountDAO = accountDAO;
-            _firebaseService = firebaseService;
         }
 
         [HttpGet]
-        [FirebaseAuthRequired]
+        [JwtAuthRequired] // 🔒 Protegemos esta ruta con JWT
         public async Task<IActionResult> GetAccountInfo()
         {
             try
             {
-              
-                // Obtener el token de Bearer del encabezado Authorization
-                var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Trim();
-
-                if (string.IsNullOrEmpty(token))
+                var accountIdParam = HttpContext.Items["AccountId"]?.ToString(); // Recuperamos el UserId del middleware
+                if (string.IsNullOrEmpty(accountIdParam) || !Guid.TryParse(accountIdParam, out Guid accountId))
                 {
-                    return Unauthorized("Token de autenticación no encontrado.");
+                    return BadRequest("Error al obtener la cuenta.");
                 }
 
-                // Verificar el token de Firebase
-                var decodedToken = await _firebaseService.VerifyTokenAsync(token);
-                var userId = decodedToken.Uid; // Obtener el userId del token
-                var account = await _accountDAO.GetAccountByUserIdAsync(userId);
-                Console.WriteLine("Cuenta encontrada: " + (account != null ? "Sí" : "No")); // Log de si la cuenta fue encontrada
-
+                var account = await _accountDAO.GetAccountByAccountIdAsync(accountId);
                 if (account == null)
                 {
-                    Console.WriteLine("Cuenta no encontrada para el userId: " + userId); // Log si la cuenta no existe
                     return NotFound("Cuenta no encontrada.");
                 }
 
-                // Devolver la información de la cuenta
-                Console.WriteLine("Devolviendo información de la cuenta: " + account.Email); // Log de la cuenta devuelta
                 return Ok(new
                 {
                     account.Email,
@@ -61,9 +48,7 @@ namespace VentusServer.Controllers
             }
             catch (Exception ex)
             {
-                // Manejar errores generales
-                Console.WriteLine("Error al obtener la información de la cuenta: " + ex.Message); // Log del error
-                return BadRequest($"Error al obtener la información de la cuenta: {ex.Message}");
+                return BadRequest($"Error: {ex.Message}");
             }
         }
     }

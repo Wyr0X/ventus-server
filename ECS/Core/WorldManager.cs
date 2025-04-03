@@ -84,7 +84,7 @@ public class WorldManager
                 Position? position = (Position?)entityC.Get(typeof(Position));
                 Character? character = (Character?)entityC.Get(typeof(Character));
                 if (character == null || position == null) continue;
-                _syncSystem.UpdatePosition(character.UserId, character.PlayerId, position.X, position.Y);
+                _syncSystem.UpdatePosition(character.AccountId, character.PlayerId, position.X, position.Y);
             }
         }
     }
@@ -104,7 +104,7 @@ public class WorldManager
 
                 if (character == null) continue;
 
-                _syncSystem.SpawnPlayer(character.UserId, characterSpawn.PlayerId, positionOfPlayerSpawn.X, positionOfPlayerSpawn.Y);
+                _syncSystem.SpawnPlayer(character.AccountId, characterSpawn.PlayerId, positionOfPlayerSpawn.X, positionOfPlayerSpawn.Y);
             }
         }
     }

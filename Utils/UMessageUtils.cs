@@ -4,12 +4,12 @@ using ProtosCommon;
 
 public class UserMessagePair
 {
-    public string UserId { get; set; }
+    public Guid AccountId { get; set; }
     public ClientMessage ClientMessage { get; set; }
 
-    public UserMessagePair(string userId, ClientMessage clientMessage)
+    public UserMessagePair(Guid accountId, ClientMessage clientMessage)
     {
-        UserId = userId;
+        AccountId = accountId;
         ClientMessage = clientMessage;
     }
     public ClientMessage GetClientMessage()

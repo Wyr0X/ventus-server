@@ -35,7 +35,7 @@ namespace VentusServer.DataAccess.Postgres
             {
                 string createTableQuery = @"
                     CREATE TABLE IF NOT EXISTS accounts (
-                        user_id VARCHAR(50) PRIMARY KEY, -- Almacena el UID de Firebase como cadena
+                        account_id UUID PRIMARY KEY,
                         email VARCHAR(255) UNIQUE NOT NULL,
                         password VARCHAR(255) NOT NULL,
                         is_deleted BOOLEAN DEFAULT FALSE,
@@ -56,6 +56,7 @@ namespace VentusServer.DataAccess.Postgres
                 Console.WriteLine($"❌ Error al crear la tabla 'accounts': {ex.Message}");
             }
         }
+        
         private async Task InitializePlayersAsync()
         {
             try
@@ -63,7 +64,7 @@ namespace VentusServer.DataAccess.Postgres
                 string createTableQuery = @"
                     CREATE TABLE IF NOT EXISTS players (
                         id SERIAL PRIMARY KEY,
-                        user_id VARCHAR(50) NOT NULL REFERENCES accounts(user_id) ON DELETE CASCADE,
+                        account_id UUID NOT NULL REFERENCES accounts(account_id) ON DELETE CASCADE,
                         name VARCHAR(100) NOT NULL,
                         gender VARCHAR(10) NOT NULL,
                         race VARCHAR(50) NOT NULL,
@@ -83,6 +84,7 @@ namespace VentusServer.DataAccess.Postgres
                 Console.WriteLine($"❌ Error al crear la tabla 'players': {ex.Message}");
             }
         }
+        
         public async Task InitializePlayerLocationsAsync()
         {
             try
@@ -99,8 +101,6 @@ namespace VentusServer.DataAccess.Postgres
                 ";
 
                 await _postgresDbService.ExecuteQueryAsync(createTableQuery);
-
-
                 Console.WriteLine("✅ Tabla 'player_locations' creada correctamente (si no existía).");
             }
             catch (Exception ex)
@@ -108,7 +108,7 @@ namespace VentusServer.DataAccess.Postgres
                 Console.WriteLine($"❌ Error al crear la tabla 'player_locations': {ex.Message}");
             }
         }
-
+        
         public async Task InitializeWorldsAsync()
         {
             try
@@ -125,8 +125,6 @@ namespace VentusServer.DataAccess.Postgres
                 ";
 
                 await _postgresDbService.ExecuteQueryAsync(createTableQuery);
-
-
                 Console.WriteLine("✅ Tabla 'worlds' creada correctamente (si no existía).");
             }
             catch (Exception ex)
@@ -134,22 +132,22 @@ namespace VentusServer.DataAccess.Postgres
                 Console.WriteLine($"❌ Error al crear la tabla 'worlds': {ex.Message}");
             }
         }
+        
         public async Task InitializeMapsAsync()
         {
             try
             {
                 string createTableQuery = @"
-            CREATE TABLE IF NOT EXISTS maps (
-                id SERIAL PRIMARY KEY,
-                name VARCHAR(100) NOT NULL,
-                min_level INT NOT NULL,
-                max_players INT NOT NULL,
-                world_id INT NOT NULL REFERENCES worlds(id) ON DELETE CASCADE
-            );
-        ";
+                    CREATE TABLE IF NOT EXISTS maps (
+                        id SERIAL PRIMARY KEY,
+                        name VARCHAR(100) NOT NULL,
+                        min_level INT NOT NULL,
+                        max_players INT NOT NULL,
+                        world_id INT NOT NULL REFERENCES worlds(id) ON DELETE CASCADE
+                    );
+                ";
 
                 await _postgresDbService.ExecuteQueryAsync(createTableQuery);
-
                 Console.WriteLine("✅ Tabla 'maps' creada correctamente (si no existía).");
             }
             catch (Exception ex)
@@ -157,6 +155,5 @@ namespace VentusServer.DataAccess.Postgres
                 Console.WriteLine($"❌ Error al crear la tabla 'maps': {ex.Message}");
             }
         }
-
     }
 }

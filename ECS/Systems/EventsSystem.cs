@@ -9,10 +9,10 @@ public class EventsSystem
 
     public void processQueues()
     {
-        Dictionary<string, PlayerEntity> playerEntities = _entityManager.GetPlayersEntity();
+        Dictionary<Guid, PlayerEntity> playerEntities = _entityManager.GetPlayersEntity();
         foreach (var kvp in playerEntities)
         {
-            string key = kvp.Key; // La clave del diccionario
+            Guid key = kvp.Key; // La clave del diccionario
             PlayerEntity player = kvp.Value; // El valor asociado (PlayerEntity)
             EventBuffer eventBuffer = (EventBuffer)player.Get(typeof(EventBuffer));
             if (eventBuffer == null) continue;

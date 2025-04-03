@@ -1,16 +1,16 @@
 public class PlayerEntity : Entity
 {
-    private string _userId { get; set;}
+    private Guid _accountId { get; set;}
 
-  public PlayerEntity(int id, string userId) : base(id) // Llamada al constructor base
+  public PlayerEntity(int id, Guid accountId) : base(id) // Llamada al constructor base
     {
-        _userId = userId;
+        _accountId = accountId;
     }
 
 
-    public string GetUserId()
+    public Guid GetUserId()
     {
-        return _userId;
+        return _accountId;
     }
 
 }

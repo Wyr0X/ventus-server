@@ -1,48 +1,67 @@
+using System;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
+using System.Linq;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Configuration;
 
-public class JWTService
+public class JwtService
 {
-    private readonly string _secretKey;
-    private readonly string _issuer;
-    private readonly string _audience;
+    private readonly string _jwtSecret;
 
-    public JWTService(string secretKey, string issuer, string audience)
+    public JwtService()
     {
-        _secretKey = secretKey;
-        _issuer = issuer;
-        _audience = audience;
+        //_jwtSecret = configuration["Jwt:Secret"];
+        _jwtSecret = "6YpV@cQ3z!mJtX7#dFk$wN9rLp*2HsG0";
     }
 
-    public string GenerateJwtToken(Account user)
+    public string GenerateToken(Guid accountId, string email)
     {
-        // Convertir la clave secreta a un arreglo de bytes
-        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey));
-        
-        // Crear las credenciales de firma
-        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var key = Encoding.UTF8.GetBytes(_jwtSecret);
 
-        // Crear los claims del token
-        var claims = new[]
+        var tokenDescriptor = new SecurityTokenDescriptor
         {
-            new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-            new Claim(ClaimTypes.Name, user.Name),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, "User")
+            Subject = new System.Security.Claims.ClaimsIdentity(new[]
+            {
+                new System.Security.Claims.Claim("accountId", accountId.ToString()), // Convertir Guid a string
+                new System.Security.Claims.Claim("email", email)
+            }),
+            Expires = DateTime.UtcNow.AddHours(2), // ⏳ Expira en 2 horas
+            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
         };
 
-        // Crear el token JWT
-        var token = new JwtSecurityToken(
-            issuer: _issuer,
-            audience: _audience,
-            claims: claims,
-            expires: DateTime.Now.AddHours(1),
-            signingCredentials: credentials
-        );
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+        return tokenHandler.WriteToken(token);
+    }
 
-        // Devolver el token JWT como un string
-        return new JwtSecurityTokenHandler().WriteToken(token);
+    public string? ValidateToken(string token)
+    {
+        try
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.UTF8.GetBytes(_jwtSecret);
+
+            var validationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ClockSkew = TimeSpan.Zero // ⏳ No permitir margen extra de tiempo
+            };
+
+            var principal = tokenHandler.ValidateToken(token, validationParameters, out var validatedToken);
+            var jwtToken = (JwtSecurityToken)validatedToken;
+
+            if (jwtToken.ValidTo < DateTime.UtcNow)
+                return null; // ❌ Token expirado
+
+            return jwtToken.Claims.First(x => x.Type == "accountId").Value; // ✅ Retornar accountId
+        }
+        catch
+        {
+            return null; // ❌ Token inválido
+        }
     }
 }

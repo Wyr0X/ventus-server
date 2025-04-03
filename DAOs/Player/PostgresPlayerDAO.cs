@@ -31,7 +31,7 @@ namespace VentusServer.DataAccess.Postgres
             {
                 return new PlayerModel(
                     reader.GetInt32(reader.GetOrdinal("id")),
-                    reader.GetString(reader.GetOrdinal("user_id")),
+                    reader.GetGuid(reader.GetOrdinal("account_id")),
                     reader.GetString(reader.GetOrdinal("name")),
                     reader.GetString(reader.GetOrdinal("gender")),
                     reader.GetString(reader.GetOrdinal("race")),
@@ -48,10 +48,10 @@ namespace VentusServer.DataAccess.Postgres
             await connection.OpenAsync();
 
             const string query = @"
-                INSERT INTO players (id, user_id, name, gender, race, level, class, created_at, last_login, status)
+                INSERT INTO players (id, account_id, name, gender, race, level, class, created_at, last_login, status)
                 VALUES (@Id, @UserId, @Name, @Gender, @Race, @Level, @Class, @CreatedAt, @LastLogin, @Status)
                 ON CONFLICT (id) DO UPDATE SET
-                    user_id = EXCLUDED.user_id,
+                    account_id = EXCLUDED.account_id,
                     name = EXCLUDED.name,
                     gender = EXCLUDED.gender,
                     race = EXCLUDED.race,
@@ -62,7 +62,7 @@ namespace VentusServer.DataAccess.Postgres
 
             await using var command = new NpgsqlCommand(query, connection);
             command.Parameters.AddWithValue("@Id", player.Id);
-            command.Parameters.AddWithValue("@UserId", player.UserId);
+            command.Parameters.AddWithValue("@UserId", player.AccountId);
             command.Parameters.AddWithValue("@Name", player.Name);
             command.Parameters.AddWithValue("@Gender", player.Gender);
             command.Parameters.AddWithValue("@Race", player.Race);
@@ -98,7 +98,7 @@ namespace VentusServer.DataAccess.Postgres
             await using var reader = await command.ExecuteReaderAsync();
             return await reader.ReadAsync();
         }
-        public async Task<PlayerModel> CreatePlayerAsync(string userId, string name, string gender, string race, string playerClass)
+        public async Task<PlayerModel> CreatePlayerAsync(Guid accountId, string name, string gender, string race, string playerClass)
         {
             await using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
@@ -106,7 +106,7 @@ namespace VentusServer.DataAccess.Postgres
             // Crear el nuevo PlayerModel con los datos recibidos
             var newPlayer = new PlayerModel(
                 id: 0,  // El ID se genera automáticamente por la base de datos
-                userId: userId,
+                accountId: accountId,
                 name: name,
                 gender: gender,
                 race: race,
@@ -115,12 +115,12 @@ namespace VentusServer.DataAccess.Postgres
             );
 
             const string query = @"
-        INSERT INTO players (user_id, name, gender, race, level, class, created_at, last_login, status)
+        INSERT INTO players (account_id, name, gender, race, level, class, created_at, last_login, status)
         VALUES (@UserId, @Name, @Gender, @Race, @Level, @Class, @CreatedAt, @LastLogin, @Status)
         RETURNING id;";  // Devuelve el ID generado por la base de datos
 
             await using var command = new NpgsqlCommand(query, connection);
-            command.Parameters.AddWithValue("@UserId", newPlayer.UserId);
+            command.Parameters.AddWithValue("@UserId", newPlayer.AccountId);
             command.Parameters.AddWithValue("@Name", newPlayer.Name);
             command.Parameters.AddWithValue("@Gender", newPlayer.Gender);
             command.Parameters.AddWithValue("@Race", newPlayer.Race);
@@ -155,7 +155,7 @@ namespace VentusServer.DataAccess.Postgres
             {
                 var player = new PlayerModel(
                     reader.GetInt32(reader.GetOrdinal("id")),
-                    reader.GetString(reader.GetOrdinal("user_id")),
+                reader.GetGuid(reader.GetOrdinal("account_id")),
                     reader.GetString(reader.GetOrdinal("name")),
                     reader.GetString(reader.GetOrdinal("gender")),
                     reader.GetString(reader.GetOrdinal("race")),
@@ -168,36 +168,62 @@ namespace VentusServer.DataAccess.Postgres
             return players;
         }
         public async Task<List<PlayerModel>> GetAllPlayersByUserIdAsync(string userId)
-{
-    await using var connection = new NpgsqlConnection(_connectionString);
-    await connection.OpenAsync();
+        {
+            await using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync();
 
-    const string query = "SELECT * FROM players WHERE user_id = @UserId";  // Consulta para obtener todos los jugadores de un usuario
+            const string query = "SELECT * FROM players WHERE account_id = @UserId";  // Consulta para obtener todos los jugadores de un usuario
 
-    await using var command = new NpgsqlCommand(query, connection);
-    command.Parameters.AddWithValue("@UserId", userId);  // Se pasa el userId como parámetro
+            await using var command = new NpgsqlCommand(query, connection);
+            command.Parameters.AddWithValue("@UserId", userId);  // Se pasa el userId como parámetro
 
-    await using var reader = await command.ExecuteReaderAsync();
+            await using var reader = await command.ExecuteReaderAsync();
 
-    var players = new List<PlayerModel>();
+            var players = new List<PlayerModel>();
 
-    while (await reader.ReadAsync())
-    {
-        var player = new PlayerModel(
-            reader.GetInt32(reader.GetOrdinal("id")),
-            reader.GetString(reader.GetOrdinal("user_id")),
-            reader.GetString(reader.GetOrdinal("name")),
-            reader.GetString(reader.GetOrdinal("gender")),
-            reader.GetString(reader.GetOrdinal("race")),
-            reader.GetInt32(reader.GetOrdinal("level")),
-            reader.GetString(reader.GetOrdinal("class"))
-        );
-        players.Add(player);
-    }
+            while (await reader.ReadAsync())
+            {
+                var player = new PlayerModel(
+                    reader.GetInt32(reader.GetOrdinal("id")),
+                     reader.GetGuid(reader.GetOrdinal("account_id")),
+                    reader.GetString(reader.GetOrdinal("name")),
+                    reader.GetString(reader.GetOrdinal("gender")),
+                    reader.GetString(reader.GetOrdinal("race")),
+                    reader.GetInt32(reader.GetOrdinal("level")),
+                    reader.GetString(reader.GetOrdinal("class"))
+                );
+                players.Add(player);
+            }
 
-    return players;
-}
+            return players;
+        }
 
+        public async Task<List<PlayerModel>> GetPlayersByAccountIdAsync(Guid accountId)
+        {
+            await using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync();
 
+            const string query = "SELECT * FROM players WHERE account_id = @AccountId";
+            await using var command = new NpgsqlCommand(query, connection);
+            command.Parameters.AddWithValue("@AccountId", accountId);
+
+            await using var reader = await command.ExecuteReaderAsync();
+            var players = new List<PlayerModel>();
+
+            while (await reader.ReadAsync())
+            {
+                players.Add(new PlayerModel(
+                    reader.GetInt32(reader.GetOrdinal("id")),
+                    reader.GetGuid(reader.GetOrdinal("account_id")),
+                    reader.GetString(reader.GetOrdinal("name")),
+                    reader.GetString(reader.GetOrdinal("gender")),
+                    reader.GetString(reader.GetOrdinal("race")),
+                    reader.GetInt32(reader.GetOrdinal("level")),
+                    reader.GetString(reader.GetOrdinal("class"))
+                ));
+            }
+
+            return players;
+        }
     }
 }

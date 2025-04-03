@@ -13,7 +13,7 @@ public class MessageSender
     {
         _websocket = webSocket;
     }
-    public void SendAuthResponse(string userId, bool success)
+    public void SendAuthResponse(Guid accountId, bool success)
     {
         ServerMessage serverMessage = new ServerMessage();
         AuthResponse authResponse = new AuthResponse
@@ -21,10 +21,10 @@ public class MessageSender
             Success = success
         };
 
-        _websocket.SendServerPacketByUserID(userId, serverMessage);
+        _websocket.SendServerPacketByAccountId(accountId, serverMessage);
     }
 
-    public void SendPlayerPosition(string userId, int playerId, float x, float y)
+    public void SendPlayerPosition(Guid accountId, int playerId, float x, float y)
     {
         ServerMessage serverMessage = new ServerMessage();
         ServerMessageGame serverMessageGame = new ServerMessageGame();
@@ -41,9 +41,9 @@ public class MessageSender
         serverMessageGame.MessageSession = serverMessageGameSession;
         serverMessage.ServerMessageGame = serverMessageGame;
 
-        _websocket.SendServerPacketByUserID(userId, serverMessage);
+        _websocket.SendServerPacketByAccountId(accountId, serverMessage);
     }
-    public void SpawnPlayer(string userId, int playerId, float x, float y)
+    public void SpawnPlayer(Guid accountId, int playerId, float x, float y)
     {
         ServerMessage serverMessage = new ServerMessage();
         ServerMessageGame serverMessageGame = new ServerMessageGame();
@@ -59,6 +59,6 @@ public class MessageSender
         serverMessageGame.MessageSession = serverMessageGameSession;
         serverMessage.ServerMessageGame = serverMessageGame;
 
-        _websocket.SendServerPacketByUserID(userId, serverMessage);
+        _websocket.SendServerPacketByAccountId(accountId, serverMessage);
     }
 }

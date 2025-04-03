@@ -23,7 +23,7 @@ public class MovementHandler
         switch (movementMessage.MessageTypeCase)
         {
             case ClientMessageMovement.MessageTypeOneofCase.PlayerInput:
-                _movementManager.HandlePlayerInput(messagePair.UserId, movementMessage.PlayerInput);
+                _movementManager.HandlePlayerInput(messagePair.AccountId, movementMessage.PlayerInput);
                 break;
 
             default:

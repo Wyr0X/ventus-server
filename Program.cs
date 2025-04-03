@@ -59,7 +59,7 @@ var serviceProvider = new ServiceCollection()
     .AddSingleton<FirestoreService>(sp => new FirestoreService(
         sp.GetRequiredService<FirebaseService>()
     ))
-    .AddScoped<IAccountDAO, PostgresAccountDAO>(sp => new PostgresAccountDAO(
+    .AddScoped<PostgresAccountDAO>(sp => new PostgresAccountDAO(
         postgresConnectionString
     ))
     .AddScoped<PostgresPlayerDAO>(sp => new PostgresPlayerDAO(postgresConnectionString))
@@ -76,6 +76,8 @@ var serviceProvider = new ServiceCollection()
     ))
     .AddSingleton<MessageSender>()
     .AddSingleton(provider => new Lazy<MessageSender>(provider.GetRequiredService<MessageSender>))
+    .AddSingleton<JwtService>() // Registrar JWTService
+
     .AddSingleton<GameEngine>()
     .AddSingleton<SessionManager>()
     .AddSingleton<SessionHandler>()
@@ -84,18 +86,20 @@ var serviceProvider = new ServiceCollection()
     .AddSingleton<ConcurrentDictionary<string, WebSocket>>()
     .AddSingleton<AuthHandler>()
     .AddSingleton<MessageHandler>()
-    .AddScoped<AuthController>()
     .AddSingleton<PlayerModel>()
     .AddSingleton<PlayerLocation>()
     .AddSingleton<MapModel>()
     .AddSingleton<WorldModel>()
+
+    //SERVICES
+    .AddSingleton<PasswordService>()
     .AddSingleton<WorldService>()
     .AddSingleton<MapService>()
     .AddSingleton<PlayerService>()
     .AddSingleton<PlayerLocationService>()
     .AddSingleton<ResponseService>() // Registrar el ResponseService
+
     .AddSingleton<WebSocketServerController>()
-    .AddSingleton<JWTService>(sp => new JWTService(secretKey, issuer, audience)) // Registrar JWTService
     .BuildServiceProvider();
 
 try

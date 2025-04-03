@@ -1,13 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
-using VentusServer.DataAccess;
-using VentusServer.Models;
-using Microsoft.AspNetCore.Authorization;
-using System.Threading.Tasks;
-using System;
-using System.Collections.Generic;
 using VentusServer.Services;
+using VentusServer.DataAccess.Postgres;
 using Game.Models;
 using Game.DTOs;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using VentusServer.Auth;
 
 namespace VentusServer.Controllers
 {
@@ -17,88 +16,126 @@ namespace VentusServer.Controllers
     {
         private readonly PlayerService _playerService;
         private readonly PlayerLocationService _playerLocationService;
-        private readonly WorldService _worldService;
-        private readonly MapService _mapService;
-        private readonly FirebaseService _firebaseService;
+        private readonly PostgresAccountDAO _accountDAO;
 
-        public PlayerController(PlayerService playerService, FirebaseService firebaseService,
-        PlayerLocationService playerLocationService, WorldService worldService, MapService mapService)
+        public PlayerController(PlayerService playerService, PlayerLocationService playerLocationService, PostgresAccountDAO accountDAO)
         {
             _playerService = playerService;
             _playerLocationService = playerLocationService;
-
-            _worldService = worldService;
-            _mapService = mapService;
-
-            _firebaseService = firebaseService;
-
+            _accountDAO = accountDAO;
         }
 
         // Crear un nuevo personaje
         [HttpPost("create-player")]
-        [FirebaseAuthRequired] // Middleware de autenticación de Firebase
+        [JwtAuthRequired]
         public async Task<IActionResult> CreatePlayer([FromBody] CreatePlayerRequest createPlayerRequest)
         {
             try
             {
-                // Obtener el token de Bearer del encabezado Authorization
-                var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Trim();
+                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.WriteLine($"[INFO] Intentando crear un personaje con nombre: {createPlayerRequest.Name}");
+                Console.ResetColor();
 
-                if (string.IsNullOrEmpty(token))
+                var accountIdParam = HttpContext.Items["AccountId"]?.ToString();
+                if (string.IsNullOrEmpty(accountIdParam) || !Guid.TryParse(accountIdParam, out Guid accountId))
                 {
-                    return Unauthorized("Token de autenticación no encontrado.");
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine("[WARNING] Error al obtener la cuenta. Token inválido o mal formateado.");
+                    Console.ResetColor();
+                    return BadRequest("Error al obtener la cuenta.");
                 }
 
-                // Verificar el token de Firebase
-                var decodedToken = await _firebaseService.VerifyTokenAsync(token);
-                var userId = decodedToken.Uid; // Obtener el userId del token
+                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.WriteLine($"[INFO] Buscando cuenta con ID: {accountId}");
+                Console.ResetColor();
 
-                // Crear el personaje
-                Console.Write($"createPlayerRequest {createPlayerRequest}");
-
-                //COMPLETAR, COMPROBAR QUE EXISTA LA CUENTA CON USERID
-                // Guardar el personaje en la base de datos
-                PlayerModel? newPlayer = await _playerService.CreatePlayer(userId, createPlayerRequest.Name, createPlayerRequest.Gender, createPlayerRequest.Race, createPlayerRequest.Class);
-                if (newPlayer != null)
+                var account = await _accountDAO.GetAccountByAccountIdAsync(accountId);
+                if (account == null)
                 {
-                    return Ok(new { Message = "Personaje creado exitosamente", Player = newPlayer });
-
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine($"[WARNING] Cuenta con ID {accountId} no encontrada.");
+                    Console.ResetColor();
+                    return Unauthorized("Cuenta no encontrada.");
                 }
-                return BadRequest($"Error al crear el personaje");
 
+                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.WriteLine($"[INFO] Creando personaje para la cuenta {accountId}: {createPlayerRequest.Name}");
+                Console.ResetColor();
+
+                var newPlayer = await _playerService.CreatePlayer(account.AccountId, createPlayerRequest.Name, createPlayerRequest.Gender, createPlayerRequest.Race, createPlayerRequest.Class);
+                if (newPlayer == null)
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine($"[WARNING] Error al crear el personaje {createPlayerRequest.Name}.");
+                    Console.ResetColor();
+                    return BadRequest("Error al crear el personaje.");
+                }
+
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"[SUCCESS] Personaje {newPlayer.Name} creado exitosamente para la cuenta {accountId}.");
+                Console.ResetColor();
+
+                return Ok(new { Message = "Personaje creado exitosamente", Player = newPlayer });
             }
             catch (Exception ex)
             {
-                // Manejar errores generales
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"[ERROR] Excepción al crear el personaje: {ex.Message}");
+                Console.ResetColor();
                 return BadRequest($"Error al crear el personaje: {ex.Message}");
             }
         }
 
-        // Obtener todos los personajes del jugador autenticado
+        // Obtener todos los personajes del usuario autenticado
         [HttpGet("get-players")]
-        [FirebaseAuthRequired] // Middleware de autenticación de Firebase
+        [JwtAuthRequired]
         public async Task<IActionResult> GetPlayers()
         {
             try
             {
+                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.WriteLine("[INFO] Solicitando lista de personajes.");
+                Console.ResetColor();
 
-                List<PlayerModel> players = await _playerService.GetAllPlayers();
-                List<PlayerDTO> playerDTOs = new List<PlayerDTO>();
+                var accountIdParam = HttpContext.Items["AccountId"]?.ToString();
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine($"[INFO] AccountId {accountIdParam}");
+                if (string.IsNullOrEmpty(accountIdParam) || !Guid.TryParse(accountIdParam, out Guid accountId))
+                {
+                    Console.WriteLine("[WARNING] Error al obtener la cuenta. Token inválido o mal formateado.");
+                    Console.ResetColor();
+                    return BadRequest("Error al obtener la cuenta.");
+                }
+
+                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.WriteLine($"[INFO] Buscando cuenta con ID: {accountId}");
+                Console.ResetColor();
+
+                var account = await _accountDAO.GetAccountByAccountIdAsync(accountId);
+                if (account == null)
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine($"[WARNING] Cuenta con ID {accountId} no encontrada.");
+                    Console.ResetColor();
+                    return Unauthorized("Cuenta no encontrada.");
+                }
+
+                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.WriteLine($"[INFO] Obteniendo personajes para la cuenta {accountId}");
+                Console.ResetColor();
+
+                var players = await _playerService.GetPlayersByAccountId(account.AccountId);
+                var playerDTOs = new List<PlayerDTO>();
 
                 foreach (var player in players)
                 {
-                    PlayerLocation? playerLocation = await _playerLocationService.GetPlayerLocationAsync(player.Id);
-
+                    var playerLocation = await _playerLocationService.GetPlayerLocationAsync(player.Id);
                     if (playerLocation == null) continue;
 
-                    WorldModel world = playerLocation.World;
-
-                    MapModel map = playerLocation.Map;
-
-                    var playerDTO = new PlayerDTO
+                    playerDTOs.Add(new PlayerDTO
                     {
                         Id = player.Id,
-                        UserId = player.UserId,
+                        AccountId = player.AccountId,
                         Name = player.Name,
                         Gender = player.Gender,
                         Race = player.Race,
@@ -125,29 +162,25 @@ namespace VentusServer.Controllers
                                 Description = playerLocation.World.Description
                             }
                         }
-                    };
-                Console.WriteLine($"Emtra 5 {playerDTO.Id}");
-
-                    // Crear el DTO de respuesta
-                    playerDTOs.Add(playerDTO);
-                 
+                    });
                 }
-                   var responseDTO = new GetPlayersResponseDTO
-                    {
-                        Players = playerDTOs
-                    };
 
-                    return Ok(responseDTO);
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"[SUCCESS] Se obtuvieron {playerDTOs.Count} personajes para la cuenta {accountId}.");
+                Console.ResetColor();
+
+                return Ok(new GetPlayersResponseDTO { Players = playerDTOs });
             }
             catch (Exception ex)
             {
-                // Manejar errores generales
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"[ERROR] Excepción al obtener los personajes: {ex.Message}");
+                Console.ResetColor();
                 return BadRequest($"Error al obtener los personajes: {ex.Message}");
             }
         }
     }
 
-    // Clase de request para crear un personaje
     public class CreatePlayerRequest
     {
         public required string Name { get; set; }

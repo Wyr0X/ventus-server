@@ -11,19 +11,21 @@ public class WebSocketServerController
 {
     private readonly FirebaseService _firebaseService;
     private readonly ConcurrentDictionary<string, WebSocket> _pendingConnections; // Conexiones pendientes de autenticación
-    private readonly ConcurrentDictionary<string, WebSocket> _websocketsByUserID;
-    private readonly ConcurrentDictionary<string, string> _connectionsByUserID;
+    private readonly ConcurrentDictionary<Guid, WebSocket> _websocketsByAccountId;
+    private readonly ConcurrentDictionary<string, Guid> _connectionsByAccountId;
     private readonly ConcurrentQueue<UserMessagePair> _messageQueue; // Conexiones ya autenticadas
     private readonly MessageHandler _messageHandler; // Conexiones ya autenticadas
-
-    public WebSocketServerController(FirebaseService firebaseService, MessageHandler messageHandler)
+    private readonly JwtService _jwtService;
+    public WebSocketServerController(FirebaseService firebaseService, MessageHandler messageHandler
+        , JwtService jwtService)
     {
         _firebaseService = firebaseService;
         _pendingConnections = new ConcurrentDictionary<string, WebSocket>();
-        _websocketsByUserID = new ConcurrentDictionary<string, WebSocket>();
-        _connectionsByUserID = new ConcurrentDictionary<string, string>();
+        _websocketsByAccountId = new ConcurrentDictionary<Guid, WebSocket>();
+        _connectionsByAccountId = new ConcurrentDictionary<string, Guid>();
         _messageQueue = new ConcurrentQueue<UserMessagePair>();
         _messageHandler = messageHandler;
+        _jwtService = jwtService;
     }
 
     public async Task StartServerAsync()
@@ -68,17 +70,17 @@ public class WebSocketServerController
     public async void ProcessQueue()
     {
         // Intentamos sacar un mensaje de la cola
-            if (_messageQueue.TryDequeue(out var userMessagePair))
-            {
-                _messageHandler.HandleIncomingMessage(userMessagePair);
-            }
+        if (_messageQueue.TryDequeue(out var userMessagePair))
+        {
+            _messageHandler.HandleIncomingMessage(userMessagePair);
+        }
     }
 
-    public async void SendServerPacketByUserID(string userId, IMessage message)
+    public async void SendServerPacketByAccountId(Guid accountId, IMessage message)
     {
-        if (_websocketsByUserID.ContainsKey(userId))
+        if (_websocketsByAccountId.ContainsKey(accountId))
         {
-            WebSocket clientSocket = _websocketsByUserID[userId];
+            WebSocket clientSocket = _websocketsByAccountId[accountId];
 
             // Serializar el mensaje a un arreglo de bytes
             byte[] serializedMessage = message.ToByteArray();
@@ -95,7 +97,7 @@ public class WebSocketServerController
     private async Task HandleWebSocket(WebSocket webSocket, string connectionId)
     {
         var buffer = new byte[1024];
-        string? userId = null;
+        Guid accountId = Guid.Empty; 
 
         try
         {
@@ -130,22 +132,27 @@ public class WebSocketServerController
 
                         try
                         {
-                            // Verificar el token de Firebase
-                            FirebaseToken decodedToken = await _firebaseService.VerifyTokenAsync(
-                                token
-                            );
+
+                            var validatedAccountIdStr = _jwtService.ValidateToken(token);
+                            if (!Guid.TryParse(validatedAccountIdStr, out accountId))
+                            {
+                                Console.ForegroundColor = ConsoleColor.Yellow;
+                                Console.WriteLine("⚠ Token inválido.");
+                                Console.ResetColor();
+                               
+                                return;
+                            }
 
                             // Extraer el userId (Uid) del token verificado
-                            userId = decodedToken.Uid;
 
-                            Console.WriteLine($"🔒 Usuario autenticado: {userId}");
+                            Console.WriteLine($"🔒 Usuario autenticado: {accountId}");
 
                             if (
                                 clientMessageAuth.MessageTypeCase
                                 == ClientMessageAuth.MessageTypeOneofCase.AuthRequest
                             )
                             {
-                                if (string.IsNullOrEmpty(userId))
+                               if (accountId == Guid.Empty)
                                 {
                                     // Si no es un token válido, cerramos la conexión
 
@@ -163,10 +170,10 @@ public class WebSocketServerController
                                     )
                                 )
                                 {
-                                    _connectionsByUserID[connectionId] = userId;
-                                    _websocketsByUserID[userId] = pendingWebSocket;
+                                    _connectionsByAccountId[connectionId] = accountId;
+                                    _websocketsByAccountId[accountId] = pendingWebSocket;
                                     Console.WriteLine(
-                                        $"🔗 Usuario {userId} añadido a la lista de usuarios autenticados."
+                                        $"🔗 Usuario {accountId} añadido a la lista de usuarios autenticados."
                                     );
                                 }
                             }
@@ -202,12 +209,12 @@ public class WebSocketServerController
                 var receivedData = ms.ToArray();
 
                 // Verificar si la conexión está autenticada
-                if (_connectionsByUserID.ContainsKey(connectionId) && !string.IsNullOrEmpty(userId))
+                if (_connectionsByAccountId.ContainsKey(connectionId) && (accountId != Guid.Empty))
                 {
                     // Procesar mensaje del usuario autenticado
                     var clientMessage = ClientMessage.Parser.ParseFrom(receivedData);
 
-                    UserMessagePair messagePair = new UserMessagePair(userId, clientMessage);
+                    UserMessagePair messagePair = new UserMessagePair(accountId, clientMessage);
                     Console.WriteLine("Enqueue");
                     _messageQueue.Enqueue(messagePair);
                 }
@@ -229,12 +236,12 @@ public class WebSocketServerController
         finally
         {
             // Si el usuario estaba autenticado, lo eliminamos de la lista
-            if (!string.IsNullOrEmpty(userId))
+            if (accountId != Guid.Empty)
             {
-                _connectionsByUserID.TryRemove(connectionId, out _);
-                _websocketsByUserID.TryRemove(userId, out _);
+                _connectionsByAccountId.TryRemove(connectionId, out _);
+                _websocketsByAccountId.TryRemove(accountId, out _);
 
-                Console.WriteLine($"🔌 Usuario {userId} desconectado.");
+                Console.WriteLine($"🔌 Usuario {accountId} desconectado.");
             }
             // Si estaba pendiente, lo eliminamos también
             _pendingConnections.TryRemove(connectionId, out _);
