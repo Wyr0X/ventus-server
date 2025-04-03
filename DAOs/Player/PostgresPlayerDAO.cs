@@ -75,7 +75,7 @@ namespace VentusServer.DataAccess.Postgres
             await command.ExecuteNonQueryAsync();
         }
 
-        public async Task DeletePlayerAsync(int playerId)
+        public async Task<bool> DeletePlayerAsync(int playerId)
         {
             await using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
@@ -83,7 +83,9 @@ namespace VentusServer.DataAccess.Postgres
             const string query = "DELETE FROM players WHERE id = @PlayerId";
             await using var command = new NpgsqlCommand(query, connection);
             command.Parameters.AddWithValue("@PlayerId", playerId);
-            await command.ExecuteNonQueryAsync();
+
+            int rowsAffected = await command.ExecuteNonQueryAsync();
+            return rowsAffected > 0; // Devuelve true si se eliminó al menos una fila, false si no se eliminó nada.
         }
 
         public async Task<bool> PlayerExistsAsync(int playerId)

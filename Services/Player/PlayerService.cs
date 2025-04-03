@@ -45,15 +45,16 @@ namespace VentusServer.Services
         }
 
         // Eliminar un jugador por su ID
-        public async Task DeletePlayerAsync(int playerId)
+        public async Task<bool> DeletePlayerAsync(int playerId)
         {
             try
             {
-                await _playerDAO.DeletePlayerAsync(playerId);
+                return await _playerDAO.DeletePlayerAsync(playerId);
                 Console.WriteLine("✅ Jugador eliminado correctamente.");
             }
             catch (Exception ex)
             {
+                return false;
                 Console.WriteLine($"❌ Error al eliminar el jugador: {ex.Message}");
             }
         }

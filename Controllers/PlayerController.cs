@@ -178,7 +178,81 @@ namespace VentusServer.Controllers
                 Console.ResetColor();
                 return BadRequest($"Error al obtener los personajes: {ex.Message}");
             }
+
         }
+        [HttpDelete("delete-player/{playerId}")]
+        [JwtAuthRequired]
+        public async Task<IActionResult> DeletePlayer(int playerId)
+        {
+            try
+            {
+                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.WriteLine($"[INFO] Intentando eliminar el personaje con ID: {playerId}");
+                Console.ResetColor();
+
+                var accountIdParam = HttpContext.Items["AccountId"]?.ToString();
+                if (string.IsNullOrEmpty(accountIdParam) || !Guid.TryParse(accountIdParam, out Guid accountId))
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine("[WARNING] Error al obtener la cuenta. Token inválido o mal formateado.");
+                    Console.ResetColor();
+                    return BadRequest("Error al obtener la cuenta.");
+                }
+
+                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.WriteLine($"[INFO] Verificando cuenta con ID: {accountId}");
+                Console.ResetColor();
+
+                var account = await _accountDAO.GetAccountByAccountIdAsync(accountId);
+                if (account == null)
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine($"[WARNING] Cuenta con ID {accountId} no encontrada.");
+                    Console.ResetColor();
+                    return Unauthorized("Cuenta no encontrada.");
+                }
+
+                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.WriteLine($"[INFO] Buscando personaje con ID: {playerId} en la cuenta {accountId}");
+                Console.ResetColor();
+
+                var player = await _playerService.GetPlayerByIdAsync(playerId);
+                if (player == null || player.AccountId != account.AccountId)
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine($"[WARNING] Personaje con ID {playerId} no encontrado o no pertenece a la cuenta.");
+                    Console.ResetColor();
+                    return NotFound("Personaje no encontrado o no pertenece a tu cuenta.");
+                }
+
+                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.WriteLine($"[INFO] Eliminando personaje con ID: {playerId}");
+                Console.ResetColor();
+
+                bool deleted = await _playerService.DeletePlayerAsync(playerId);
+                if (!deleted)
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine($"[WARNING] Error al eliminar el personaje con ID {playerId}");
+                    Console.ResetColor();
+                    return BadRequest("No se pudo eliminar el personaje.");
+                }
+
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"[SUCCESS] Personaje con ID {playerId} eliminado exitosamente.");
+                Console.ResetColor();
+
+                return Ok(new { Message = "Personaje eliminado exitosamente" });
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"[ERROR] Excepción al eliminar el personaje: {ex.Message}");
+                Console.ResetColor();
+                return BadRequest($"Error al eliminar el personaje: {ex.Message}");
+            }
+        }
+
     }
 
     public class CreatePlayerRequest
