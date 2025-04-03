@@ -29,7 +29,7 @@ public class WebSocketServerController
     public async Task StartServerAsync()
     {
         var listener = new HttpListener();
-        listener.Prefixes.Add("http://localhost:5001/");
+        listener.Prefixes.Add("http://localhost:5331/");
         listener.Start();
         Console.WriteLine("✅ Servidor WebSocket iniciado en ws://localhost:6000");
 

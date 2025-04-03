@@ -97,7 +97,7 @@ public class WorldManager
             WorldEntity world = _worlds[worldId];
 
             List<Entity> charactersInWorld = GetCharactersInWorld(worldId);
-
+            Console.WriteLine($"Characters in world: {charactersInWorld.Count}");
             foreach (var entityC in charactersInWorld)
             {
                 Character? character = (Character?)entityC.Get(typeof(Character));
