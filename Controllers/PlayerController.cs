@@ -155,7 +155,7 @@ namespace VentusServer.Controllers
                                 MinLevel = playerLocation.Map.MinLevel,
                                 MaxPlayers = playerLocation.Map.MaxPlayers
                             },
-                            WorldModel = new WorldDTO
+                            World = new WorldDTO
                             {
                                 Id = playerLocation.World.Id,
                                 Name = playerLocation.World.Name,
