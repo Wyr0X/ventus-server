@@ -165,5 +165,30 @@ namespace VentusServer.DataAccess.Postgres
 
             await command.ExecuteNonQueryAsync();
         }
+         public async Task<bool> UpdateAccountPasswordAsync(Guid accountId, string newPassword)
+        {
+            await using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            const string query = "UPDATE accounts SET password = @Password WHERE account_id = @AccountId";
+            await using var command = new NpgsqlCommand(query, connection);
+            command.Parameters.AddWithValue("@Password", newPassword);
+            command.Parameters.AddWithValue("@AccountId", accountId);
+
+            return await command.ExecuteNonQueryAsync() > 0;
+        }
+
+        public async Task<bool> UpdateAccountNameAsync(Guid accountId, string newName)
+        {
+            await using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            const string query = "UPDATE accounts SET name = @Name WHERE account_id = @AccountId";
+            await using var command = new NpgsqlCommand(query, connection);
+            command.Parameters.AddWithValue("@Name", newName);
+            command.Parameters.AddWithValue("@AccountId", accountId);
+
+            return await command.ExecuteNonQueryAsync() > 0;
+        }
     }
 }
