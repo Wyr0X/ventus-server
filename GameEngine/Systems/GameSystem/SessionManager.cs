@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Game.Models;
-using Protos.Game.Common;
+using Protos.Common;
 using Protos.Game.Movement;
 using Protos.Game.Session;
-using ProtosCommon;
 using VentusServer.Services;
 
 public class SessionManager
@@ -27,12 +26,13 @@ public class SessionManager
 
     public async void HandlePlayerJoin(UserMessagePair messagePair)
     {
-        ClientMessageGame? clientMessageGame = messagePair.GetClientMessageGame();
+        ClientMessage? clientMessage = (ClientMessage?)messagePair.ClientMessage;
 
-        if (clientMessageGame == null)
+        ClientMessageGameSession? sessionMessage = clientMessage.ClientMessageSession;
+
+        if (sessionMessage == null)
             return;
 
-        ClientMessageGameSession sessionMessage = clientMessageGame.MessageSession;
         PlayerJoin playerJoinMessage = sessionMessage.PlayerJoin;
 
         PlayerLocation? playerLocation = await _playerLocationService.GetPlayerLocationAsync(

@@ -1,8 +1,8 @@
 using System.Net.WebSockets;
 using FirebaseAdmin.Messaging;
 using Google.Protobuf;
-using Protos.Game.Common;
-using ProtosCommon;
+using Protos.Common;
+using Protos.Game.Session;
 using VentusServer;
 
 public class MessageHandler
@@ -21,95 +21,31 @@ public class MessageHandler
     {
         try
         {
+            ClientMessage clientMessage = (ClientMessage)messagePair.ClientMessage;
 
-
-            ClientMessage clientMessage = messagePair.ClientMessage;
-
-            Console.WriteLine($"🔹 Tipo de mensaje recibido: {clientMessage.MessageTypeCase}, {ClientMessage.MessageTypeOneofCase.MessageUnAuth}");
-            switch (clientMessage.MessageTypeCase)
+            Console.WriteLine($"🔹 Tipo de mensaje recibido: {clientMessage.GetType().Name}");
+            if (clientMessage.MessageCase == ClientMessage.MessageOneofCase.ClientMessageSession)
             {
-                // case ClientMessage.MessageTypeOneofCase.MessageAuth:
-                //     HandleAuthMessage(messagePair);
-                //     break;
-                case ClientMessage.MessageTypeOneofCase.MessageUnAuth:
+                _sessionHandler.HandleSessionMessage(messagePair);
 
-                    HandleOAuthMessage(messagePair);
-                    break;
+            }
+            
+            // else if (clientMessage is MessageUnAuth unAuthMessage)
+            // {
+            //     HandleOAuthMessage(unAuthMessage, messagePair);
+            // }
+            else
+            {
+                Console.WriteLine("❌ Mensaje recibido sin un tipo válido.");
+            }
+        }
+        catch (InvalidProtocolBufferException)
+        {
+            Console.WriteLine("❌ No se pudo deserializar el mensaje.");
+        }
+    }
+
+
+
     
-                default:
-                    Console.WriteLine("❌ Mensaje recibido sin un tipo válido. 1");
-                    break;
-            }
-        }
-        catch (InvalidProtocolBufferException)
-        {
-            Console.WriteLine("❌ No se pudo deserializar el mensaje.");
-        }
-    }
-    public void HandleAuthMessage(UserMessagePair messagePair)
-    {
-        try
-        {
-            ClientMessage clientMessage = messagePair.ClientMessage;
-            var clientMessageAuth = clientMessage.MessageAuth;
-            switch (clientMessageAuth.MessageTypeCase)
-            {
-                default:
-                    Console.WriteLine("❌ Mensaje recibido sin un tipo válido.");
-                    break;
-            }
-
-        }
-        catch (InvalidProtocolBufferException)
-        {
-            Console.WriteLine("❌ No se pudo deserializar el mensaje.");
-        }
-    }
-    public void HandleOAuthMessage(UserMessagePair messagePair)
-    {
-        try
-        {
-            ClientMessage clientMessage = messagePair.ClientMessage;
-            var clientMessageOAuth = clientMessage.MessageUnAuth;
-            switch (clientMessageOAuth.MessageTypeCase)
-            {
-                case ClientMessageUnAuth.MessageTypeOneofCase.ClientMessageGame:
-                    HandleMessageGame(messagePair);
-                    break;
-                default:
-                    Console.WriteLine("❌ Mensaje recibido sin un tipo válido.");
-                    break;
-            }
-
-        }
-        catch (InvalidProtocolBufferException)
-        {
-            Console.WriteLine("❌ No se pudo deserializar el mensaje.");
-        }
-    }
-    public void HandleMessageGame(UserMessagePair messagePair)
-    {
-        try
-        {
-            ClientMessage clientMessage = messagePair.ClientMessage;
-            ClientMessageGame clientMessageGame = clientMessage.MessageUnAuth.ClientMessageGame;
-            switch (clientMessageGame.MessageTypeCase)
-            {
-                /*case ClientMessageGame.MessageTypeOneofCase.MessageMovement:
-                    _movementHandler.HandleMovementMessage(messagePair );
-                    break;*/
-                case ClientMessageGame.MessageTypeOneofCase.MessageSession:
-                    _sessionHandler.HandleSessionMessage(messagePair);
-                    break;
-                default:
-                    Console.WriteLine("❌ Mensaje recibido sin un tipo válido.");
-                    break;
-            }
-
-        }
-        catch (InvalidProtocolBufferException)
-        {
-            Console.WriteLine("❌ No se pudo deserializar el mensaje.");
-        }
-    }
 }

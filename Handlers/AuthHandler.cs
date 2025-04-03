@@ -1,6 +1,6 @@
 using System.Net.WebSockets;
-using Messages.Auth;
-using ProtosCommon;
+using Protos.Auth;
+using Protos.Common;
 using VentusServer;
 using VentusServer.DataAccess;
 using VentusServer.DataAccess.Postgres;
@@ -29,10 +29,7 @@ public class AuthHandler
             if (!Guid.TryParse(validatedAccountIdStr, out Guid accountId))
             {
                 Console.WriteLine("⚠ Token inválido.");
-                await _responseService.SendMessageAsync(webSocket, new ServerMessage
-                {
-                    AuthResponse = new AuthResponse { Success = false }
-                });
+                await _responseService.SendMessageAsync(webSocket, new AuthResponse { Success = false });
                 return null;
             }
 
@@ -54,20 +51,22 @@ public class AuthHandler
             {
                 // Si no existe la cuenta, rechazar la autenticación
                 Console.WriteLine("⚠ Usuario no encontrado.");
-                await _responseService.SendMessageAsync(webSocket, new ServerMessage
+                AuthResponse authResponse = new AuthResponse { Success = false };
+                ServerMessage serverMessage = new ServerMessage
                 {
-                    AuthResponse = new AuthResponse { Success = false }
-                });
+                    AuthResponse = authResponse
+                };
+                await _responseService.SendMessageAsync(webSocket, serverMessage);
+
+
+
                 return null;
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"❌ Error en autenticación: {ex.Message}");
-            await _responseService.SendMessageAsync(webSocket, new ServerMessage
-            {
-                AuthResponse = new AuthResponse { Success = false }
-            });
+            await _responseService.SendMessageAsync(webSocket, new AuthResponse { Success = false });
             return null;
         }
     }

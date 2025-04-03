@@ -1,7 +1,6 @@
 using System.Net.WebSockets;
-using Protos.Game.Common;
+using Google.Protobuf;
 using Protos.Game.Movement;
-using ProtosCommon;
 
 public class MovementHandler
 {
@@ -17,9 +16,8 @@ public class MovementHandler
     
     public void HandleMovementMessage(UserMessagePair messagePair)
     {
-        ClientMessageGame? clientMessageGame = messagePair.GetClientMessageGame();
-        if (clientMessageGame == null) return;
-        ClientMessageMovement movementMessage = clientMessageGame.MessageMovement;
+        ClientMessageMovement? movementMessage = (ClientMessageMovement?)messagePair.ClientMessage;
+        if (movementMessage == null) return;
         switch (movementMessage.MessageTypeCase)
         {
             case ClientMessageMovement.MessageTypeOneofCase.PlayerInput:

@@ -4,7 +4,9 @@ using System.Net;
 using System.Net.WebSockets;
 using FirebaseAdmin.Auth;
 using Google.Protobuf;
-using ProtosCommon;
+using Google.Protobuf.WellKnownTypes;
+using Protos.Auth;
+using Protos.Common;
 using VentusServer;
 
 public class WebSocketServerController
@@ -16,8 +18,8 @@ public class WebSocketServerController
     private readonly ConcurrentQueue<UserMessagePair> _messageQueue; // Conexiones ya autenticadas
     private readonly MessageHandler _messageHandler; // Conexiones ya autenticadas
     private readonly JwtService _jwtService;
-    public WebSocketServerController(FirebaseService firebaseService, MessageHandler messageHandler
-        , JwtService jwtService)
+
+    public WebSocketServerController(FirebaseService firebaseService, MessageHandler messageHandler, JwtService jwtService)
     {
         _firebaseService = firebaseService;
         _pendingConnections = new ConcurrentDictionary<string, WebSocket>();
@@ -33,7 +35,10 @@ public class WebSocketServerController
         var listener = new HttpListener();
         listener.Prefixes.Add("http://localhost:5331/");
         listener.Start();
+
+        Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine("✅ Servidor WebSocket iniciado en ws://localhost:6000");
+        Console.ResetColor();
 
         while (true)
         {
@@ -41,35 +46,38 @@ public class WebSocketServerController
             if (context.Request.IsWebSocketRequest)
             {
                 WebSocket webSocket = (await context.AcceptWebSocketAsync(null)).WebSocket;
-                // Generar un identificador único para la conexión
                 var connectionId = Guid.NewGuid().ToString();
-                Console.WriteLine($"🆔 Conexión iniciada con ID único: {connectionId}");
 
-                // Guardar la conexión pendiente en el diccionario
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine($"🆔 Conexión iniciada con ID único: {connectionId}");
+                Console.ResetColor();
+
                 _pendingConnections[connectionId] = webSocket;
 
-                // Manejar la nueva conexión en un hilo separado y pasar el connectionId
                 _ = Task.Run(() => HandleWebSocket(webSocket, connectionId));
             }
             else
             {
                 context.Response.StatusCode = 400;
                 context.Response.Close();
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("❌ Petición no válida. Respuesta 400.");
+                Console.ResetColor();
             }
         }
     }
+
     public async Task StartLoop()
     {
-
         while (true)
         {
             ProcessQueue();
             await Task.Delay(100); // Espera de 100 ms (equivalente a 10 FPS, ajusta según sea necesario)
         }
     }
+
     public async void ProcessQueue()
     {
-        // Intentamos sacar un mensaje de la cola
         if (_messageQueue.TryDequeue(out var userMessagePair))
         {
             _messageHandler.HandleIncomingMessage(userMessagePair);
@@ -82,22 +90,31 @@ public class WebSocketServerController
         {
             WebSocket clientSocket = _websocketsByAccountId[accountId];
 
-            // Serializar el mensaje a un arreglo de bytes
             byte[] serializedMessage = message.ToByteArray();
-            // Enviar el mensaje serializado a través del WebSocket
+
             await clientSocket.SendAsync(
                 new ArraySegment<byte>(serializedMessage),
                 WebSocketMessageType.Binary,
                 true,
                 CancellationToken.None
             );
+
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"✅ Mensaje enviado al usuario {accountId}.");
+            Console.ResetColor();
+        }
+        else
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"❌ No se encontró WebSocket para el usuario {accountId}.");
+            Console.ResetColor();
         }
     }
 
     private async Task HandleWebSocket(WebSocket webSocket, string connectionId)
     {
         var buffer = new byte[1024];
-        Guid accountId = Guid.Empty; 
+        Guid accountId = Guid.Empty;
 
         try
         {
@@ -116,72 +133,61 @@ public class WebSocketServerController
                 if (result.MessageType == WebSocketMessageType.Binary)
                 {
                     var receivedBytes = ms.ToArray();
-
-                    // Verificar si el paquete es un paquete de autenticación
                     var clientMessage = ClientMessage.Parser.ParseFrom(receivedBytes);
-                    Console.WriteLine($"Llego un paquete {clientMessage.MessageTypeCase}");
 
-                    if (
-                        clientMessage.MessageTypeCase
-                        == ClientMessage.MessageTypeOneofCase.MessageAuth
-                    )
+                    Console.ForegroundColor = ConsoleColor.Magenta;
+
+                    Console.ResetColor();
+
+                    if (clientMessage.MessageCase == ClientMessage.MessageOneofCase.AuthRequest)
                     {
-                        var clientMessageAuth = clientMessage.MessageAuth;
-                        var clientMessageAuthRequest = clientMessageAuth.AuthRequest;
-                        var token = clientMessageAuthRequest.Token;
+                        var authRequest = clientMessage.AuthRequest;
+                        var token = authRequest.Token;
 
                         try
                         {
-
                             var validatedAccountIdStr = _jwtService.ValidateToken(token);
                             if (!Guid.TryParse(validatedAccountIdStr, out accountId))
                             {
                                 Console.ForegroundColor = ConsoleColor.Yellow;
                                 Console.WriteLine("⚠ Token inválido.");
                                 Console.ResetColor();
-                               
                                 return;
                             }
 
-                            // Extraer el userId (Uid) del token verificado
-
+                            Console.ForegroundColor = ConsoleColor.Green;
                             Console.WriteLine($"🔒 Usuario autenticado: {accountId}");
+                            Console.ResetColor();
 
-                            if (
-                                clientMessageAuth.MessageTypeCase
-                                == ClientMessageAuth.MessageTypeOneofCase.AuthRequest
-                            )
+                            if (accountId == Guid.Empty)
                             {
-                               if (accountId == Guid.Empty)
-                                {
-                                    // Si no es un token válido, cerramos la conexión
+                                Console.WriteLine("Cerrado 2");
 
-                                    await webSocket.CloseAsync(
-                                        WebSocketCloseStatus.InvalidMessageType,
-                                        "Token de Firebase inválido",
-                                        CancellationToken.None
-                                    );
-                                    return;
-                                }
-                                if (
-                                    _pendingConnections.TryRemove(
-                                        connectionId,
-                                        out var pendingWebSocket
-                                    )
-                                )
-                                {
-                                    _connectionsByAccountId[connectionId] = accountId;
-                                    _websocketsByAccountId[accountId] = pendingWebSocket;
-                                    Console.WriteLine(
-                                        $"🔗 Usuario {accountId} añadido a la lista de usuarios autenticados."
-                                    );
-                                }
+                                await webSocket.CloseAsync(
+                                    WebSocketCloseStatus.InvalidMessageType,
+                                    "Token de Firebase inválido",
+                                    CancellationToken.None
+                                );
+                                return;
+                            }
+
+                            if (_pendingConnections.TryRemove(connectionId, out var pendingWebSocket))
+                            {
+                                _connectionsByAccountId[connectionId] = accountId;
+                                _websocketsByAccountId[accountId] = pendingWebSocket;
+
+                                Console.ForegroundColor = ConsoleColor.Cyan;
+                                Console.WriteLine($"🔗 Usuario {accountId} añadido a la lista de usuarios autenticados.");
+                                Console.ResetColor();
                             }
                         }
                         catch (Exception ex)
                         {
+                            Console.ForegroundColor = ConsoleColor.Red;
                             Console.WriteLine($"❌ Error al verificar el token: {ex.Message}");
-                            // Si la verificación falla, cerramos la conexión
+                            Console.ResetColor();
+                            Console.WriteLine("Cerrado 3");
+
                             await webSocket.CloseAsync(
                                 WebSocketCloseStatus.InvalidMessageType,
                                 "Token de Firebase inválido",
@@ -193,7 +199,6 @@ public class WebSocketServerController
                 }
             }
 
-            // Aquí podemos manejar otros mensajes del usuario una vez autenticado
             while (webSocket.State == WebSocketState.Open)
             {
                 var ms = new MemoryStream();
@@ -208,45 +213,72 @@ public class WebSocketServerController
 
                 var receivedData = ms.ToArray();
 
-                // Verificar si la conexión está autenticada
                 if (_connectionsByAccountId.ContainsKey(connectionId) && (accountId != Guid.Empty))
                 {
-                    // Procesar mensaje del usuario autenticado
                     var clientMessage = ClientMessage.Parser.ParseFrom(receivedData);
 
-                    UserMessagePair messagePair = new UserMessagePair(accountId, clientMessage);
-                    Console.WriteLine("Enqueue");
-                    _messageQueue.Enqueue(messagePair);
+
+                    Console.ForegroundColor = ConsoleColor.Magenta;
+                    Console.WriteLine($"Llego un paquete del tipo {clientMessage.MessageCase}");
+                    Console.ResetColor();
+
+                    if (clientMessage.MessageCase == ClientMessage.MessageOneofCase.ClientMessagePing)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.WriteLine("Envio mensaje de Pong");
+                        Console.ResetColor();
+                        ServerMessagePong serverMessagePong = new ServerMessagePong { Message = "Pong" };
+                        ServerMessage serverMessage = new ServerMessage
+                        {
+                            ServerMessagePong = serverMessagePong
+                        };
+                        SendServerPacketByAccountId(accountId, serverMessage);
+                    }
+                    else
+                    {
+                        UserMessagePair messagePair = new UserMessagePair(accountId, clientMessage);
+                        _messageQueue.Enqueue(messagePair);
+                        Console.ForegroundColor = ConsoleColor.Blue;
+                        Console.WriteLine("Enqueue");
+                        Console.ResetColor();
+                    }
+
                 }
                 else
                 {
-                    // Si la conexión no está autenticada, cerrar la conexión
+                    Console.WriteLine("Cerrado 4");
+
                     await webSocket.CloseAsync(
                         WebSocketCloseStatus.InvalidMessageType,
                         "Usuario no autenticado",
                         CancellationToken.None
                     );
+
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("❌ Conexión no autenticada, cerrando conexión.");
+                    Console.ResetColor();
                 }
             }
         }
         catch (Exception ex)
         {
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine($"❌ Error en WebSocket: {ex.Message}");
+            Console.ResetColor();
         }
         finally
         {
-            // Si el usuario estaba autenticado, lo eliminamos de la lista
             if (accountId != Guid.Empty)
             {
                 _connectionsByAccountId.TryRemove(connectionId, out _);
                 _websocketsByAccountId.TryRemove(accountId, out _);
-
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine($"🔌 Usuario {accountId} desconectado.");
+                Console.ResetColor();
             }
-            // Si estaba pendiente, lo eliminamos también
-            _pendingConnections.TryRemove(connectionId, out _);
+            Console.WriteLine("Cerrado");
 
-            // Cerramos el WebSocket
+            _pendingConnections.TryRemove(connectionId, out _);
             await webSocket.CloseAsync(
                 WebSocketCloseStatus.NormalClosure,
                 "Conexión cerrada",
@@ -256,4 +288,3 @@ public class WebSocketServerController
         }
     }
 }
-

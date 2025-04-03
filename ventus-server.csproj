@@ -6,7 +6,20 @@
     <RootNamespace>ventus_server</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <OutputPath>bin\</OutputPath>
   </PropertyGroup>
+
+  <!-- 🔄 ACTUALIZAR SUBMÓDULO Y GENERAR PROTOS -->
+  <Target Name="UpdateAndGenerateProtobuf" BeforeTargets="BeforeBuild">
+    <Exec Command="git submodule update --init --recursive" />
+    <Exec Command="git -C protos pull origin main" />
+     <Exec Command='protoc --proto_path="protos" --csharp_out="Generated" %(Protos.Identity)' />
+  </Target>
+
+ 
+<ItemGroup>
+    <Protos Include="protos\**\*.proto" />
+</ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="dotenv.net" Version="3.2.1" />
@@ -21,19 +34,19 @@
     <PackageReference Include="Npgsql" Version="9.0.3" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.7.0" />
     <PackageReference Include="System.Net.WebSockets" Version="4.3.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <Protobuf Include="Protos/messages.proto" GrpcServices="None" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.3.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.1" />
-    <!-- Otras dependencias necesarias -->
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.3" />
   </ItemGroup>
+
   <ItemGroup>
-  <PackageReference Include="Microsoft.AspNetCore.App">
-    <Version>2.2.8</Version>
-  </PackageReference>
-  <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.3" />
-</ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App">
+      <Version>2.2.8</Version>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="protos/**/*.proto" GrpcServices="None" />
+  </ItemGroup>
+
 </Project>

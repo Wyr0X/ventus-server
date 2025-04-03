@@ -1,9 +1,8 @@
 using System.Net.WebSockets;
 using Google.Protobuf;
-using Messages.Auth;
-using Protos.Game.Common;
+using Protos.Auth;
+using Protos.Common;
 using Protos.Game.Session;
-using ProtosCommon;
 using VentusServer;
 
 public class MessageSender
@@ -15,20 +14,20 @@ public class MessageSender
     }
     public void SendAuthResponse(Guid accountId, bool success)
     {
-        ServerMessage serverMessage = new ServerMessage();
         AuthResponse authResponse = new AuthResponse
         {
             Success = success
         };
-
+        ServerMessage serverMessage = new ServerMessage
+        {
+            AuthResponse = authResponse
+        };
         _websocket.SendServerPacketByAccountId(accountId, serverMessage);
     }
 
     public void SendPlayerPosition(Guid accountId, int playerId, float x, float y)
     {
-        ServerMessage serverMessage = new ServerMessage();
-        ServerMessageGame serverMessageGame = new ServerMessageGame();
-        
+
         ServerMessageGameSession serverMessageGameSession = new ServerMessageGameSession();
 
         PlayerPosition playerPosition = new PlayerPosition
@@ -38,17 +37,15 @@ public class MessageSender
             Y = y
         };
         serverMessageGameSession.PlayerPosition = playerPosition;
-        serverMessageGame.MessageSession = serverMessageGameSession;
-        serverMessage.ServerMessageGame = serverMessageGame;
 
-        _websocket.SendServerPacketByAccountId(accountId, serverMessage);
+        _websocket.SendServerPacketByAccountId(accountId, serverMessageGameSession);
     }
     public void SpawnPlayer(Guid accountId, int playerId, float x, float y)
     {
         ServerMessage serverMessage = new ServerMessage();
-        ServerMessageGame serverMessageGame = new ServerMessageGame();
-        ServerMessageGameSession serverMessageGameSession = new ServerMessageGameSession();
 
+        ServerMessageGameSession serverMessageGameSession = new ServerMessageGameSession();
+serverMessage.ServerMessageSession = serverMessageGameSession;
         PlayerSpawn playerSpawn = new PlayerSpawn
         {
             PlayerId = playerId,
@@ -56,8 +53,6 @@ public class MessageSender
             Y = y
         };
         serverMessageGameSession.PlayerSpawn = playerSpawn;
-        serverMessageGame.MessageSession = serverMessageGameSession;
-        serverMessage.ServerMessageGame = serverMessageGame;
 
         _websocket.SendServerPacketByAccountId(accountId, serverMessage);
     }

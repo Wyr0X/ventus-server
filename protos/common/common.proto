@@ -1,0 +1,36 @@
+syntax = "proto3";
+package protos.common;
+
+import "auth/auth.proto";
+import "game/session/session.proto";
+
+message ClientMessagePing {
+    string message = 1;
+  
+  }
+  
+message ServerMessagePong {
+  string message = 1;
+  
+}
+
+
+message ClientMessage {
+  oneof message {
+    protos.auth.AuthRequest auth_request = 1;
+    ClientMessagePing client_message_ping = 2;
+    protos.game.session.ClientMessageGameSession client_message_session = 3;
+
+    // Agrega más tipos de mensajes aquí
+  }
+}
+
+message ServerMessage {
+  oneof message {
+    protos.auth.AuthResponse auth_response = 1;
+    ServerMessagePong server_message_pong = 2;
+    protos.game.session.ServerMessageGameSession server_message_session = 3;
+
+    // Agrega más tipos de mensajes aquí
+  }
+}

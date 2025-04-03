@@ -1,8 +1,7 @@
 using System.Net.WebSockets;
-using Protos.Game.Common;
+using Protos.Common;
 using Protos.Game.Movement;
 using Protos.Game.Session;
-using ProtosCommon;
 
 public class SessionHandler
 {
@@ -19,8 +18,9 @@ public class SessionHandler
 
     public void HandleSessionMessage(UserMessagePair messagePair)
     {
-        ClientMessage clientMessage = messagePair.ClientMessage;
-        ClientMessageGameSession sessionMessage = clientMessage.MessageUnAuth.ClientMessageGame.MessageSession;
+        ClientMessage clientMessage = (ClientMessage)messagePair.ClientMessage;
+
+        ClientMessageGameSession sessionMessage = clientMessage.ClientMessageSession;
         switch (sessionMessage.MessageTypeCase)
         {
             case ClientMessageGameSession.MessageTypeOneofCase.PlayerJoin:

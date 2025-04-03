@@ -1,8 +1,6 @@
 using System;
 using Protos.Game.Movement;
-using Protos.Game.Common;
 using System.Collections.Generic;
-using ProtosCommon;
 using Protos.Game.Session;
 
 public class SessionLogic

@@ -1,4 +1,3 @@
-using ProtosCommon;
 
 public class SyncSystem
 {
