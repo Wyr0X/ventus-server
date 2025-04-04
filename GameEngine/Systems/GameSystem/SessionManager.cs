@@ -12,16 +12,20 @@ public class SessionManager
 
     PlayerLocationService _playerLocationService;
     PlayerService _playerService;
+    AccountService _accountService;
 
     public SessionManager(
         GameEngine game,
         PlayerLocationService playerLocationService,
-        PlayerService playerService
+        PlayerService playerService,
+        AccountService accountService
+
     )
     {
         _game = game;
         _playerLocationService = playerLocationService;
         _playerService = playerService;
+        _accountService = accountService;
     }
 
     public async void HandlePlayerJoin(UserMessagePair messagePair)
@@ -39,15 +43,49 @@ public class SessionManager
             playerJoinMessage.PlayerId
         );
 
-        PlayerModel? playerModel = await _playerService.GetPlayerByIdAsync(
+        PlayerModel? playerModel = await _playerService.GetOrCreatePlayerInCacheAsync(
             playerJoinMessage.PlayerId
         );
+        AccountModel? accountModel = await _accountService.GetAccountByIdAsync(messagePair.AccountId);
 
-        if (playerLocation != null && playerModel != null)
+        if (accountModel != null)
         {
-            Console.WriteLine($"Player {playerModel.Id} joined the game");
-            _game.SpawnPlayer(messagePair.AccountId, playerModel, playerLocation);
+            int? currentActivePlayer = accountModel.ActivePlayer;
+            if (currentActivePlayer != null)
+            {
+                _game.UnSpawnPlayer(messagePair.AccountId, playerModel, playerLocation);
+                playerModel.isSpawned = false;
+
+            }
+
+            if (playerLocation != null && playerModel != null)
+            {
+                playerModel.PrintInfo();
+
+                if (playerModel.isSpawned)
+                {
+                    _game.UnSpawnPlayer(messagePair.AccountId, playerModel, playerLocation);
+                    playerModel.isSpawned = false;
+                }
+
+                await _playerService.SavePlayerAsync(playerModel);
+
+            }
+            if (!playerModel.isSpawned)
+            {
+                playerModel.isSpawned = true;
+                accountModel.ActivePlayer = playerModel.Id;
+
+                Console.WriteLine($"Player {playerModel.Id} joined the game");
+                _game.SpawnPlayer(messagePair.AccountId, playerModel, playerLocation);
+            }
+            await _accountService.SaveAccountAsync(accountModel);
+            accountModel.PrintInfo();
+
+
+
         }
+
         //Aca te va a llegar data , vas a buscar la info necesaria y lo vas a meter en el eventsbuffer
 
 

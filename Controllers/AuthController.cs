@@ -77,7 +77,7 @@ namespace VentusServer.Controllers
 
             var hashedPassword = _passwordService.HashPassword(request.Password);
 
-            var newUser = new Account
+            var newUser = new AccountModel
             {
                 AccountId = accountId,
                 Email = request.Email,

@@ -14,9 +14,9 @@ namespace VentusServer.DataAccess.Postgres
             _connectionString = connectionString;
         }
 
-        private static Account MapAccount(NpgsqlDataReader reader)
+        private static AccountModel MapAccount(NpgsqlDataReader reader)
         {
-            return new Account
+            return new AccountModel
             {
                 AccountId = reader.GetGuid(reader.GetOrdinal("account_id")),
 
@@ -34,7 +34,7 @@ namespace VentusServer.DataAccess.Postgres
             };
         }
 
-        public async Task<Account?> GetAccountByEmailAsync(string email)
+        public async Task<AccountModel?> GetAccountByEmailAsync(string email)
         {
             await using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
@@ -47,7 +47,7 @@ namespace VentusServer.DataAccess.Postgres
             return await reader.ReadAsync() ? MapAccount(reader) : null;
         }
 
-        public async Task<Account?> GetAccountByAccountIdAsync(Guid accountId)
+        public async Task<AccountModel?> GetAccountByAccountIdAsync(Guid accountId)
         {
             await using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
@@ -60,7 +60,7 @@ namespace VentusServer.DataAccess.Postgres
             return await reader.ReadAsync() ? MapAccount(reader) : null;
         }
 
-        public async Task<Account?> GetAccountByNameAsync(string name)
+        public async Task<AccountModel?> GetAccountByNameAsync(string name)
         {
             await using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
@@ -73,11 +73,10 @@ namespace VentusServer.DataAccess.Postgres
             return await reader.ReadAsync() ? MapAccount(reader) : null;
         }
 
-        public async Task SaveAccountAsync(Account account)
+        public async Task SaveAccountAsync(AccountModel account)
         {
             await using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
-
             const string query = @"
                 INSERT INTO accounts (account_id, email, Name, password, is_deleted, is_banned, credits, last_ip, last_login, created_at)
                 VALUES (@AccountId, @Email, @Name, @Password, @IsDeleted, @IsBanned, @Credits, @LastIp, @LastLogin, @CreatedAt)
@@ -142,7 +141,7 @@ namespace VentusServer.DataAccess.Postgres
             return await reader.ReadAsync();
         }
 
-        public async Task CreateAccountAsync(Account account)
+        public async Task CreateAccountAsync(AccountModel account)
         {
             await using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();

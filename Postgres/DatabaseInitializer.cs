@@ -19,33 +19,35 @@ namespace VentusServer.DataAccess.Postgres
             {
                 await InitializeAccountsAsync();
                 await InitializePlayersAsync();
-                await InitializePlayerLocationsAsync();
                 await InitializeWorldsAsync();
                 await InitializeMapsAsync();
+                await InitializePlayerLocationsAsync();
+
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"❌ Error durante la inicialización de la base de datos: {ex.Message}");
             }
         }
-        
+
         private async Task InitializeAccountsAsync()
         {
             try
             {
                 string createTableQuery = @"
-                    CREATE TABLE IF NOT EXISTS accounts (
-                        account_id UUID PRIMARY KEY,
-                        email VARCHAR(255) UNIQUE NOT NULL,
-                        password VARCHAR(255) NOT NULL,
-                        is_deleted BOOLEAN DEFAULT FALSE,
-                        is_banned BOOLEAN DEFAULT FALSE,
-                        credits INT DEFAULT 0,
-                        last_ip VARCHAR(45),
-                        last_login TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-                        created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-                        name VARCHAR(100) NOT NULL
-                    );
+                 CREATE TABLE IF NOT EXISTS accounts (
+                    account_id UUID PRIMARY KEY,
+                    email VARCHAR(255) NOT NULL,
+                    name VARCHAR(100) NOT NULL,
+                    password VARCHAR(255) NOT NULL,
+                    is_deleted BOOLEAN DEFAULT FALSE,
+                    is_banned BOOLEAN DEFAULT FALSE,
+                    credits INT DEFAULT 0,
+                    last_ip VARCHAR(45),
+                    last_login TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                    UNIQUE (email, name)  -- 🔥 Agregar restricción única aquí
+                );
                 ";
 
                 await _postgresDbService.ExecuteQueryAsync(createTableQuery);
@@ -56,7 +58,7 @@ namespace VentusServer.DataAccess.Postgres
                 Console.WriteLine($"❌ Error al crear la tabla 'accounts': {ex.Message}");
             }
         }
-        
+
         private async Task InitializePlayersAsync()
         {
             try
@@ -84,7 +86,7 @@ namespace VentusServer.DataAccess.Postgres
                 Console.WriteLine($"❌ Error al crear la tabla 'players': {ex.Message}");
             }
         }
-        
+
         public async Task InitializePlayerLocationsAsync()
         {
             try
@@ -108,7 +110,7 @@ namespace VentusServer.DataAccess.Postgres
                 Console.WriteLine($"❌ Error al crear la tabla 'player_locations': {ex.Message}");
             }
         }
-        
+
         public async Task InitializeWorldsAsync()
         {
             try
@@ -132,7 +134,7 @@ namespace VentusServer.DataAccess.Postgres
                 Console.WriteLine($"❌ Error al crear la tabla 'worlds': {ex.Message}");
             }
         }
-        
+
         public async Task InitializeMapsAsync()
         {
             try

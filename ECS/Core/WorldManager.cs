@@ -71,6 +71,13 @@ public class WorldManager
             _worlds.Remove(worldId);
         }
     }
+    public void RemoveMapsInWorld(int worldId)
+    {
+        if (_mapsByWorld.ContainsKey(worldId))
+        {
+            _mapsByWorld.Remove(worldId);
+        }
+    }
 
     public void UpdateWorld()
     {
@@ -107,6 +114,16 @@ public class WorldManager
                 _syncSystem.SpawnPlayer(character.AccountId, characterSpawn.PlayerId, positionOfPlayerSpawn.X, positionOfPlayerSpawn.Y);
             }
         }
+    }
+    public void UnSpawnPlayer(int worldId)
+    {
+
+        List<Entity> charactersInWorld = GetCharactersInWorld(worldId);
+        if (charactersInWorld.Count == 0){
+            RemoveWorldEntity(worldId);
+            RemoveMapsInWorld(worldId);
+        }
+
     }
     public List<Entity> GetCharactersInWorld(int worldId)
     {

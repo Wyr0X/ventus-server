@@ -3,6 +3,7 @@ package protos.common;
 
 import "auth/auth.proto";
 import "game/session/session.proto";
+import "game/chat/chat.proto";
 
 message ClientMessagePing {
     string message = 1;
@@ -20,6 +21,7 @@ message ClientMessage {
     protos.auth.AuthRequest auth_request = 1;
     ClientMessagePing client_message_ping = 2;
     protos.game.session.ClientMessageGameSession client_message_session = 3;
+    protos.game.chat.ClientMessageChat client_message_chat = 4;
 
     // Agrega más tipos de mensajes aquí
   }
@@ -30,6 +32,7 @@ message ServerMessage {
     protos.auth.AuthResponse auth_response = 1;
     ServerMessagePong server_message_pong = 2;
     protos.game.session.ServerMessageGameSession server_message_session = 3;
+    protos.game.chat.ServerMessageChat server_message_chat = 4;
 
     // Agrega más tipos de mensajes aquí
   }

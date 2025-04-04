@@ -79,17 +79,25 @@ var serviceProvider = new ServiceCollection()
     .AddSingleton<JwtService>() // Registrar JWTService
 
     .AddSingleton<GameEngine>()
-    .AddSingleton<SessionManager>()
-    .AddSingleton<SessionHandler>()
+
     .AddSingleton<PostgresDbService>()
     .AddSingleton<DatabaseInitializer>()
     .AddSingleton<ConcurrentDictionary<string, WebSocket>>()
+    //Handlers
+    .AddSingleton<SessionHandler>()
+    .AddSingleton<ChatHandler>()
+
     .AddSingleton<AuthHandler>()
     .AddSingleton<MessageHandler>()
+
     .AddSingleton<PlayerModel>()
     .AddSingleton<PlayerLocation>()
     .AddSingleton<MapModel>()
     .AddSingleton<WorldModel>()
+
+    //Managers
+    .AddSingleton<SessionManager>()
+    .AddSingleton<ChatManager>()
 
     //SERVICES
     .AddSingleton<PasswordService>()
@@ -97,9 +105,14 @@ var serviceProvider = new ServiceCollection()
     .AddSingleton<MapService>()
     .AddSingleton<PlayerService>()
     .AddSingleton<PlayerLocationService>()
+    .AddSingleton<AccountService>()
+
     .AddSingleton<ResponseService>() // Registrar el ResponseService
 
     .AddSingleton<WebSocketServerController>()
+    .AddSingleton<Lazy<WebSocketServerController>>(sp =>
+    new Lazy<WebSocketServerController>(() => sp.GetRequiredService<WebSocketServerController>())
+)
     .BuildServiceProvider();
 
 try

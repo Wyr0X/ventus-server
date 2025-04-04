@@ -18,7 +18,7 @@ namespace VentusServer
 
         public FirestoreDb GetFirestoreDb() => _firestoreDb;
 
-        public async Task<Account?> GetAccountByEmailAsync(string email)
+        public async Task<AccountModel?> GetAccountByEmailAsync(string email)
         {
             var accountsRef = _firestoreDb.Collection("accounts");
             var query = accountsRef.WhereEqualTo("Email", email);
@@ -30,10 +30,10 @@ namespace VentusServer
             }
 
             var document = snapshot.Documents[0];
-            return document.ConvertTo<Account>();
+            return document.ConvertTo<AccountModel>();
         }
 
-        public async Task SaveAccountAsync(Account account)
+        public async Task SaveAccountAsync(AccountModel account)
         {
             var accountsRef = _firestoreDb.Collection("accounts");
             var documentRef = accountsRef.Document(account.Email);

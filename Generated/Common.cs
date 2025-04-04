@@ -25,26 +25,30 @@ namespace Protos.Common {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "ChNjb21tb24vY29tbW9uLnByb3RvEg1wcm90b3MuY29tbW9uGg9hdXRoL2F1",
-            "dGgucHJvdG8aGmdhbWUvc2Vzc2lvbi9zZXNzaW9uLnByb3RvIiQKEUNsaWVu",
-            "dE1lc3NhZ2VQaW5nEg8KB21lc3NhZ2UYASABKAkiJAoRU2VydmVyTWVzc2Fn",
-            "ZVBvbmcSDwoHbWVzc2FnZRgBIAEoCSLeAQoNQ2xpZW50TWVzc2FnZRIwCgxh",
-            "dXRoX3JlcXVlc3QYASABKAsyGC5wcm90b3MuYXV0aC5BdXRoUmVxdWVzdEgA",
-            "Ej8KE2NsaWVudF9tZXNzYWdlX3BpbmcYAiABKAsyIC5wcm90b3MuY29tbW9u",
-            "LkNsaWVudE1lc3NhZ2VQaW5nSAASTwoWY2xpZW50X21lc3NhZ2Vfc2Vzc2lv",
-            "bhgDIAEoCzItLnByb3Rvcy5nYW1lLnNlc3Npb24uQ2xpZW50TWVzc2FnZUdh",
-            "bWVTZXNzaW9uSABCCQoHbWVzc2FnZSLgAQoNU2VydmVyTWVzc2FnZRIyCg1h",
+            "dGgucHJvdG8aGmdhbWUvc2Vzc2lvbi9zZXNzaW9uLnByb3RvGhRnYW1lL2No",
+            "YXQvY2hhdC5wcm90byIkChFDbGllbnRNZXNzYWdlUGluZxIPCgdtZXNzYWdl",
+            "GAEgASgJIiQKEVNlcnZlck1lc3NhZ2VQb25nEg8KB21lc3NhZ2UYASABKAki",
+            "ogIKDUNsaWVudE1lc3NhZ2USMAoMYXV0aF9yZXF1ZXN0GAEgASgLMhgucHJv",
+            "dG9zLmF1dGguQXV0aFJlcXVlc3RIABI/ChNjbGllbnRfbWVzc2FnZV9waW5n",
+            "GAIgASgLMiAucHJvdG9zLmNvbW1vbi5DbGllbnRNZXNzYWdlUGluZ0gAEk8K",
+            "FmNsaWVudF9tZXNzYWdlX3Nlc3Npb24YAyABKAsyLS5wcm90b3MuZ2FtZS5z",
+            "ZXNzaW9uLkNsaWVudE1lc3NhZ2VHYW1lU2Vzc2lvbkgAEkIKE2NsaWVudF9t",
+            "ZXNzYWdlX2NoYXQYBCABKAsyIy5wcm90b3MuZ2FtZS5jaGF0LkNsaWVudE1l",
+            "c3NhZ2VDaGF0SABCCQoHbWVzc2FnZSKkAgoNU2VydmVyTWVzc2FnZRIyCg1h",
             "dXRoX3Jlc3BvbnNlGAEgASgLMhkucHJvdG9zLmF1dGguQXV0aFJlc3BvbnNl",
             "SAASPwoTc2VydmVyX21lc3NhZ2VfcG9uZxgCIAEoCzIgLnByb3Rvcy5jb21t",
             "b24uU2VydmVyTWVzc2FnZVBvbmdIABJPChZzZXJ2ZXJfbWVzc2FnZV9zZXNz",
             "aW9uGAMgASgLMi0ucHJvdG9zLmdhbWUuc2Vzc2lvbi5TZXJ2ZXJNZXNzYWdl",
-            "R2FtZVNlc3Npb25IAEIJCgdtZXNzYWdlYgZwcm90bzM="));
+            "R2FtZVNlc3Npb25IABJCChNzZXJ2ZXJfbWVzc2FnZV9jaGF0GAQgASgLMiMu",
+            "cHJvdG9zLmdhbWUuY2hhdC5TZXJ2ZXJNZXNzYWdlQ2hhdEgAQgkKB21lc3Nh",
+            "Z2ViBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::Protos.Auth.AuthReflection.Descriptor, global::Protos.Game.Session.SessionReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::Protos.Auth.AuthReflection.Descriptor, global::Protos.Game.Session.SessionReflection.Descriptor, global::Protos.Game.Chat.ChatReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Common.ClientMessagePing), global::Protos.Common.ClientMessagePing.Parser, new[]{ "Message" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Common.ServerMessagePong), global::Protos.Common.ServerMessagePong.Parser, new[]{ "Message" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Common.ClientMessage), global::Protos.Common.ClientMessage.Parser, new[]{ "AuthRequest", "ClientMessagePing", "ClientMessageSession" }, new[]{ "Message" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Common.ServerMessage), global::Protos.Common.ServerMessage.Parser, new[]{ "AuthResponse", "ServerMessagePong", "ServerMessageSession" }, new[]{ "Message" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Common.ClientMessage), global::Protos.Common.ClientMessage.Parser, new[]{ "AuthRequest", "ClientMessagePing", "ClientMessageSession", "ClientMessageChat" }, new[]{ "Message" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Common.ServerMessage), global::Protos.Common.ServerMessage.Parser, new[]{ "AuthResponse", "ServerMessagePong", "ServerMessageSession", "ServerMessageChat" }, new[]{ "Message" }, null, null, null)
           }));
     }
     #endregion
@@ -492,6 +496,9 @@ namespace Protos.Common {
         case MessageOneofCase.ClientMessageSession:
           ClientMessageSession = other.ClientMessageSession.Clone();
           break;
+        case MessageOneofCase.ClientMessageChat:
+          ClientMessageChat = other.ClientMessageChat.Clone();
+          break;
       }
 
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -539,6 +546,18 @@ namespace Protos.Common {
       }
     }
 
+    /// <summary>Field number for the "client_message_chat" field.</summary>
+    public const int ClientMessageChatFieldNumber = 4;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Protos.Game.Chat.ClientMessageChat ClientMessageChat {
+      get { return messageCase_ == MessageOneofCase.ClientMessageChat ? (global::Protos.Game.Chat.ClientMessageChat) message_ : null; }
+      set {
+        message_ = value;
+        messageCase_ = value == null ? MessageOneofCase.None : MessageOneofCase.ClientMessageChat;
+      }
+    }
+
     private object message_;
     /// <summary>Enum of possible cases for the "message" oneof.</summary>
     public enum MessageOneofCase {
@@ -546,6 +565,7 @@ namespace Protos.Common {
       AuthRequest = 1,
       ClientMessagePing = 2,
       ClientMessageSession = 3,
+      ClientMessageChat = 4,
     }
     private MessageOneofCase messageCase_ = MessageOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -579,6 +599,7 @@ namespace Protos.Common {
       if (!object.Equals(AuthRequest, other.AuthRequest)) return false;
       if (!object.Equals(ClientMessagePing, other.ClientMessagePing)) return false;
       if (!object.Equals(ClientMessageSession, other.ClientMessageSession)) return false;
+      if (!object.Equals(ClientMessageChat, other.ClientMessageChat)) return false;
       if (MessageCase != other.MessageCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -590,6 +611,7 @@ namespace Protos.Common {
       if (messageCase_ == MessageOneofCase.AuthRequest) hash ^= AuthRequest.GetHashCode();
       if (messageCase_ == MessageOneofCase.ClientMessagePing) hash ^= ClientMessagePing.GetHashCode();
       if (messageCase_ == MessageOneofCase.ClientMessageSession) hash ^= ClientMessageSession.GetHashCode();
+      if (messageCase_ == MessageOneofCase.ClientMessageChat) hash ^= ClientMessageChat.GetHashCode();
       hash ^= (int) messageCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -621,6 +643,10 @@ namespace Protos.Common {
         output.WriteRawTag(26);
         output.WriteMessage(ClientMessageSession);
       }
+      if (messageCase_ == MessageOneofCase.ClientMessageChat) {
+        output.WriteRawTag(34);
+        output.WriteMessage(ClientMessageChat);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -643,6 +669,10 @@ namespace Protos.Common {
         output.WriteRawTag(26);
         output.WriteMessage(ClientMessageSession);
       }
+      if (messageCase_ == MessageOneofCase.ClientMessageChat) {
+        output.WriteRawTag(34);
+        output.WriteMessage(ClientMessageChat);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -661,6 +691,9 @@ namespace Protos.Common {
       }
       if (messageCase_ == MessageOneofCase.ClientMessageSession) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(ClientMessageSession);
+      }
+      if (messageCase_ == MessageOneofCase.ClientMessageChat) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ClientMessageChat);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -692,6 +725,12 @@ namespace Protos.Common {
             ClientMessageSession = new global::Protos.Game.Session.ClientMessageGameSession();
           }
           ClientMessageSession.MergeFrom(other.ClientMessageSession);
+          break;
+        case MessageOneofCase.ClientMessageChat:
+          if (ClientMessageChat == null) {
+            ClientMessageChat = new global::Protos.Game.Chat.ClientMessageChat();
+          }
+          ClientMessageChat.MergeFrom(other.ClientMessageChat);
           break;
       }
 
@@ -741,6 +780,15 @@ namespace Protos.Common {
             ClientMessageSession = subBuilder;
             break;
           }
+          case 34: {
+            global::Protos.Game.Chat.ClientMessageChat subBuilder = new global::Protos.Game.Chat.ClientMessageChat();
+            if (messageCase_ == MessageOneofCase.ClientMessageChat) {
+              subBuilder.MergeFrom(ClientMessageChat);
+            }
+            input.ReadMessage(subBuilder);
+            ClientMessageChat = subBuilder;
+            break;
+          }
         }
       }
     #endif
@@ -785,6 +833,15 @@ namespace Protos.Common {
             }
             input.ReadMessage(subBuilder);
             ClientMessageSession = subBuilder;
+            break;
+          }
+          case 34: {
+            global::Protos.Game.Chat.ClientMessageChat subBuilder = new global::Protos.Game.Chat.ClientMessageChat();
+            if (messageCase_ == MessageOneofCase.ClientMessageChat) {
+              subBuilder.MergeFrom(ClientMessageChat);
+            }
+            input.ReadMessage(subBuilder);
+            ClientMessageChat = subBuilder;
             break;
           }
         }
@@ -839,6 +896,9 @@ namespace Protos.Common {
         case MessageOneofCase.ServerMessageSession:
           ServerMessageSession = other.ServerMessageSession.Clone();
           break;
+        case MessageOneofCase.ServerMessageChat:
+          ServerMessageChat = other.ServerMessageChat.Clone();
+          break;
       }
 
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -886,6 +946,18 @@ namespace Protos.Common {
       }
     }
 
+    /// <summary>Field number for the "server_message_chat" field.</summary>
+    public const int ServerMessageChatFieldNumber = 4;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Protos.Game.Chat.ServerMessageChat ServerMessageChat {
+      get { return messageCase_ == MessageOneofCase.ServerMessageChat ? (global::Protos.Game.Chat.ServerMessageChat) message_ : null; }
+      set {
+        message_ = value;
+        messageCase_ = value == null ? MessageOneofCase.None : MessageOneofCase.ServerMessageChat;
+      }
+    }
+
     private object message_;
     /// <summary>Enum of possible cases for the "message" oneof.</summary>
     public enum MessageOneofCase {
@@ -893,6 +965,7 @@ namespace Protos.Common {
       AuthResponse = 1,
       ServerMessagePong = 2,
       ServerMessageSession = 3,
+      ServerMessageChat = 4,
     }
     private MessageOneofCase messageCase_ = MessageOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -926,6 +999,7 @@ namespace Protos.Common {
       if (!object.Equals(AuthResponse, other.AuthResponse)) return false;
       if (!object.Equals(ServerMessagePong, other.ServerMessagePong)) return false;
       if (!object.Equals(ServerMessageSession, other.ServerMessageSession)) return false;
+      if (!object.Equals(ServerMessageChat, other.ServerMessageChat)) return false;
       if (MessageCase != other.MessageCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -937,6 +1011,7 @@ namespace Protos.Common {
       if (messageCase_ == MessageOneofCase.AuthResponse) hash ^= AuthResponse.GetHashCode();
       if (messageCase_ == MessageOneofCase.ServerMessagePong) hash ^= ServerMessagePong.GetHashCode();
       if (messageCase_ == MessageOneofCase.ServerMessageSession) hash ^= ServerMessageSession.GetHashCode();
+      if (messageCase_ == MessageOneofCase.ServerMessageChat) hash ^= ServerMessageChat.GetHashCode();
       hash ^= (int) messageCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -968,6 +1043,10 @@ namespace Protos.Common {
         output.WriteRawTag(26);
         output.WriteMessage(ServerMessageSession);
       }
+      if (messageCase_ == MessageOneofCase.ServerMessageChat) {
+        output.WriteRawTag(34);
+        output.WriteMessage(ServerMessageChat);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -990,6 +1069,10 @@ namespace Protos.Common {
         output.WriteRawTag(26);
         output.WriteMessage(ServerMessageSession);
       }
+      if (messageCase_ == MessageOneofCase.ServerMessageChat) {
+        output.WriteRawTag(34);
+        output.WriteMessage(ServerMessageChat);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -1008,6 +1091,9 @@ namespace Protos.Common {
       }
       if (messageCase_ == MessageOneofCase.ServerMessageSession) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(ServerMessageSession);
+      }
+      if (messageCase_ == MessageOneofCase.ServerMessageChat) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ServerMessageChat);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -1039,6 +1125,12 @@ namespace Protos.Common {
             ServerMessageSession = new global::Protos.Game.Session.ServerMessageGameSession();
           }
           ServerMessageSession.MergeFrom(other.ServerMessageSession);
+          break;
+        case MessageOneofCase.ServerMessageChat:
+          if (ServerMessageChat == null) {
+            ServerMessageChat = new global::Protos.Game.Chat.ServerMessageChat();
+          }
+          ServerMessageChat.MergeFrom(other.ServerMessageChat);
           break;
       }
 
@@ -1088,6 +1180,15 @@ namespace Protos.Common {
             ServerMessageSession = subBuilder;
             break;
           }
+          case 34: {
+            global::Protos.Game.Chat.ServerMessageChat subBuilder = new global::Protos.Game.Chat.ServerMessageChat();
+            if (messageCase_ == MessageOneofCase.ServerMessageChat) {
+              subBuilder.MergeFrom(ServerMessageChat);
+            }
+            input.ReadMessage(subBuilder);
+            ServerMessageChat = subBuilder;
+            break;
+          }
         }
       }
     #endif
@@ -1132,6 +1233,15 @@ namespace Protos.Common {
             }
             input.ReadMessage(subBuilder);
             ServerMessageSession = subBuilder;
+            break;
+          }
+          case 34: {
+            global::Protos.Game.Chat.ServerMessageChat subBuilder = new global::Protos.Game.Chat.ServerMessageChat();
+            if (messageCase_ == MessageOneofCase.ServerMessageChat) {
+              subBuilder.MergeFrom(ServerMessageChat);
+            }
+            input.ReadMessage(subBuilder);
+            ServerMessageChat = subBuilder;
             break;
           }
         }

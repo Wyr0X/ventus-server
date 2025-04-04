@@ -13,7 +13,7 @@ public class GameEvent
         PlayerId = playerId;
     }
 
-    public Guid GetUserId()
+    public Guid GetAccountId()
     {
         return AccountId;
     }

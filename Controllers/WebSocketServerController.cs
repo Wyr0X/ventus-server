@@ -239,7 +239,6 @@ public class WebSocketServerController
                         UserMessagePair messagePair = new UserMessagePair(accountId, clientMessage);
                         _messageQueue.Enqueue(messagePair);
                         Console.ForegroundColor = ConsoleColor.Blue;
-                        Console.WriteLine("Enqueue");
                         Console.ResetColor();
                     }
 

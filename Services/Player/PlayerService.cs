@@ -5,7 +5,7 @@ using VentusServer.DataAccess.Postgres;
 
 namespace VentusServer.Services
 {
-    public class PlayerService
+    public class PlayerService : BaseCachedService<PlayerModel, int>
     {
         private readonly PostgresPlayerDAO _playerDAO;
         private readonly PlayerLocationService _playerLocationService;
@@ -101,6 +101,31 @@ namespace VentusServer.Services
         public async Task<List<PlayerModel>> GetPlayersByAccountId(Guid accountId)
         {
             return await _playerDAO.GetPlayersByAccountIdAsync(accountId);
+        }
+
+        //Cache
+
+        public async Task<PlayerModel?> GetOrCreatePlayerInCacheAsync(int playerId)
+        {
+            var cachedPlayer = GetIfLoaded(playerId);
+            if (cachedPlayer != null)
+                return cachedPlayer;
+
+            var player = await _playerDAO.GetPlayerByIdAsync(playerId);
+            if (player != null)
+            {
+                _cache[playerId] = player; // ahora sí accedés al diccionario protegido
+            }
+
+            return player;
+        }
+
+        protected override PlayerModel CreateModel(int playerId)
+        {
+            // Nota: si necesitas que sea async, hay formas de adaptarlo (por ejemplo, cargar todo antes de llamar)
+            var task = _playerDAO.GetPlayerByIdAsync(playerId);
+            task.Wait();
+            return task.Result!;
         }
     }
 }

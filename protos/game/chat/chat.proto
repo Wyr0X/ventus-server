@@ -1,0 +1,32 @@
+syntax = "proto3";
+package protos.game.chat;
+
+
+
+
+message ClientMessageChat {
+  oneof message {
+    ChatSend chat_send = 1;
+    // Agrega más tipos de mensajes aquí
+  }
+}
+
+message ServerMessageChat {
+  oneof message {
+    OutgoingChatMessage outgoing_chat_message = 1;
+  }
+}
+
+message ChatSend  {
+    int32 playerId = 1;
+    string message = 2;
+    int64 timestamp_ms = 3;
+}
+
+message OutgoingChatMessage {
+    int32 playerId = 1;
+    string message = 2;
+    string playerName = 3;
+    int64 timestamp_ms = 4;
+
+}

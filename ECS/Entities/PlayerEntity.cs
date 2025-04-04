@@ -8,7 +8,7 @@ public class PlayerEntity : Entity
     }
 
 
-    public Guid GetUserId()
+    public Guid GetAccountId()
     {
         return _accountId;
     }

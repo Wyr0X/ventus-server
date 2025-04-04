@@ -184,7 +184,7 @@ public class EntityManager
         }
     }
 
-    public Entity? GetPlayerByUserId(Guid accountId){
+    public Entity? GetPlayerByAccountId(Guid accountId){
         return playersEntities[accountId];
     }
      public Dictionary<Guid, PlayerEntity> GetPlayersEntity(){

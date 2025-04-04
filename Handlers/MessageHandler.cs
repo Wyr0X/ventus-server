@@ -9,11 +9,13 @@ public class MessageHandler
 {
     private readonly AuthHandler _authHandler;
     private readonly SessionHandler _sessionHandler;
+    private readonly ChatHandler _chatHandler;
 
-    public MessageHandler(AuthHandler authHandler, SessionHandler sessionHandler)
+    public MessageHandler(AuthHandler authHandler, SessionHandler sessionHandler, ChatHandler chatHandler)
     {
         _authHandler = authHandler;
         _sessionHandler = sessionHandler;
+        _chatHandler = chatHandler;
 
     }
 
@@ -29,7 +31,11 @@ public class MessageHandler
                 _sessionHandler.HandleSessionMessage(messagePair);
 
             }
-            
+               if (clientMessage.MessageCase == ClientMessage.MessageOneofCase.ClientMessageChat)
+            {
+                _chatHandler.HandleChatMessage(messagePair);
+
+            }
             // else if (clientMessage is MessageUnAuth unAuthMessage)
             // {
             //     HandleOAuthMessage(unAuthMessage, messagePair);

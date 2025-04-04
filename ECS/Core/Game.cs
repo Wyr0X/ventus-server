@@ -71,7 +71,7 @@ public class GameEngine : Engine
 
     public void EnqueuEvent(GameEvent gameEvent)
     {
-        Entity? playerEntity = Entities.GetPlayerByUserId(gameEvent.GetUserId());
+        Entity? playerEntity = Entities.GetPlayerByAccountId(gameEvent.GetAccountId());
         if (playerEntity != null)
         {
             EventBuffer? eventBuffer = (EventBuffer?)playerEntity.Get(typeof(EventBuffer));
@@ -79,6 +79,18 @@ public class GameEngine : Engine
             {
                 eventBuffer.EnqueueEvent(gameEvent);
             }
+        }
+
+    }
+    public void UnSpawnPlayer(Guid accountId, PlayerModel playerModel, PlayerLocation playerLocation)
+    {
+        PlayerEntity? playerEntity = (PlayerEntity?)Entities.GetPlayerByAccountId(accountId);
+        if (playerEntity != null){
+                        Console.WriteLine($"Player {playerModel.Id} unspawn");
+
+            Entities.Remove(playerEntity);
+            _worldManager.UnSpawnPlayer(playerLocation.World.Id);
+
         }
 
     }

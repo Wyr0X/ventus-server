@@ -12,6 +12,8 @@ public class PlayerModel
     public string Class { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime LastLogin { get; set; }
+    public Boolean isSpawned { get; set; } = false;
+
     public string Status { get; private set; } // Estado: "Online", "Offline", "Banned"
 
 
@@ -34,6 +36,28 @@ public class PlayerModel
         Status = newStatus;
     }
 
+    public void PrintInfo()
+    {
+        Console.ForegroundColor = ConsoleColor.Blue;
+
+        Console.WriteLine("\n##################################");
+        Console.WriteLine("           PLAYER INFO            ");
+        Console.WriteLine("##################################");
+        Console.WriteLine($"ID:          {Id}");
+        Console.WriteLine($"Account ID:  {AccountId}");
+        Console.WriteLine($"Name:        {Name}");
+        Console.WriteLine($"Gender:      {Gender}");
+        Console.WriteLine($"Race:        {Race}");
+        Console.WriteLine($"Level:       {Level}");
+        Console.WriteLine($"Class:       {Class}");
+        Console.WriteLine($"Created At:  {CreatedAt}");
+        Console.WriteLine($"Last Login:  {LastLogin}");
+        Console.WriteLine($"Status:      {Status}");
+        Console.WriteLine($"Is Spawned:  {isSpawned}");
+        Console.WriteLine("##################################\n");
+
+        Console.ResetColor();
+    }
 
 }
 
