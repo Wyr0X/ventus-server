@@ -106,6 +106,9 @@ var serviceProvider = new ServiceCollection()
     .AddSingleton<PlayerService>()
     .AddSingleton<PlayerLocationService>()
     .AddSingleton<AccountService>()
+    .AddSingleton<GlobalChatService>()
+    .AddSingleton<ModerationService>()
+
 
     .AddSingleton<ResponseService>() // Registrar el ResponseService
 

@@ -24,28 +24,69 @@ namespace Protos.Game.Chat {
     static ChatReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "ChRnYW1lL2NoYXQvY2hhdC5wcm90bxIQcHJvdG9zLmdhbWUuY2hhdCJPChFD",
-            "bGllbnRNZXNzYWdlQ2hhdBIvCgljaGF0X3NlbmQYASABKAsyGi5wcm90b3Mu",
-            "Z2FtZS5jaGF0LkNoYXRTZW5kSABCCQoHbWVzc2FnZSJmChFTZXJ2ZXJNZXNz",
-            "YWdlQ2hhdBJGChVvdXRnb2luZ19jaGF0X21lc3NhZ2UYASABKAsyJS5wcm90",
-            "b3MuZ2FtZS5jaGF0Lk91dGdvaW5nQ2hhdE1lc3NhZ2VIAEIJCgdtZXNzYWdl",
-            "IkMKCENoYXRTZW5kEhAKCHBsYXllcklkGAEgASgFEg8KB21lc3NhZ2UYAiAB",
-            "KAkSFAoMdGltZXN0YW1wX21zGAMgASgDImIKE091dGdvaW5nQ2hhdE1lc3Nh",
-            "Z2USEAoIcGxheWVySWQYASABKAUSDwoHbWVzc2FnZRgCIAEoCRISCgpwbGF5",
-            "ZXJOYW1lGAMgASgJEhQKDHRpbWVzdGFtcF9tcxgEIAEoA2IGcHJvdG8z"));
+            "ChRnYW1lL2NoYXQvY2hhdC5wcm90bxIQcHJvdG9zLmdhbWUuY2hhdCKGAQoR",
+            "Q2xpZW50TWVzc2FnZUNoYXQSLwoJY2hhdF9zZW5kGAEgASgLMhoucHJvdG9z",
+            "LmdhbWUuY2hhdC5DaGF0U2VuZEgAEjUKDGNoYXRfY29tbWFuZBgCIAEoCzId",
+            "LnByb3Rvcy5nYW1lLmNoYXQuQ2hhdENvbW1hbmRIAEIJCgdtZXNzYWdlIqEB",
+            "ChFTZXJ2ZXJNZXNzYWdlQ2hhdBJGChVvdXRnb2luZ19jaGF0X21lc3NhZ2UY",
+            "ASABKAsyJS5wcm90b3MuZ2FtZS5jaGF0Lk91dGdvaW5nQ2hhdE1lc3NhZ2VI",
+            "ABI5Cg5zeXN0ZW1fbWVzc2FnZRgCIAEoCzIfLnByb3Rvcy5nYW1lLmNoYXQu",
+            "U3lzdGVtTWVzc2FnZUgAQgkKB21lc3NhZ2UicwoIQ2hhdFNlbmQSEAoIcGxh",
+            "eWVySWQYASABKAUSDwoHbWVzc2FnZRgCIAEoCRIUCgx0aW1lc3RhbXBfbXMY",
+            "AyABKAMSLgoHY2hhbm5lbBgEIAEoDjIdLnByb3Rvcy5nYW1lLmNoYXQuQ2hh",
+            "dENoYW5uZWwikgEKE091dGdvaW5nQ2hhdE1lc3NhZ2USEAoIcGxheWVySWQY",
+            "ASABKAUSEgoKcGxheWVyTmFtZRgCIAEoCRIPCgdtZXNzYWdlGAMgASgJEhQK",
+            "DHRpbWVzdGFtcF9tcxgEIAEoAxIuCgdjaGFubmVsGAUgASgOMh0ucHJvdG9z",
+            "LmdhbWUuY2hhdC5DaGF0Q2hhbm5lbCI+CgtDaGF0Q29tbWFuZBIQCghwbGF5",
+            "ZXJJZBgBIAEoBRIPCgdjb21tYW5kGAIgASgJEgwKBGFyZ3MYAyADKAkiUwoN",
+            "U3lzdGVtTWVzc2FnZRIPCgdtZXNzYWdlGAEgASgJEjEKBHR5cGUYAiABKA4y",
+            "Iy5wcm90b3MuZ2FtZS5jaGF0LlN5c3RlbU1lc3NhZ2VUeXBlKkkKC0NoYXRD",
+            "aGFubmVsEgsKB0dFTkVSQUwQABILCgdQUklWQVRFEAESCQoFUEFSVFkQAhIJ",
+            "CgVHVUlMRBADEgoKBlNZU1RFTRAEKkwKEVN5c3RlbU1lc3NhZ2VUeXBlEggK",
+            "BElORk8QABILCgdXQVJOSU5HEAESCQoFRVJST1IQAhIVChFNVVRFX05PVElG",
+            "SUNBVElPThADYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Game.Chat.ClientMessageChat), global::Protos.Game.Chat.ClientMessageChat.Parser, new[]{ "ChatSend" }, new[]{ "Message" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Game.Chat.ServerMessageChat), global::Protos.Game.Chat.ServerMessageChat.Parser, new[]{ "OutgoingChatMessage" }, new[]{ "Message" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Game.Chat.ChatSend), global::Protos.Game.Chat.ChatSend.Parser, new[]{ "PlayerId", "Message", "TimestampMs" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Game.Chat.OutgoingChatMessage), global::Protos.Game.Chat.OutgoingChatMessage.Parser, new[]{ "PlayerId", "Message", "PlayerName", "TimestampMs" }, null, null, null, null)
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Protos.Game.Chat.ChatChannel), typeof(global::Protos.Game.Chat.SystemMessageType), }, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Game.Chat.ClientMessageChat), global::Protos.Game.Chat.ClientMessageChat.Parser, new[]{ "ChatSend", "ChatCommand" }, new[]{ "Message" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Game.Chat.ServerMessageChat), global::Protos.Game.Chat.ServerMessageChat.Parser, new[]{ "OutgoingChatMessage", "SystemMessage" }, new[]{ "Message" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Game.Chat.ChatSend), global::Protos.Game.Chat.ChatSend.Parser, new[]{ "PlayerId", "Message", "TimestampMs", "Channel" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Game.Chat.OutgoingChatMessage), global::Protos.Game.Chat.OutgoingChatMessage.Parser, new[]{ "PlayerId", "PlayerName", "Message", "TimestampMs", "Channel" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Game.Chat.ChatCommand), global::Protos.Game.Chat.ChatCommand.Parser, new[]{ "PlayerId", "Command", "Args" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Game.Chat.SystemMessage), global::Protos.Game.Chat.SystemMessage.Parser, new[]{ "Message", "Type" }, null, null, null, null)
           }));
     }
     #endregion
 
   }
+  #region Enums
+  /// <summary>
+  /// 🎯 Enumeración de los tipos de chat disponibles
+  /// </summary>
+  public enum ChatChannel {
+    [pbr::OriginalName("GENERAL")] General = 0,
+    [pbr::OriginalName("PRIVATE")] Private = 1,
+    [pbr::OriginalName("PARTY")] Party = 2,
+    [pbr::OriginalName("GUILD")] Guild = 3,
+    [pbr::OriginalName("SYSTEM")] System = 4,
+  }
+
+  /// <summary>
+  /// 🎯 Enumeración de los tipos de mensajes del sistema
+  /// </summary>
+  public enum SystemMessageType {
+    [pbr::OriginalName("INFO")] Info = 0,
+    [pbr::OriginalName("WARNING")] Warning = 1,
+    [pbr::OriginalName("ERROR")] Error = 2,
+    [pbr::OriginalName("MUTE_NOTIFICATION")] MuteNotification = 3,
+  }
+
+  #endregion
+
   #region Messages
+  /// <summary>
+  /// 🎯 Mensaje que el cliente envía al servidor
+  /// </summary>
   [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
   public sealed partial class ClientMessageChat : pb::IMessage<ClientMessageChat>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
@@ -85,6 +126,9 @@ namespace Protos.Game.Chat {
         case MessageOneofCase.ChatSend:
           ChatSend = other.ChatSend.Clone();
           break;
+        case MessageOneofCase.ChatCommand:
+          ChatCommand = other.ChatCommand.Clone();
+          break;
       }
 
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -98,9 +142,6 @@ namespace Protos.Game.Chat {
 
     /// <summary>Field number for the "chat_send" field.</summary>
     public const int ChatSendFieldNumber = 1;
-    /// <summary>
-    /// Agrega más tipos de mensajes aquí
-    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Protos.Game.Chat.ChatSend ChatSend {
@@ -111,11 +152,27 @@ namespace Protos.Game.Chat {
       }
     }
 
+    /// <summary>Field number for the "chat_command" field.</summary>
+    public const int ChatCommandFieldNumber = 2;
+    /// <summary>
+    /// 📌 Nuevo mensaje para comandos
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Protos.Game.Chat.ChatCommand ChatCommand {
+      get { return messageCase_ == MessageOneofCase.ChatCommand ? (global::Protos.Game.Chat.ChatCommand) message_ : null; }
+      set {
+        message_ = value;
+        messageCase_ = value == null ? MessageOneofCase.None : MessageOneofCase.ChatCommand;
+      }
+    }
+
     private object message_;
     /// <summary>Enum of possible cases for the "message" oneof.</summary>
     public enum MessageOneofCase {
       None = 0,
       ChatSend = 1,
+      ChatCommand = 2,
     }
     private MessageOneofCase messageCase_ = MessageOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -147,6 +204,7 @@ namespace Protos.Game.Chat {
         return true;
       }
       if (!object.Equals(ChatSend, other.ChatSend)) return false;
+      if (!object.Equals(ChatCommand, other.ChatCommand)) return false;
       if (MessageCase != other.MessageCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -156,6 +214,7 @@ namespace Protos.Game.Chat {
     public override int GetHashCode() {
       int hash = 1;
       if (messageCase_ == MessageOneofCase.ChatSend) hash ^= ChatSend.GetHashCode();
+      if (messageCase_ == MessageOneofCase.ChatCommand) hash ^= ChatCommand.GetHashCode();
       hash ^= (int) messageCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -179,6 +238,10 @@ namespace Protos.Game.Chat {
         output.WriteRawTag(10);
         output.WriteMessage(ChatSend);
       }
+      if (messageCase_ == MessageOneofCase.ChatCommand) {
+        output.WriteRawTag(18);
+        output.WriteMessage(ChatCommand);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -193,6 +256,10 @@ namespace Protos.Game.Chat {
         output.WriteRawTag(10);
         output.WriteMessage(ChatSend);
       }
+      if (messageCase_ == MessageOneofCase.ChatCommand) {
+        output.WriteRawTag(18);
+        output.WriteMessage(ChatCommand);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -205,6 +272,9 @@ namespace Protos.Game.Chat {
       int size = 0;
       if (messageCase_ == MessageOneofCase.ChatSend) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(ChatSend);
+      }
+      if (messageCase_ == MessageOneofCase.ChatCommand) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ChatCommand);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -224,6 +294,12 @@ namespace Protos.Game.Chat {
             ChatSend = new global::Protos.Game.Chat.ChatSend();
           }
           ChatSend.MergeFrom(other.ChatSend);
+          break;
+        case MessageOneofCase.ChatCommand:
+          if (ChatCommand == null) {
+            ChatCommand = new global::Protos.Game.Chat.ChatCommand();
+          }
+          ChatCommand.MergeFrom(other.ChatCommand);
           break;
       }
 
@@ -255,6 +331,15 @@ namespace Protos.Game.Chat {
             ChatSend = subBuilder;
             break;
           }
+          case 18: {
+            global::Protos.Game.Chat.ChatCommand subBuilder = new global::Protos.Game.Chat.ChatCommand();
+            if (messageCase_ == MessageOneofCase.ChatCommand) {
+              subBuilder.MergeFrom(ChatCommand);
+            }
+            input.ReadMessage(subBuilder);
+            ChatCommand = subBuilder;
+            break;
+          }
         }
       }
     #endif
@@ -283,6 +368,15 @@ namespace Protos.Game.Chat {
             ChatSend = subBuilder;
             break;
           }
+          case 18: {
+            global::Protos.Game.Chat.ChatCommand subBuilder = new global::Protos.Game.Chat.ChatCommand();
+            if (messageCase_ == MessageOneofCase.ChatCommand) {
+              subBuilder.MergeFrom(ChatCommand);
+            }
+            input.ReadMessage(subBuilder);
+            ChatCommand = subBuilder;
+            break;
+          }
         }
       }
     }
@@ -290,6 +384,9 @@ namespace Protos.Game.Chat {
 
   }
 
+  /// <summary>
+  /// 🎯 Mensaje que el servidor envía a los clientes
+  /// </summary>
   [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
   public sealed partial class ServerMessageChat : pb::IMessage<ServerMessageChat>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
@@ -329,6 +426,9 @@ namespace Protos.Game.Chat {
         case MessageOneofCase.OutgoingChatMessage:
           OutgoingChatMessage = other.OutgoingChatMessage.Clone();
           break;
+        case MessageOneofCase.SystemMessage:
+          SystemMessage = other.SystemMessage.Clone();
+          break;
       }
 
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -352,11 +452,27 @@ namespace Protos.Game.Chat {
       }
     }
 
+    /// <summary>Field number for the "system_message" field.</summary>
+    public const int SystemMessageFieldNumber = 2;
+    /// <summary>
+    /// 📌 Nuevo mensaje del sistema
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Protos.Game.Chat.SystemMessage SystemMessage {
+      get { return messageCase_ == MessageOneofCase.SystemMessage ? (global::Protos.Game.Chat.SystemMessage) message_ : null; }
+      set {
+        message_ = value;
+        messageCase_ = value == null ? MessageOneofCase.None : MessageOneofCase.SystemMessage;
+      }
+    }
+
     private object message_;
     /// <summary>Enum of possible cases for the "message" oneof.</summary>
     public enum MessageOneofCase {
       None = 0,
       OutgoingChatMessage = 1,
+      SystemMessage = 2,
     }
     private MessageOneofCase messageCase_ = MessageOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -388,6 +504,7 @@ namespace Protos.Game.Chat {
         return true;
       }
       if (!object.Equals(OutgoingChatMessage, other.OutgoingChatMessage)) return false;
+      if (!object.Equals(SystemMessage, other.SystemMessage)) return false;
       if (MessageCase != other.MessageCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -397,6 +514,7 @@ namespace Protos.Game.Chat {
     public override int GetHashCode() {
       int hash = 1;
       if (messageCase_ == MessageOneofCase.OutgoingChatMessage) hash ^= OutgoingChatMessage.GetHashCode();
+      if (messageCase_ == MessageOneofCase.SystemMessage) hash ^= SystemMessage.GetHashCode();
       hash ^= (int) messageCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -420,6 +538,10 @@ namespace Protos.Game.Chat {
         output.WriteRawTag(10);
         output.WriteMessage(OutgoingChatMessage);
       }
+      if (messageCase_ == MessageOneofCase.SystemMessage) {
+        output.WriteRawTag(18);
+        output.WriteMessage(SystemMessage);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -434,6 +556,10 @@ namespace Protos.Game.Chat {
         output.WriteRawTag(10);
         output.WriteMessage(OutgoingChatMessage);
       }
+      if (messageCase_ == MessageOneofCase.SystemMessage) {
+        output.WriteRawTag(18);
+        output.WriteMessage(SystemMessage);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -446,6 +572,9 @@ namespace Protos.Game.Chat {
       int size = 0;
       if (messageCase_ == MessageOneofCase.OutgoingChatMessage) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(OutgoingChatMessage);
+      }
+      if (messageCase_ == MessageOneofCase.SystemMessage) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(SystemMessage);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -465,6 +594,12 @@ namespace Protos.Game.Chat {
             OutgoingChatMessage = new global::Protos.Game.Chat.OutgoingChatMessage();
           }
           OutgoingChatMessage.MergeFrom(other.OutgoingChatMessage);
+          break;
+        case MessageOneofCase.SystemMessage:
+          if (SystemMessage == null) {
+            SystemMessage = new global::Protos.Game.Chat.SystemMessage();
+          }
+          SystemMessage.MergeFrom(other.SystemMessage);
           break;
       }
 
@@ -496,6 +631,15 @@ namespace Protos.Game.Chat {
             OutgoingChatMessage = subBuilder;
             break;
           }
+          case 18: {
+            global::Protos.Game.Chat.SystemMessage subBuilder = new global::Protos.Game.Chat.SystemMessage();
+            if (messageCase_ == MessageOneofCase.SystemMessage) {
+              subBuilder.MergeFrom(SystemMessage);
+            }
+            input.ReadMessage(subBuilder);
+            SystemMessage = subBuilder;
+            break;
+          }
         }
       }
     #endif
@@ -524,6 +668,15 @@ namespace Protos.Game.Chat {
             OutgoingChatMessage = subBuilder;
             break;
           }
+          case 18: {
+            global::Protos.Game.Chat.SystemMessage subBuilder = new global::Protos.Game.Chat.SystemMessage();
+            if (messageCase_ == MessageOneofCase.SystemMessage) {
+              subBuilder.MergeFrom(SystemMessage);
+            }
+            input.ReadMessage(subBuilder);
+            SystemMessage = subBuilder;
+            break;
+          }
         }
       }
     }
@@ -531,6 +684,9 @@ namespace Protos.Game.Chat {
 
   }
 
+  /// <summary>
+  /// 📢 Mensaje normal del chat con diferentes canales
+  /// </summary>
   [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
   public sealed partial class ChatSend : pb::IMessage<ChatSend>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
@@ -569,6 +725,7 @@ namespace Protos.Game.Chat {
       playerId_ = other.playerId_;
       message_ = other.message_;
       timestampMs_ = other.timestampMs_;
+      channel_ = other.channel_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -614,6 +771,21 @@ namespace Protos.Game.Chat {
       }
     }
 
+    /// <summary>Field number for the "channel" field.</summary>
+    public const int ChannelFieldNumber = 4;
+    private global::Protos.Game.Chat.ChatChannel channel_ = global::Protos.Game.Chat.ChatChannel.General;
+    /// <summary>
+    /// 📌 Nuevo: canal del mensaje
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Protos.Game.Chat.ChatChannel Channel {
+      get { return channel_; }
+      set {
+        channel_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -632,6 +804,7 @@ namespace Protos.Game.Chat {
       if (PlayerId != other.PlayerId) return false;
       if (Message != other.Message) return false;
       if (TimestampMs != other.TimestampMs) return false;
+      if (Channel != other.Channel) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -642,6 +815,7 @@ namespace Protos.Game.Chat {
       if (PlayerId != 0) hash ^= PlayerId.GetHashCode();
       if (Message.Length != 0) hash ^= Message.GetHashCode();
       if (TimestampMs != 0L) hash ^= TimestampMs.GetHashCode();
+      if (Channel != global::Protos.Game.Chat.ChatChannel.General) hash ^= Channel.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -672,6 +846,10 @@ namespace Protos.Game.Chat {
         output.WriteRawTag(24);
         output.WriteInt64(TimestampMs);
       }
+      if (Channel != global::Protos.Game.Chat.ChatChannel.General) {
+        output.WriteRawTag(32);
+        output.WriteEnum((int) Channel);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -694,6 +872,10 @@ namespace Protos.Game.Chat {
         output.WriteRawTag(24);
         output.WriteInt64(TimestampMs);
       }
+      if (Channel != global::Protos.Game.Chat.ChatChannel.General) {
+        output.WriteRawTag(32);
+        output.WriteEnum((int) Channel);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -712,6 +894,9 @@ namespace Protos.Game.Chat {
       }
       if (TimestampMs != 0L) {
         size += 1 + pb::CodedOutputStream.ComputeInt64Size(TimestampMs);
+      }
+      if (Channel != global::Protos.Game.Chat.ChatChannel.General) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Channel);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -733,6 +918,9 @@ namespace Protos.Game.Chat {
       }
       if (other.TimestampMs != 0L) {
         TimestampMs = other.TimestampMs;
+      }
+      if (other.Channel != global::Protos.Game.Chat.ChatChannel.General) {
+        Channel = other.Channel;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -763,6 +951,10 @@ namespace Protos.Game.Chat {
           }
           case 24: {
             TimestampMs = input.ReadInt64();
+            break;
+          }
+          case 32: {
+            Channel = (global::Protos.Game.Chat.ChatChannel) input.ReadEnum();
             break;
           }
         }
@@ -796,6 +988,10 @@ namespace Protos.Game.Chat {
             TimestampMs = input.ReadInt64();
             break;
           }
+          case 32: {
+            Channel = (global::Protos.Game.Chat.ChatChannel) input.ReadEnum();
+            break;
+          }
         }
       }
     }
@@ -803,6 +999,9 @@ namespace Protos.Game.Chat {
 
   }
 
+  /// <summary>
+  /// 📢 Mensaje que los jugadores reciben en el chat
+  /// </summary>
   [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
   public sealed partial class OutgoingChatMessage : pb::IMessage<OutgoingChatMessage>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
@@ -839,9 +1038,10 @@ namespace Protos.Game.Chat {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public OutgoingChatMessage(OutgoingChatMessage other) : this() {
       playerId_ = other.playerId_;
-      message_ = other.message_;
       playerName_ = other.playerName_;
+      message_ = other.message_;
       timestampMs_ = other.timestampMs_;
+      channel_ = other.channel_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -863,20 +1063,8 @@ namespace Protos.Game.Chat {
       }
     }
 
-    /// <summary>Field number for the "message" field.</summary>
-    public const int MessageFieldNumber = 2;
-    private string message_ = "";
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string Message {
-      get { return message_; }
-      set {
-        message_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
     /// <summary>Field number for the "playerName" field.</summary>
-    public const int PlayerNameFieldNumber = 3;
+    public const int PlayerNameFieldNumber = 2;
     private string playerName_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -884,6 +1072,18 @@ namespace Protos.Game.Chat {
       get { return playerName_; }
       set {
         playerName_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "message" field.</summary>
+    public const int MessageFieldNumber = 3;
+    private string message_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string Message {
+      get { return message_; }
+      set {
+        message_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
@@ -896,6 +1096,21 @@ namespace Protos.Game.Chat {
       get { return timestampMs_; }
       set {
         timestampMs_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "channel" field.</summary>
+    public const int ChannelFieldNumber = 5;
+    private global::Protos.Game.Chat.ChatChannel channel_ = global::Protos.Game.Chat.ChatChannel.General;
+    /// <summary>
+    /// 📌 Nuevo: canal del mensaje
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Protos.Game.Chat.ChatChannel Channel {
+      get { return channel_; }
+      set {
+        channel_ = value;
       }
     }
 
@@ -915,9 +1130,10 @@ namespace Protos.Game.Chat {
         return true;
       }
       if (PlayerId != other.PlayerId) return false;
-      if (Message != other.Message) return false;
       if (PlayerName != other.PlayerName) return false;
+      if (Message != other.Message) return false;
       if (TimestampMs != other.TimestampMs) return false;
+      if (Channel != other.Channel) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -926,9 +1142,10 @@ namespace Protos.Game.Chat {
     public override int GetHashCode() {
       int hash = 1;
       if (PlayerId != 0) hash ^= PlayerId.GetHashCode();
-      if (Message.Length != 0) hash ^= Message.GetHashCode();
       if (PlayerName.Length != 0) hash ^= PlayerName.GetHashCode();
+      if (Message.Length != 0) hash ^= Message.GetHashCode();
       if (TimestampMs != 0L) hash ^= TimestampMs.GetHashCode();
+      if (Channel != global::Protos.Game.Chat.ChatChannel.General) hash ^= Channel.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -951,17 +1168,21 @@ namespace Protos.Game.Chat {
         output.WriteRawTag(8);
         output.WriteInt32(PlayerId);
       }
-      if (Message.Length != 0) {
-        output.WriteRawTag(18);
-        output.WriteString(Message);
-      }
       if (PlayerName.Length != 0) {
-        output.WriteRawTag(26);
+        output.WriteRawTag(18);
         output.WriteString(PlayerName);
+      }
+      if (Message.Length != 0) {
+        output.WriteRawTag(26);
+        output.WriteString(Message);
       }
       if (TimestampMs != 0L) {
         output.WriteRawTag(32);
         output.WriteInt64(TimestampMs);
+      }
+      if (Channel != global::Protos.Game.Chat.ChatChannel.General) {
+        output.WriteRawTag(40);
+        output.WriteEnum((int) Channel);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -977,17 +1198,21 @@ namespace Protos.Game.Chat {
         output.WriteRawTag(8);
         output.WriteInt32(PlayerId);
       }
-      if (Message.Length != 0) {
-        output.WriteRawTag(18);
-        output.WriteString(Message);
-      }
       if (PlayerName.Length != 0) {
-        output.WriteRawTag(26);
+        output.WriteRawTag(18);
         output.WriteString(PlayerName);
+      }
+      if (Message.Length != 0) {
+        output.WriteRawTag(26);
+        output.WriteString(Message);
       }
       if (TimestampMs != 0L) {
         output.WriteRawTag(32);
         output.WriteInt64(TimestampMs);
+      }
+      if (Channel != global::Protos.Game.Chat.ChatChannel.General) {
+        output.WriteRawTag(40);
+        output.WriteEnum((int) Channel);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
@@ -1002,14 +1227,17 @@ namespace Protos.Game.Chat {
       if (PlayerId != 0) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(PlayerId);
       }
-      if (Message.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(Message);
-      }
       if (PlayerName.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(PlayerName);
       }
+      if (Message.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Message);
+      }
       if (TimestampMs != 0L) {
         size += 1 + pb::CodedOutputStream.ComputeInt64Size(TimestampMs);
+      }
+      if (Channel != global::Protos.Game.Chat.ChatChannel.General) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Channel);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -1026,14 +1254,17 @@ namespace Protos.Game.Chat {
       if (other.PlayerId != 0) {
         PlayerId = other.PlayerId;
       }
-      if (other.Message.Length != 0) {
-        Message = other.Message;
-      }
       if (other.PlayerName.Length != 0) {
         PlayerName = other.PlayerName;
       }
+      if (other.Message.Length != 0) {
+        Message = other.Message;
+      }
       if (other.TimestampMs != 0L) {
         TimestampMs = other.TimestampMs;
+      }
+      if (other.Channel != global::Protos.Game.Chat.ChatChannel.General) {
+        Channel = other.Channel;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -1059,15 +1290,19 @@ namespace Protos.Game.Chat {
             break;
           }
           case 18: {
-            Message = input.ReadString();
+            PlayerName = input.ReadString();
             break;
           }
           case 26: {
-            PlayerName = input.ReadString();
+            Message = input.ReadString();
             break;
           }
           case 32: {
             TimestampMs = input.ReadInt64();
+            break;
+          }
+          case 40: {
+            Channel = (global::Protos.Game.Chat.ChatChannel) input.ReadEnum();
             break;
           }
         }
@@ -1094,15 +1329,524 @@ namespace Protos.Game.Chat {
             break;
           }
           case 18: {
-            Message = input.ReadString();
+            PlayerName = input.ReadString();
             break;
           }
           case 26: {
-            PlayerName = input.ReadString();
+            Message = input.ReadString();
             break;
           }
           case 32: {
             TimestampMs = input.ReadInt64();
+            break;
+          }
+          case 40: {
+            Channel = (global::Protos.Game.Chat.ChatChannel) input.ReadEnum();
+            break;
+          }
+        }
+      }
+    }
+    #endif
+
+  }
+
+  /// <summary>
+  /// 📜 Mensaje de comandos (/mute, /w, /roll)
+  /// </summary>
+  [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
+  public sealed partial class ChatCommand : pb::IMessage<ChatCommand>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
+    private static readonly pb::MessageParser<ChatCommand> _parser = new pb::MessageParser<ChatCommand>(() => new ChatCommand());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pb::MessageParser<ChatCommand> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Protos.Game.Chat.ChatReflection.Descriptor.MessageTypes[4]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public ChatCommand() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public ChatCommand(ChatCommand other) : this() {
+      playerId_ = other.playerId_;
+      command_ = other.command_;
+      args_ = other.args_.Clone();
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public ChatCommand Clone() {
+      return new ChatCommand(this);
+    }
+
+    /// <summary>Field number for the "playerId" field.</summary>
+    public const int PlayerIdFieldNumber = 1;
+    private int playerId_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int PlayerId {
+      get { return playerId_; }
+      set {
+        playerId_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "command" field.</summary>
+    public const int CommandFieldNumber = 2;
+    private string command_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string Command {
+      get { return command_; }
+      set {
+        command_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "args" field.</summary>
+    public const int ArgsFieldNumber = 3;
+    private static readonly pb::FieldCodec<string> _repeated_args_codec
+        = pb::FieldCodec.ForString(26);
+    private readonly pbc::RepeatedField<string> args_ = new pbc::RepeatedField<string>();
+    /// <summary>
+    /// Argumentos opcionales del comando
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public pbc::RepeatedField<string> Args {
+      get { return args_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override bool Equals(object other) {
+      return Equals(other as ChatCommand);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Equals(ChatCommand other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (PlayerId != other.PlayerId) return false;
+      if (Command != other.Command) return false;
+      if(!args_.Equals(other.args_)) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (PlayerId != 0) hash ^= PlayerId.GetHashCode();
+      if (Command.Length != 0) hash ^= Command.GetHashCode();
+      hash ^= args_.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      if (PlayerId != 0) {
+        output.WriteRawTag(8);
+        output.WriteInt32(PlayerId);
+      }
+      if (Command.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteString(Command);
+      }
+      args_.WriteTo(output, _repeated_args_codec);
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (PlayerId != 0) {
+        output.WriteRawTag(8);
+        output.WriteInt32(PlayerId);
+      }
+      if (Command.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteString(Command);
+      }
+      args_.WriteTo(ref output, _repeated_args_codec);
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int CalculateSize() {
+      int size = 0;
+      if (PlayerId != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(PlayerId);
+      }
+      if (Command.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Command);
+      }
+      size += args_.CalculateSize(_repeated_args_codec);
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(ChatCommand other) {
+      if (other == null) {
+        return;
+      }
+      if (other.PlayerId != 0) {
+        PlayerId = other.PlayerId;
+      }
+      if (other.Command.Length != 0) {
+        Command = other.Command;
+      }
+      args_.Add(other.args_);
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+      if ((tag & 7) == 4) {
+        // Abort on any end group tag.
+        return;
+      }
+      switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 8: {
+            PlayerId = input.ReadInt32();
+            break;
+          }
+          case 18: {
+            Command = input.ReadString();
+            break;
+          }
+          case 26: {
+            args_.AddEntriesFrom(input, _repeated_args_codec);
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+      if ((tag & 7) == 4) {
+        // Abort on any end group tag.
+        return;
+      }
+      switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 8: {
+            PlayerId = input.ReadInt32();
+            break;
+          }
+          case 18: {
+            Command = input.ReadString();
+            break;
+          }
+          case 26: {
+            args_.AddEntriesFrom(ref input, _repeated_args_codec);
+            break;
+          }
+        }
+      }
+    }
+    #endif
+
+  }
+
+  /// <summary>
+  /// 📢 Mensajes del sistema (avisos, muteos, eventos)
+  /// </summary>
+  [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
+  public sealed partial class SystemMessage : pb::IMessage<SystemMessage>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
+    private static readonly pb::MessageParser<SystemMessage> _parser = new pb::MessageParser<SystemMessage>(() => new SystemMessage());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pb::MessageParser<SystemMessage> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Protos.Game.Chat.ChatReflection.Descriptor.MessageTypes[5]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public SystemMessage() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public SystemMessage(SystemMessage other) : this() {
+      message_ = other.message_;
+      type_ = other.type_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public SystemMessage Clone() {
+      return new SystemMessage(this);
+    }
+
+    /// <summary>Field number for the "message" field.</summary>
+    public const int MessageFieldNumber = 1;
+    private string message_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string Message {
+      get { return message_; }
+      set {
+        message_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "type" field.</summary>
+    public const int TypeFieldNumber = 2;
+    private global::Protos.Game.Chat.SystemMessageType type_ = global::Protos.Game.Chat.SystemMessageType.Info;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Protos.Game.Chat.SystemMessageType Type {
+      get { return type_; }
+      set {
+        type_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override bool Equals(object other) {
+      return Equals(other as SystemMessage);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Equals(SystemMessage other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (Message != other.Message) return false;
+      if (Type != other.Type) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (Message.Length != 0) hash ^= Message.GetHashCode();
+      if (Type != global::Protos.Game.Chat.SystemMessageType.Info) hash ^= Type.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      if (Message.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(Message);
+      }
+      if (Type != global::Protos.Game.Chat.SystemMessageType.Info) {
+        output.WriteRawTag(16);
+        output.WriteEnum((int) Type);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (Message.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(Message);
+      }
+      if (Type != global::Protos.Game.Chat.SystemMessageType.Info) {
+        output.WriteRawTag(16);
+        output.WriteEnum((int) Type);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int CalculateSize() {
+      int size = 0;
+      if (Message.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Message);
+      }
+      if (Type != global::Protos.Game.Chat.SystemMessageType.Info) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Type);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(SystemMessage other) {
+      if (other == null) {
+        return;
+      }
+      if (other.Message.Length != 0) {
+        Message = other.Message;
+      }
+      if (other.Type != global::Protos.Game.Chat.SystemMessageType.Info) {
+        Type = other.Type;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+      if ((tag & 7) == 4) {
+        // Abort on any end group tag.
+        return;
+      }
+      switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            Message = input.ReadString();
+            break;
+          }
+          case 16: {
+            Type = (global::Protos.Game.Chat.SystemMessageType) input.ReadEnum();
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+      if ((tag & 7) == 4) {
+        // Abort on any end group tag.
+        return;
+      }
+      switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            Message = input.ReadString();
+            break;
+          }
+          case 16: {
+            Type = (global::Protos.Game.Chat.SystemMessageType) input.ReadEnum();
             break;
           }
         }
