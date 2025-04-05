@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
+using System.Security.Claims;
 
 public class JwtService
 {
@@ -15,7 +16,7 @@ public class JwtService
         _jwtSecret = "6YpV@cQ3z!mJtX7#dFk$wN9rLp*2HsG0";
     }
 
-    public string GenerateToken(Guid accountId, string email)
+    public string GenerateToken(Guid accountId, string email, Guid sessionId)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.UTF8.GetBytes(_jwtSecret);
@@ -24,10 +25,11 @@ public class JwtService
         {
             Subject = new System.Security.Claims.ClaimsIdentity(new[]
             {
-                new System.Security.Claims.Claim("accountId", accountId.ToString()), // Convertir Guid a string
-                new System.Security.Claims.Claim("email", email)
-            }),
-            Expires = DateTime.UtcNow.AddHours(2), // ⏳ Expira en 2 horas
+            new Claim("accountId", accountId.ToString()),
+            new Claim("email", email),
+            new Claim("sessionId", sessionId.ToString())
+        }),
+            Expires = DateTime.UtcNow.AddHours(2),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
         };
 
@@ -35,7 +37,7 @@ public class JwtService
         return tokenHandler.WriteToken(token);
     }
 
-    public string? ValidateToken(string token)
+    public (string? accountId, string? sessionId) ValidateToken(string token)
     {
         try
         {
@@ -48,21 +50,22 @@ public class JwtService
                 IssuerSigningKey = new SymmetricSecurityKey(key),
                 ValidateIssuer = false,
                 ValidateAudience = false,
-                ClockSkew = TimeSpan.Zero // ⏳ No permitir margen extra de tiempo
+                ClockSkew = TimeSpan.Zero
             };
 
             var principal = tokenHandler.ValidateToken(token, validationParameters, out var validatedToken);
             var jwtToken = (JwtSecurityToken)validatedToken;
 
             if (jwtToken.ValidTo < DateTime.UtcNow)
-                return null; // ❌ Token expirado
+                return (null, null);
 
-            return jwtToken.Claims.First(x => x.Type == "accountId").Value; // ✅ Retornar accountId
+            var accountIdStr = jwtToken.Claims.First(x => x.Type == "accountId").Value;
+            var sessionId = jwtToken.Claims.First(x => x.Type == "sessionId").Value;
+            return (accountIdStr, sessionId);
         }
         catch
         {
-            return null; // ❌ Token inválido
+            return (null, null);
         }
     }
-    
 }

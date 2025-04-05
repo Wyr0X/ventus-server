@@ -33,7 +33,7 @@ namespace VentusServer.Auth
             var token = authorizationHeader.Replace("Bearer ", "").Trim();
             Console.WriteLine($"[JwtAuthRequired] Token extraído: {token}");
 
-            var accountId = jwtService.ValidateToken(token); // Verificamos el token
+            var (accountId, sessionId) = jwtService.ValidateToken(token); // Verificamos el token
             Console.WriteLine($"[JwtAuthRequired] UserId obtenido del token: {accountId}");
 
             if (string.IsNullOrEmpty(accountId))
@@ -43,7 +43,9 @@ namespace VentusServer.Auth
                 return;
             }
 
-            context.HttpContext.Items["AccountId"] = accountId; // Guardamos el UserId en el contexto
+            context.HttpContext.Items["AccountId"] = accountId;
+            context.HttpContext.Items["SessionId"] = sessionId; 
+
             Console.WriteLine($"[JwtAuthRequired] AccountId almacenado en HttpContext: {accountId}");
 
             await next();

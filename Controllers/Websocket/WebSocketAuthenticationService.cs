@@ -18,7 +18,7 @@ public class WebSocketAuthenticationService
         accountId = Guid.Empty;
         try
         {
-            var accountIdStr = _jwtService.ValidateToken(token);
+            var (accountIdStr, sessionIdStr) = _jwtService.ValidateToken(token);
             var result = Guid.TryParse(accountIdStr, out accountId);
 
             LoggerUtil.Log("AuthService", result
@@ -35,13 +35,4 @@ public class WebSocketAuthenticationService
         }
     }
 
-    public bool verifyToken( Guid accountId, string currenToken){
-        AccountModel? account = _accountService.GetIfLoaded(accountId);
-        if (account != null){
-            if (account.ValidToken == currenToken){
-                return true;
-            }
-        }
-        return false;
-    }
 }

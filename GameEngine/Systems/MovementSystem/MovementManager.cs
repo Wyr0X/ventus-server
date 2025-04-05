@@ -11,15 +11,13 @@ public class MovementManager
 {
     GameEngine _game;
 
-    PlayerLocationService _playerLocationService;
-    PlayerService _playerService;
 
 
-    public MovementManager(GameEngine game,
-    PlayerLocationService playerLocationService, PlayerService playerService)
+    public MovementManager(GameEngine game
+)
     {
      
-
+        _game = game;
     }
 
     public async void HandlePlayerInput(Guid accountId, PlayerInput playerInput)

@@ -13,12 +13,12 @@ public class ResponseService
             await webSocket.SendAsync(new ArraySegment<byte>(messageBytes), WebSocketMessageType.Binary, true, CancellationToken.None);
         }
 
-         public async Task SendBroadcastAsync(WebSocket[] webSockets, IMessage message)
+    public void SendBroadcast(WebSocket[] webSockets, IMessage message)
+    {
+
+        foreach (var webSocket in webSockets)
         {
-            
-            foreach (var webSocket in webSockets)
-            {
-                SendMessageAsync(webSocket, message);
-            }
+            _ = SendMessageAsync(webSocket, message);
         }
+    }
 }

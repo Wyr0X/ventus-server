@@ -6,7 +6,8 @@ public class WebSocketConnectionManager
 {
     private readonly ConcurrentDictionary<string, WebSocket> _pendingConnections = new();
     private readonly ConcurrentDictionary<Guid, WebSocket> _websocketsByAccountId = new();
-    private readonly ConcurrentDictionary<string, Guid> _connectionsByAccountId = new();
+    private readonly ConcurrentDictionary<string, Guid> _accountIdsByConnectionId = new();
+    private readonly ConcurrentDictionary<Guid, string> _connectionIdsByAccountId = new();
 
     public void AddPendingConnection(string connectionId, WebSocket socket)
     {
@@ -19,7 +20,8 @@ public class WebSocketConnectionManager
         socket = null!;
         if (_pendingConnections.TryRemove(connectionId, out var pending))
         {
-            _connectionsByAccountId[connectionId] = accountId;
+            _accountIdsByConnectionId[connectionId] = accountId;
+            _connectionIdsByAccountId[accountId] = connectionId;
             _websocketsByAccountId[accountId] = pending;
 
             socket = pending;
@@ -34,7 +36,7 @@ public class WebSocketConnectionManager
 
     public bool TryGetAccountId(string connectionId, out Guid accountId)
     {
-        var result = _connectionsByAccountId.TryGetValue(connectionId, out accountId);
+        var result = _accountIdsByConnectionId.TryGetValue(connectionId, out accountId);
         LoggerUtil.Log("WebSocket", result
             ? $"Retrieved AccountId {accountId} for ConnectionId {connectionId}"
             : $"Failed to retrieve AccountId for ConnectionId {connectionId}", ConsoleColor.Cyan);
@@ -52,29 +54,19 @@ public class WebSocketConnectionManager
 
     public void RemoveConnection(string connectionId, Guid accountId)
     {
-        _connectionsByAccountId.TryRemove(connectionId, out _);
+        _accountIdsByConnectionId.TryRemove(connectionId, out _);
         _websocketsByAccountId.TryRemove(accountId, out _);
         _pendingConnections.TryRemove(connectionId, out _);
+        _connectionIdsByAccountId.TryRemove(accountId, out _);
+
 
         LoggerUtil.Log("WebSocket", $"Removed connection {connectionId} and Account {accountId}", ConsoleColor.DarkMagenta);
     }
-    public async Task InvalidateExistingConnectionAsync(Guid accountId, string reason = "Sesión reemplazada")
+    public async Task RemoveConnectionByAccountId(Guid accountId)
     {
-        if (_websocketsByAccountId.TryRemove(accountId, out var oldSocket))
-        {
-            var oldConnectionId = _connectionsByAccountId.FirstOrDefault(x => x.Value == accountId).Key;
-            if (oldConnectionId != null)
-                _connectionsByAccountId.TryRemove(oldConnectionId, out _);
-
-            try
-            {
-                await oldSocket.CloseAsync(WebSocketCloseStatus.PolicyViolation, reason, CancellationToken.None);
-                LoggerUtil.Log("WebSocket", $"🔄 Sesión anterior cerrada para {accountId}", ConsoleColor.DarkYellow);
-            }
-            catch (Exception ex)
-            {
-                LoggerUtil.Log("WebSocket", $"⚠️ Error cerrando WebSocket anterior: {ex.Message}", ConsoleColor.Red);
-            }
+        var result = _connectionIdsByAccountId.TryGetValue(accountId, out var connectionId);
+        if (connectionId != null){
+            RemoveConnection(connectionId, accountId);
         }
     }
    

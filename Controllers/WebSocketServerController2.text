@@ -14,7 +14,7 @@ public class WebSocketServerController2
     private readonly FirebaseService _firebaseService;
     private readonly ConcurrentDictionary<string, WebSocket> _pendingConnections; // Conexiones pendientes de autenticación
     private readonly ConcurrentDictionary<Guid, WebSocket> _websocketsByAccountId;
-    private readonly ConcurrentDictionary<string, Guid> _connectionsByAccountId;
+    private readonly ConcurrentDictionary<string, Guid> _accountIdsByConnectionId;
     private readonly ConcurrentQueue<UserMessagePair> _messageQueue; // Conexiones ya autenticadas
     private readonly MessageHandler _messageHandler; // Conexiones ya autenticadas
     private readonly JwtService _jwtService;
@@ -24,7 +24,7 @@ public class WebSocketServerController2
         _firebaseService = firebaseService;
         _pendingConnections = new ConcurrentDictionary<string, WebSocket>();
         _websocketsByAccountId = new ConcurrentDictionary<Guid, WebSocket>();
-        _connectionsByAccountId = new ConcurrentDictionary<string, Guid>();
+        _accountIdsByConnectionId = new ConcurrentDictionary<string, Guid>();
         _messageQueue = new ConcurrentQueue<UserMessagePair>();
         _messageHandler = messageHandler;
         _jwtService = jwtService;
@@ -178,7 +178,7 @@ public class WebSocketServerController2
 
                             if (_pendingConnections.TryRemove(connectionId, out var pendingWebSocket))
                             {
-                                _connectionsByAccountId[connectionId] = accountId;
+                                _accountIdsByConnectionId[connectionId] = accountId;
                                 _websocketsByAccountId[accountId] = pendingWebSocket;
 
                                 Console.ForegroundColor = ConsoleColor.Cyan;
@@ -218,11 +218,11 @@ public class WebSocketServerController2
 
                 var receivedData = ms.ToArray();
 
-                if (_connectionsByAccountId.ContainsKey(connectionId) && (accountId != Guid.Empty))
+                if (_accountIdsByConnectionId.ContainsKey(connectionId) && (accountId != Guid.Empty))
                 {
                     var clientMessage = ClientMessage.Parser.ParseFrom(receivedData);
 
-                    accountId = _connectionsByAccountId[connectionId];
+                    accountId = _accountIdsByConnectionId[connectionId];
                     Console.ForegroundColor = ConsoleColor.Magenta;
                     Console.WriteLine($"Llego un paquete del tipo {clientMessage.MessageCase}");
                     Console.ResetColor();
@@ -272,7 +272,7 @@ public class WebSocketServerController2
         {
             if (accountId != Guid.Empty)
             {
-                _connectionsByAccountId.TryRemove(connectionId, out _);
+                _accountIdsByConnectionId.TryRemove(connectionId, out _);
                 _websocketsByAccountId.TryRemove(accountId, out _);
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine($"🔌 Usuario {accountId} desconectado.");

@@ -115,12 +115,12 @@ namespace VentusServer.Controllers
 
     public class ChangeNameRequest
     {
-        public string NewName { get; set; }
+        public required string NewName { get; set; }
     }
 
     public class ChangePasswordRequest
     {
-        public string NewPassword { get; set; }
-        public string ConfirmPassword { get; set; }
+        public required string NewPassword { get; set; }
+        public required string ConfirmPassword { get; set; }
     }
 }

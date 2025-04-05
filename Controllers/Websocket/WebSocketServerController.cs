@@ -103,7 +103,9 @@ public class WebSocketServerController
             }
 
             var clientMessage = ClientMessage.Parser.ParseFrom(ms.ToArray());
+            LoggerUtil.Log("WebSocketServerController", $"Bytes :{ms.ToArray()}", ConsoleColor.Magenta);
 
+            LoggerUtil.Log("WebSocketServerController", $"Paquete recibido - Tipo :{clientMessage.MessageCase}", ConsoleColor.Magenta);
             if (clientMessage.MessageCase == ClientMessage.MessageOneofCase.AuthRequest)
             {
                 if (!_authService.TryAuthenticate(clientMessage.AuthRequest.Token, out accountId))
@@ -112,7 +114,7 @@ public class WebSocketServerController
                     await socket.CloseAsync(WebSocketCloseStatus.PolicyViolation, "Token inválido", CancellationToken.None);
                     return;
                 }
-                await _connectionManager.InvalidateExistingConnectionAsync(accountId);
+                await _connectionManager.RemoveConnectionByAccountId(accountId);
 
                 if (!_connectionManager.TryAuthenticateConnection(connectionId, accountId, clientMessage.AuthRequest.Token, out socket))
                 {
@@ -136,6 +138,7 @@ public class WebSocketServerController
                     await socket.CloseAsync(WebSocketCloseStatus.PolicyViolation, "Usuario no autenticado", CancellationToken.None);
                     return;
                 }
+                LoggerUtil.Log("WebSocketServerController", $"Paquete recibido - Tipo :{clientMessage.MessageCase}", ConsoleColor.Magenta);
 
                 if (clientMessage.MessageCase == ClientMessage.MessageOneofCase.ClientMessagePing)
                 {
@@ -165,8 +168,9 @@ public class WebSocketServerController
             socket.Dispose();
         }
     }
-    public void SendWebSocketStatusOpen(Guid accountId){
-         ServerStatusMessage serverStatusMessage = new ServerStatusMessage
+    public void SendWebSocketStatusOpen(Guid accountId)
+    {
+        ServerStatusMessage serverStatusMessage = new ServerStatusMessage
         {
             Level = NotificationLevel.Info.GetDescription(),
             Message = "Conexión con el Servidor establecida correctamente.",
@@ -187,8 +191,9 @@ public class WebSocketServerController
         SendServerPacketByAccountId(accountId, serverMessage);
 
     }
-    public async Task InvalidateExistingConnectionAsync(Guid accountId){
-        await _connectionManager.InvalidateExistingConnectionAsync(accountId);
+    public async Task RemoveConnectionByAccountId(Guid accountId)
+    {
+        await _connectionManager.RemoveConnectionByAccountId(accountId);
         SendSessionInvalidate(accountId);
     }
 }

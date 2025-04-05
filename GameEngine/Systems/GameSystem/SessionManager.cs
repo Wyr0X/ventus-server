@@ -79,7 +79,7 @@ public class SessionManager
                 await _playerService.SavePlayerAsync(playerModel);
 
             }
-            if (!playerModel.isSpawned)
+            if (playerModel != null && !playerModel.isSpawned && playerLocation != null)
             {
                 playerModel.isSpawned = true;
                 accountModel.ActivePlayerId = playerModel.Id;

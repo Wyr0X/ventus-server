@@ -25,7 +25,7 @@ public class AuthHandler
         try
         {
             // Verificar el token JWT
-            var validatedAccountIdStr = _jwtService.ValidateToken(authMessage.Token);
+            var (validatedAccountIdStr, sessionIdStr) = _jwtService.ValidateToken(authMessage.Token);
             if (!Guid.TryParse(validatedAccountIdStr, out Guid accountId))
             {
                 Console.WriteLine("⚠ Token inválido.");

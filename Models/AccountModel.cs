@@ -20,7 +20,7 @@ public class AccountModel
 
     public int? ActivePlayerId { get; set; } = null;
 
-    public string ValidToken { get; set; }
+    public Guid SessionId { get; set; } = Guid.Empty;
     public DateTime TokenIssuedAt { get; set; } 
     public DateTime LastLogin { get; set; } = DateTime.UtcNow;
 
