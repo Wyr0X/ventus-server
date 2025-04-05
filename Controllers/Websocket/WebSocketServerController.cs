@@ -67,9 +67,11 @@ public class WebSocketServerController
 
         if (_connectionManager.TryGetSocket(accountId, out var socket))
         {
+            Console.WriteLine($"Entra");
+
             byte[] data = message.ToByteArray();
             await socket.SendAsync(new(data), WebSocketMessageType.Binary, true, CancellationToken.None);
-            LoggerUtil.Log("WebSocket", $"📤 Enviado mensaje a {accountId}: {message.GetType().Name}", ConsoleColor.Blue);
+         //   LoggerUtil.Log("WebSocket", $"📤 Enviado mensaje a {accountId}: {message.GetType().Name}", ConsoleColor.Blue);
         }
         else
         {
@@ -131,6 +133,7 @@ public class WebSocketServerController
                 ms.SetLength(0);
                 result = await socket.ReceiveAsync(new(buffer), CancellationToken.None);
                 ms.Write(buffer, 0, result.Count);
+                clientMessage = ClientMessage.Parser.ParseFrom(ms.ToArray());
 
                 if (!_connectionManager.TryGetAccountId(connectionId, out accountId))
                 {

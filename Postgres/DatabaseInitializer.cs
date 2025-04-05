@@ -35,20 +35,21 @@ namespace VentusServer.DataAccess.Postgres
             try
             {
                 string createTableQuery = @"
-                 CREATE TABLE IF NOT EXISTS accounts (
-                    account_id UUID PRIMARY KEY,
-                    email VARCHAR(255) NOT NULL,
-                    name VARCHAR(100) NOT NULL,
-                    password VARCHAR(255) NOT NULL,
-                    is_deleted BOOLEAN DEFAULT FALSE,
-                    is_banned BOOLEAN DEFAULT FALSE,
-                    credits INT DEFAULT 0,
-                    last_ip VARCHAR(45),
-                    last_login TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-                    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-                    UNIQUE (email, name)  -- 🔥 Agregar restricción única aquí
-                );
-                ";
+            CREATE TABLE IF NOT EXISTS accounts (
+                account_id UUID PRIMARY KEY,
+                email VARCHAR(255) NOT NULL,
+                name VARCHAR(100) NOT NULL,
+                password VARCHAR(255) NOT NULL,
+                is_deleted BOOLEAN DEFAULT FALSE,
+                is_banned BOOLEAN DEFAULT FALSE,
+                credits INT DEFAULT 0,
+                last_ip VARCHAR(45),
+                last_login TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                session_id UUID, -- 🆕 Agregado campo para sesión
+                created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE (email, name)
+            );
+        ";
 
                 await _postgresDbService.ExecuteQueryAsync(createTableQuery);
                 Console.WriteLine("✅ Tabla 'accounts' creada correctamente (si no existía).");
@@ -159,3 +160,9 @@ namespace VentusServer.DataAccess.Postgres
         }
     }
 }
+
+// DROP TABLE IF EXISTS player_locations CASCADE;
+// DROP TABLE IF EXISTS players CASCADE;
+// DROP TABLE IF EXISTS maps CASCADE;
+// DROP TABLE IF EXISTS worlds CASCADE;
+// DROP TABLE IF EXISTS accounts CASCADE;

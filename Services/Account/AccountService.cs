@@ -118,6 +118,15 @@ namespace VentusServer.Services
             await _accountDao.CreateAccountAsync(accountModelToCreate);
             Set(accountModelToCreate.AccountId, accountModelToCreate);
         }
+        public async Task<AccountModel?> UpdateSessionId(Guid accountId, Guid sessionId)
+        {
+            var account = await GetOrCreateAccountInCacheAsync(accountId);
+            if (account != null){
+                account.SessionId = sessionId;
+                await _accountDao.UpdateSessionIdAsync(accountId, sessionId);
+            }
+            return account;
 
+        }
     }
 }

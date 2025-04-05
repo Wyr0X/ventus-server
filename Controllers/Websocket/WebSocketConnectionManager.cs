@@ -46,9 +46,7 @@ public class WebSocketConnectionManager
     public bool TryGetSocket(Guid accountId, out WebSocket socket)
     {
         var result = _websocketsByAccountId.TryGetValue(accountId, out socket);
-        LoggerUtil.Log("WebSocket", result
-            ? $"Retrieved socket for Account {accountId}"
-            : $"Failed to retrieve socket for Account {accountId}", ConsoleColor.Cyan);
+       
         return result;
     }
 

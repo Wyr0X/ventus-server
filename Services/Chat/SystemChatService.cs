@@ -20,6 +20,8 @@ public class SystemChatService : ChatMessageChannel
 
         foreach (var accountId in accountIds)
         {
+            LoggerUtil.Log("SystemChatService", $"Broadcast message for ${accountId}  - Message: ${serverMessage}");
+
             sendServerPacketByAccountId(accountId, serverMessage);
         }
     }

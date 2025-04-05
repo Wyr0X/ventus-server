@@ -9,17 +9,14 @@ using Microsoft.Extensions.Logging; // Necesario para ILogger
 public class MessageSender
 {
     private readonly WebSocketServerController _websocket;
-    private readonly ILogger<MessageSender> _logger;
 
-    public MessageSender(WebSocketServerController webSocket, ILogger<MessageSender> logger)
+    public MessageSender(WebSocketServerController webSocket)
     {
         _websocket = webSocket;
-        _logger = logger;
     }
 
     public void SendAuthResponse(Guid accountId, bool success)
     {
-        _logger.LogInformation("🔐 Enviando AuthResponse a {AccountId}, éxito: {Success}", accountId, success);
 
         var authResponse = new AuthResponse
         {
@@ -36,7 +33,6 @@ public class MessageSender
 
     public void SendPlayerPosition(Guid accountId, int playerId, float x, float y)
     {
-        _logger.LogInformation("📍 Enviando posición del jugador {PlayerId} a {AccountId}: ({X}, {Y})", playerId, accountId, x, y);
 
         var playerPosition = new PlayerPosition
         {
@@ -55,7 +51,6 @@ public class MessageSender
 
     public void SpawnPlayer(Guid accountId, int playerId, float x, float y)
     {
-        _logger.LogInformation("🧍 Spawn de jugador {PlayerId} para {AccountId} en ({X}, {Y})", playerId, accountId, x, y);
 
         var playerSpawn = new PlayerSpawn
         {
@@ -73,13 +68,13 @@ public class MessageSender
         {
             ServerMessageSession = serverMessageGameSession
         };
+            Console.WriteLine($"Entra 3");
 
         _websocket.SendServerPacketByAccountId(accountId, serverMessage);
     }
 
     public void SendWorlState(List<Guid> accountsIds, WorldStateUpdate worldStateUpdate)
     {
-        _logger.LogInformation("🌍 Enviando estado del mundo a {Count} usuarios", accountsIds.Count);
 
         var serverWorldMessage = new ServerWorldMessage
         {

@@ -30,7 +30,10 @@ namespace VentusServer.DataAccess.Postgres
                 Credits = reader.GetInt32(reader.GetOrdinal("credits")),
                 LastIpAddress = reader.GetString(reader.GetOrdinal("last_ip")),
                 LastLogin = reader.GetDateTime(reader.GetOrdinal("last_login")).ToUniversalTime(),
-                CreatedAt = reader.GetDateTime(reader.GetOrdinal("created_at")).ToUniversalTime()
+                CreatedAt = reader.GetDateTime(reader.GetOrdinal("created_at")).ToUniversalTime(),
+                SessionId = reader.IsDBNull(reader.GetOrdinal("session_id"))
+                    ? Guid.Empty
+                    : reader.GetGuid(reader.GetOrdinal("session_id"))
             };
         }
 
@@ -78,16 +81,17 @@ namespace VentusServer.DataAccess.Postgres
             await using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
             const string query = @"
-                INSERT INTO accounts (account_id, email, Name, password, is_deleted, is_banned, credits, last_ip, last_login, created_at)
-                VALUES (@AccountId, @Email, @Name, @Password, @IsDeleted, @IsBanned, @Credits, @LastIp, @LastLogin, @CreatedAt)
-                ON CONFLICT (email, Name) 
-                DO UPDATE SET 
-                    password = COALESCE(@Password, accounts.password), 
-                    is_deleted = EXCLUDED.is_deleted, 
-                    is_banned = EXCLUDED.is_banned, 
-                    credits = EXCLUDED.credits, 
-                    last_ip = EXCLUDED.last_ip, 
-                    last_login = EXCLUDED.last_login";
+            INSERT INTO accounts (account_id, email, Name, password, is_deleted, is_banned, credits, last_ip, last_login, created_at, session_id)
+            VALUES (@AccountId, @Email, @Name, @Password, @IsDeleted, @IsBanned, @Credits, @LastIp, @LastLogin, @CreatedAt, @SessionId)
+            ON CONFLICT (email, Name) 
+            DO UPDATE SET 
+                password = COALESCE(@Password, accounts.password), 
+                is_deleted = EXCLUDED.is_deleted, 
+                is_banned = EXCLUDED.is_banned, 
+                credits = EXCLUDED.credits, 
+                last_ip = EXCLUDED.last_ip, 
+                last_login = EXCLUDED.last_login,
+                session_id = EXCLUDED.session_id";
 
             await using var command = new NpgsqlCommand(query, connection);
             command.Parameters.AddWithValue("@AccountId", account.AccountId);
@@ -100,6 +104,8 @@ namespace VentusServer.DataAccess.Postgres
             command.Parameters.AddWithValue("@LastIp", (object?)account.LastIpAddress ?? DBNull.Value);
             command.Parameters.AddWithValue("@LastLogin", account.LastLogin);
             command.Parameters.AddWithValue("@CreatedAt", account.CreatedAt);
+            command.Parameters.AddWithValue("@SessionId", account.SessionId);
+
 
             await command.ExecuteNonQueryAsync();
         }
@@ -147,8 +153,8 @@ namespace VentusServer.DataAccess.Postgres
             await connection.OpenAsync();
 
             const string query = @"
-                INSERT INTO accounts (account_id, email, Name, password, is_deleted, is_banned, credits, last_ip, last_login, created_at)
-                VALUES (@AccountId, @Email, @Name, @Password, @IsDeleted, @IsBanned, @Credits, @LastIp, @LastLogin, @CreatedAt)";
+                INSERT INTO accounts (account_id, email, Name, password, is_deleted, is_banned, credits, last_ip, last_login, created_at, session_id)
+                VALUES (@AccountId, @Email, @Name, @Password, @IsDeleted, @IsBanned, @Credits, @LastIp, @LastLogin, @CreatedAt, @SessionId)";
 
             await using var command = new NpgsqlCommand(query, connection);
             command.Parameters.AddWithValue("@AccountId", account.AccountId);
@@ -161,10 +167,11 @@ namespace VentusServer.DataAccess.Postgres
             command.Parameters.AddWithValue("@LastIp", (object?)account.LastIpAddress ?? DBNull.Value);
             command.Parameters.AddWithValue("@LastLogin", account.LastLogin);
             command.Parameters.AddWithValue("@CreatedAt", account.CreatedAt);
+            command.Parameters.AddWithValue("@SessionId", account.SessionId);
 
             await command.ExecuteNonQueryAsync();
         }
-         public async Task<bool> UpdateAccountPasswordAsync(Guid accountId, string newPassword)
+        public async Task<bool> UpdateAccountPasswordAsync(Guid accountId, string newPassword)
         {
             await using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
@@ -189,5 +196,18 @@ namespace VentusServer.DataAccess.Postgres
 
             return await command.ExecuteNonQueryAsync() > 0;
         }
+        public async Task<bool> UpdateSessionIdAsync(Guid accountId, Guid sessionId)
+        {
+            await using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            const string query = "UPDATE accounts SET session_id = @SessionId WHERE account_id = @AccountId";
+            await using var command = new NpgsqlCommand(query, connection);
+            command.Parameters.AddWithValue("@SessionId", sessionId);
+            command.Parameters.AddWithValue("@AccountId", accountId);
+
+            return await command.ExecuteNonQueryAsync() > 0;
+        }
+
     }
 }

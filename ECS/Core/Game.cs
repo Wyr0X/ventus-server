@@ -86,7 +86,6 @@ public class GameEngine : Engine
     {
         PlayerEntity? playerEntity = (PlayerEntity?)Entities.GetPlayerByAccountId(accountId);
         if (playerEntity != null){
-                        Console.WriteLine($"Player {playerModel.Id} unspawn");
 
             Entities.Remove(playerEntity);
             _worldManager.UnSpawnPlayer(playerLocation.World.Id);

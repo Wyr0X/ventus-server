@@ -112,7 +112,7 @@ public class WorldManager
                 // _syncSystem.UpdatePosition(character.AccountId, character.PlayerId, position.X, position.Y);
             }
             WorldStateUpdate worldStateUpdate =  CreateWorldStateUpdate(playersState);
-            _syncSystem.SendWorlState(accountsId, worldStateUpdate);
+           // _syncSystem.SendWorlState(accountsId, worldStateUpdate);
         }
     }
     public void SpawnPlayer(int worldId, Entity playerSpawnEntity, Character characterSpawn, Position positionOfPlayerSpawn)
@@ -124,7 +124,6 @@ public class WorldManager
             WorldEntity world = _worlds[worldId];
 
             List<Entity> charactersInWorld = GetCharactersInWorld(worldId);
-            Console.WriteLine($"Characters in world: {charactersInWorld.Count}");
             foreach (var entityC in charactersInWorld)
             {
                 Character? character = (Character?)entityC.Get(typeof(Character));
