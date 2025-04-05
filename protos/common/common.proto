@@ -35,7 +35,13 @@ message ServerMessage {
     protos.game.session.ServerMessageGameSession server_message_session = 3;
     protos.game.chat.ServerMessageChat server_message_chat = 4;
     protos.game.world.ServerWorldMessage server_world_message = 5;
+    ServerStatusMessage server_status_message = 6;
 
     // Agrega más tipos de mensajes aquí
   }
+}
+message ServerStatusMessage {
+  string message = 1;
+  string level = 2; // info, warning, error
+  int64 timestamp = 4;
 }

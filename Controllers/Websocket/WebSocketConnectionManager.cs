@@ -14,13 +14,14 @@ public class WebSocketConnectionManager
         LoggerUtil.Log("WebSocket", $"Pending connection added: {connectionId}", ConsoleColor.Yellow);
     }
 
-    public bool TryAuthenticateConnection(string connectionId, Guid accountId, out WebSocket socket)
+    public bool TryAuthenticateConnection(string connectionId, Guid accountId, string currentToken, out WebSocket socket)
     {
         socket = null!;
         if (_pendingConnections.TryRemove(connectionId, out var pending))
         {
             _connectionsByAccountId[connectionId] = accountId;
             _websocketsByAccountId[accountId] = pending;
+
             socket = pending;
 
             LoggerUtil.Log("WebSocket", $"Connection {connectionId} authenticated for Account {accountId}", ConsoleColor.Green);
@@ -57,4 +58,24 @@ public class WebSocketConnectionManager
 
         LoggerUtil.Log("WebSocket", $"Removed connection {connectionId} and Account {accountId}", ConsoleColor.DarkMagenta);
     }
+    public async Task InvalidateExistingConnectionAsync(Guid accountId, string reason = "Sesión reemplazada")
+    {
+        if (_websocketsByAccountId.TryRemove(accountId, out var oldSocket))
+        {
+            var oldConnectionId = _connectionsByAccountId.FirstOrDefault(x => x.Value == accountId).Key;
+            if (oldConnectionId != null)
+                _connectionsByAccountId.TryRemove(oldConnectionId, out _);
+
+            try
+            {
+                await oldSocket.CloseAsync(WebSocketCloseStatus.PolicyViolation, reason, CancellationToken.None);
+                LoggerUtil.Log("WebSocket", $"🔄 Sesión anterior cerrada para {accountId}", ConsoleColor.DarkYellow);
+            }
+            catch (Exception ex)
+            {
+                LoggerUtil.Log("WebSocket", $"⚠️ Error cerrando WebSocket anterior: {ex.Message}", ConsoleColor.Red);
+            }
+        }
+    }
+   
 }

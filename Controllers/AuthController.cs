@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using VentusServer.Models;
 using System;
 using VentusServer.DataAccess.Postgres;
+using VentusServer.Services;
 
 namespace VentusServer.Controllers
 {
@@ -11,18 +12,20 @@ namespace VentusServer.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly PostgresAccountDAO _accountDAO;
+        private readonly AccountService _accountService;
         private readonly JwtService _jwtService;
         private readonly PasswordService _passwordService;
+   //     private readonly WebSocketServerController _webSocketServerController;
 
         public AuthController(
-            PostgresAccountDAO accountDAO,
+            AccountService accountService,
             JwtService jwtService,
             PasswordService passwordService)
         {
-            _accountDAO = accountDAO;
+            _accountService = accountService;
             _jwtService = jwtService;
             _passwordService = passwordService;
+           // _webSocketServerController = webSocketServerController;
         }
 
         [HttpPost("login")]
@@ -30,28 +33,40 @@ namespace VentusServer.Controllers
         {
             try
             {
-                Console.WriteLine("[Login] Iniciando proceso de autenticación para: " + request.Email);
-                var user = await _accountDAO.GetAccountByEmailAsync(request.Email);
+                LoggerUtil.Log("Login", $"Iniciando proceso de autenticación para: {request.Email}", ConsoleColor.Cyan);
+                var account = await _accountService.GetAccountByEmailAsync(request.Email);
 
-                if (user == null)
+                if (account == null)
                 {
-                    Console.WriteLine("[Login] Usuario no encontrado.");
+                    LoggerUtil.Log("Login", "Usuario no encontrado.", ConsoleColor.Yellow);
                     return Unauthorized("Correo o contraseña incorrectos.");
                 }
 
-                if (!_passwordService.VerifyPassword(request.Password, user.PasswordHash))
+                if (!_passwordService.VerifyPassword(request.Password, account.PasswordHash))
                 {
-                    Console.WriteLine("[Login] Contraseña incorrecta.");
+                    LoggerUtil.Log("Login", "Contraseña incorrecta.", ConsoleColor.Yellow);
                     return Unauthorized("Correo o contraseña incorrectos.");
                 }
 
-                var token = _jwtService.GenerateToken(user.AccountId, user.Email);
-                Console.WriteLine("[Login] Usuario autenticado correctamente.");
-                return Ok(new { login = true, token });
+                var token = _jwtService.GenerateToken(account.AccountId, account.Email);
+                account.ValidToken = token;
+                _accountService.Set(account.AccountId, account);
+
+                var messageToClient = "";
+                // if (account.ValidToken != token)
+                // {
+                //     account.ValidToken = token;
+                //     messageToClient = "Había otra sesión activa. Se cerró automáticamente para continuar con este inicio de sesión.";
+                //     await _webSocketServerController.InvalidateExistingConnectionAsync(account.AccountId);
+                //     _accountService.Set(account.AccountId, account);
+                // }
+
+                LoggerUtil.Log("Login", "Usuario autenticado correctamente.", ConsoleColor.Green);
+                return Ok(new { login = true, token, message = messageToClient });
             }
             catch (Exception ex)
             {
-                Console.WriteLine("[Login] Error: " + ex.Message);
+                LoggerUtil.Log("Login", $"Error: {ex.Message}", ConsoleColor.Red);
                 return BadRequest("Error en Login: " + ex.Message);
             }
         }
@@ -64,20 +79,19 @@ namespace VentusServer.Controllers
                 return BadRequest(ModelState);
             }
 
-            Console.WriteLine("[Register] Iniciando proceso de registro para: " + request.Email);
+            LoggerUtil.Log("Register", $"Iniciando proceso de registro para: {request.Email}", ConsoleColor.Cyan);
 
-            var existingUser = await _accountDAO.GetAccountByEmailAsync(request.Email);
+            var existingUser = await _accountService.GetAccountByEmailAsync(request.Email);
             if (existingUser != null)
             {
-                Console.WriteLine("[Register] Error: Correo ya en uso.");
+                LoggerUtil.Log("Register", "Error: Correo ya en uso.", ConsoleColor.Yellow);
                 return BadRequest("El correo ya está en uso.");
             }
 
             var accountId = Guid.NewGuid();
-
             var hashedPassword = _passwordService.HashPassword(request.Password);
 
-            var newUser = new AccountModel
+            var newAccount = new AccountModel
             {
                 AccountId = accountId,
                 Email = request.Email,
@@ -89,23 +103,23 @@ namespace VentusServer.Controllers
                 Credits = 0
             };
 
-            await _accountDAO.CreateAccountAsync(newUser);
-            Console.WriteLine("[Register] Usuario registrado con éxito: " + request.Email);
+            await _accountService.CreateAccountAsync(newAccount);
+            LoggerUtil.Log("Register", $"Usuario registrado con éxito: {request.Email}", ConsoleColor.Green);
 
             var token = _jwtService.GenerateToken(accountId, request.Email);
+            newAccount.ValidToken = token;
             return Ok(new { message = "Registro exitoso. Ahora puedes conectarte.", token });
         }
+
         [HttpGet("validate")]
         public async Task<IActionResult> ValidateToken()
         {
             try
             {
-                Console.WriteLine("[ValidateToken] Iniciando validación de token...");
+                LoggerUtil.Log("ValidateToken", "Iniciando validación de token...", ConsoleColor.Cyan);
 
-                // Intentar obtener el token desde las cookies
                 var token = Request.Cookies["authToken"];
 
-                // Si no hay token en las cookies, intentar obtenerlo desde el header de autorización
                 if (string.IsNullOrEmpty(token) && Request.Headers.ContainsKey("Authorization"))
                 {
                     var authHeader = Request.Headers["Authorization"].ToString();
@@ -115,40 +129,35 @@ namespace VentusServer.Controllers
                     }
                 }
 
-                // Si sigue sin haber token, rechazar la petición
                 if (string.IsNullOrEmpty(token))
                 {
-                    Console.WriteLine("[ValidateToken] ❌ Token no encontrado.");
+                    LoggerUtil.Log("ValidateToken", "❌ Token no encontrado.", ConsoleColor.Yellow);
                     return Unauthorized(new { message = "Token no encontrado" });
                 }
 
-                // Validar el token
                 var validatedAccountIdStr = _jwtService.ValidateToken(token);
 
-                // Verificar si el accountId es un UUID válido
                 if (!Guid.TryParse(validatedAccountIdStr, out Guid validatedAccountId))
                 {
-                    Console.WriteLine("[ValidateToken] ❌ Token inválido: no es un UUID válido.");
+                    LoggerUtil.Log("ValidateToken", "❌ Token inválido: no es un UUID válido.", ConsoleColor.Yellow);
                     return Unauthorized(new { message = "Token inválido o expirado" });
                 }
 
-                // Buscar el usuario en la base de datos
-                var user = await _accountDAO.GetAccountByAccountIdAsync(validatedAccountId);
-                if (user == null)
+                var account = await _accountService.GetOrCreateAccountInCacheAsync(validatedAccountId);
+                if (account == null)
                 {
-                    Console.WriteLine("[ValidateToken] ❌ Usuario no encontrado.");
+                    LoggerUtil.Log("ValidateToken", "❌ Usuario no encontrado.", ConsoleColor.Yellow);
                     return Unauthorized(new { message = "Usuario no encontrado" });
                 }
 
-                Console.WriteLine($"[ValidateToken] ✅ Token válido para {user.Email}");
-                return Ok(new { accountId = user.AccountId, email = user.Email, name = user.AccountName });
+                LoggerUtil.Log("ValidateToken", $"✅ Token válido para {account.Email}", ConsoleColor.Green);
+                return Ok(new { accountId = account.AccountId, email = account.Email, name = account.AccountName });
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[ValidateToken] ⚠️ Error: {ex.Message}");
+                LoggerUtil.Log("ValidateToken", $"⚠️ Error: {ex.Message}", ConsoleColor.Red);
                 return BadRequest(new { message = "Error en validación: " + ex.Message });
             }
         }
-
     }
 }

@@ -112,6 +112,12 @@ namespace VentusServer.Services
             var account = await GetOrLoadAsync(accountId);
             return account?.ActivePlayerId;
         }
-        
+
+        public async Task CreateAccountAsync(AccountModel accountModelToCreate)
+        {
+            await _accountDao.CreateAccountAsync(accountModelToCreate);
+            Set(accountModelToCreate.AccountId, accountModelToCreate);
+        }
+
     }
 }

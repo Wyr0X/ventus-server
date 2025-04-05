@@ -2,7 +2,9 @@ using System.Collections.Concurrent;
 using System.Net;
 using System.Net.WebSockets;
 using Google.Protobuf;
+using Grpc.Core;
 using Protos.Common;
+using VentusServer.Services;
 
 public class WebSocketServerController
 {
@@ -11,11 +13,11 @@ public class WebSocketServerController
     private readonly ConcurrentQueue<UserMessagePair> _messageQueue;
     private readonly MessageHandler _messageHandler;
 
-    public WebSocketServerController(MessageHandler messageHandler)
+    public WebSocketServerController(MessageHandler messageHandler, AccountService accountService)
     {
         _messageHandler = messageHandler;
         _messageQueue = new ConcurrentQueue<UserMessagePair>();
-        _authService = new WebSocketAuthenticationService();
+        _authService = new WebSocketAuthenticationService(accountService);
         _connectionManager = new WebSocketConnectionManager();
     }
 
@@ -61,6 +63,8 @@ public class WebSocketServerController
 
     public async void SendServerPacketByAccountId(Guid accountId, IMessage message)
     {
+
+
         if (_connectionManager.TryGetSocket(accountId, out var socket))
         {
             byte[] data = message.ToByteArray();
@@ -71,6 +75,7 @@ public class WebSocketServerController
         {
             LoggerUtil.Log("WebSocket", $"❌ No se encontró WebSocket para {accountId}", ConsoleColor.Red);
         }
+
     }
 
     public void SendBroadcast(List<Guid> accountIds, IMessage message)
@@ -107,14 +112,15 @@ public class WebSocketServerController
                     await socket.CloseAsync(WebSocketCloseStatus.PolicyViolation, "Token inválido", CancellationToken.None);
                     return;
                 }
+                await _connectionManager.InvalidateExistingConnectionAsync(accountId);
 
-                if (!_connectionManager.TryAuthenticateConnection(connectionId, accountId, out socket))
+                if (!_connectionManager.TryAuthenticateConnection(connectionId, accountId, clientMessage.AuthRequest.Token, out socket))
                 {
                     LoggerUtil.Log("Auth", $"❌ Fallo al autenticar conexión {connectionId}", ConsoleColor.Red);
                     await socket.CloseAsync(WebSocketCloseStatus.InternalServerError, "No se pudo autenticar", CancellationToken.None);
                     return;
                 }
-
+                SendWebSocketStatusOpen(accountId);
                 LoggerUtil.Log("Auth", $"🔓 Usuario autenticado: {accountId}", ConsoleColor.Green);
             }
 
@@ -130,8 +136,6 @@ public class WebSocketServerController
                     await socket.CloseAsync(WebSocketCloseStatus.PolicyViolation, "Usuario no autenticado", CancellationToken.None);
                     return;
                 }
-
-                clientMessage = ClientMessage.Parser.ParseFrom(ms.ToArray());
 
                 if (clientMessage.MessageCase == ClientMessage.MessageOneofCase.ClientMessagePing)
                 {
@@ -160,5 +164,31 @@ public class WebSocketServerController
             await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Cerrado", CancellationToken.None);
             socket.Dispose();
         }
+    }
+    public void SendWebSocketStatusOpen(Guid accountId){
+         ServerStatusMessage serverStatusMessage = new ServerStatusMessage
+        {
+            Level = NotificationLevel.Info.GetDescription(),
+            Message = "Conexión con el Servidor establecida correctamente.",
+            Timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+        };
+        ServerMessage serverMessage = new ServerMessage { ServerStatusMessage = serverStatusMessage };
+        SendServerPacketByAccountId(accountId, serverMessage);
+    }
+    public void SendSessionInvalidate(Guid accountId)
+    {
+        ServerStatusMessage serverStatusMessage = new ServerStatusMessage
+        {
+            Level = NotificationLevel.Info.GetDescription(),
+            Message = "Tu cuenta ha iniciado sesión desde otro lugar. Has sido desconectado.",
+            Timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+        };
+        ServerMessage serverMessage = new ServerMessage { ServerStatusMessage = serverStatusMessage };
+        SendServerPacketByAccountId(accountId, serverMessage);
+
+    }
+    public async Task InvalidateExistingConnectionAsync(Guid accountId){
+        await _connectionManager.InvalidateExistingConnectionAsync(accountId);
+        SendSessionInvalidate(accountId);
     }
 }

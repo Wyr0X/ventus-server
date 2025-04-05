@@ -77,11 +77,15 @@ namespace VentusServer
             services.AddSingleton<PlayerLocationService>();
             services.AddSingleton<MapService>();
             services.AddSingleton<WorldService>();
+            services.AddSingleton<AccountService>();
+
             services.AddSingleton<PlayerController>();
+            
 
             services.AddSingleton<PlayerService>();
 
             services.AddSingleton<AccountController>();
+            services.AddSingleton<AuthController>();
             services.AddControllers();
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

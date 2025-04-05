@@ -20,8 +20,8 @@ public class AccountModel
 
     public int? ActivePlayerId { get; set; } = null;
 
-    public string? ActiveToken { get; set; } = null;
-
+    public string ValidToken { get; set; }
+    public DateTime TokenIssuedAt { get; set; } 
     public DateTime LastLogin { get; set; } = DateTime.UtcNow;
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
@@ -51,7 +51,6 @@ public class AccountModel
         Console.WriteLine($"Credits:         {Credits}");
         Console.WriteLine($"LastIpAddress:   {LastIpAddress}");
         Console.WriteLine($"ActivePlayerId:  {ActivePlayerId}");
-        Console.WriteLine($"ActiveToken:     {ActiveToken}");
         Console.WriteLine($"LastLogin:       {LastLogin}");
         Console.WriteLine($"CreatedAt:       {CreatedAt}");
         Console.WriteLine("############################\n");
