@@ -108,7 +108,7 @@ namespace VentusServer
         {
             services
                 .AddSingleton<WebSocketServerController>()
-                .AddSingleton<AuthController>()
+                .AddSingleton<AccountController>()
                 .AddSingleton<AuthController>()
                 .AddSingleton(sp =>
                     new Lazy<WebSocketServerController>(

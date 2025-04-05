@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 public static class HttpServerBuilder
 {
-    public static IWebHost BuildHost(IServiceCollection services)
+    public static IWebHost BuildHost(IServiceCollection externalServices)
     {
         return WebHost
         .CreateDefaultBuilder()
@@ -16,13 +16,12 @@ public static class HttpServerBuilder
             logging.AddConsole();
             logging.SetMinimumLevel(LogLevel.Warning);
         })
-        .ConfigureServices(services =>
+         .ConfigureServices(services =>
         {
-            var originalServices = services.ToList();
-
-            foreach (var serviceDescriptor in originalServices)
+            // Copiar servicios del ServiceProviderModule
+            foreach (var service in externalServices)
             {
-                services.Add(serviceDescriptor);
+                services.Add(service);
             }
 
             services.AddControllers();
