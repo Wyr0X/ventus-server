@@ -26,29 +26,31 @@ namespace Protos.Common {
           string.Concat(
             "ChNjb21tb24vY29tbW9uLnByb3RvEg1wcm90b3MuY29tbW9uGg9hdXRoL2F1",
             "dGgucHJvdG8aGmdhbWUvc2Vzc2lvbi9zZXNzaW9uLnByb3RvGhRnYW1lL2No",
-            "YXQvY2hhdC5wcm90byIkChFDbGllbnRNZXNzYWdlUGluZxIPCgdtZXNzYWdl",
-            "GAEgASgJIiQKEVNlcnZlck1lc3NhZ2VQb25nEg8KB21lc3NhZ2UYASABKAki",
-            "ogIKDUNsaWVudE1lc3NhZ2USMAoMYXV0aF9yZXF1ZXN0GAEgASgLMhgucHJv",
-            "dG9zLmF1dGguQXV0aFJlcXVlc3RIABI/ChNjbGllbnRfbWVzc2FnZV9waW5n",
-            "GAIgASgLMiAucHJvdG9zLmNvbW1vbi5DbGllbnRNZXNzYWdlUGluZ0gAEk8K",
-            "FmNsaWVudF9tZXNzYWdlX3Nlc3Npb24YAyABKAsyLS5wcm90b3MuZ2FtZS5z",
-            "ZXNzaW9uLkNsaWVudE1lc3NhZ2VHYW1lU2Vzc2lvbkgAEkIKE2NsaWVudF9t",
-            "ZXNzYWdlX2NoYXQYBCABKAsyIy5wcm90b3MuZ2FtZS5jaGF0LkNsaWVudE1l",
-            "c3NhZ2VDaGF0SABCCQoHbWVzc2FnZSKkAgoNU2VydmVyTWVzc2FnZRIyCg1h",
-            "dXRoX3Jlc3BvbnNlGAEgASgLMhkucHJvdG9zLmF1dGguQXV0aFJlc3BvbnNl",
-            "SAASPwoTc2VydmVyX21lc3NhZ2VfcG9uZxgCIAEoCzIgLnByb3Rvcy5jb21t",
-            "b24uU2VydmVyTWVzc2FnZVBvbmdIABJPChZzZXJ2ZXJfbWVzc2FnZV9zZXNz",
-            "aW9uGAMgASgLMi0ucHJvdG9zLmdhbWUuc2Vzc2lvbi5TZXJ2ZXJNZXNzYWdl",
-            "R2FtZVNlc3Npb25IABJCChNzZXJ2ZXJfbWVzc2FnZV9jaGF0GAQgASgLMiMu",
-            "cHJvdG9zLmdhbWUuY2hhdC5TZXJ2ZXJNZXNzYWdlQ2hhdEgAQgkKB21lc3Nh",
-            "Z2ViBnByb3RvMw=="));
+            "YXQvY2hhdC5wcm90bxoWZ2FtZS93b3JsZC93b3JsZC5wcm90byIkChFDbGll",
+            "bnRNZXNzYWdlUGluZxIPCgdtZXNzYWdlGAEgASgJIiQKEVNlcnZlck1lc3Nh",
+            "Z2VQb25nEg8KB21lc3NhZ2UYASABKAkiogIKDUNsaWVudE1lc3NhZ2USMAoM",
+            "YXV0aF9yZXF1ZXN0GAEgASgLMhgucHJvdG9zLmF1dGguQXV0aFJlcXVlc3RI",
+            "ABI/ChNjbGllbnRfbWVzc2FnZV9waW5nGAIgASgLMiAucHJvdG9zLmNvbW1v",
+            "bi5DbGllbnRNZXNzYWdlUGluZ0gAEk8KFmNsaWVudF9tZXNzYWdlX3Nlc3Np",
+            "b24YAyABKAsyLS5wcm90b3MuZ2FtZS5zZXNzaW9uLkNsaWVudE1lc3NhZ2VH",
+            "YW1lU2Vzc2lvbkgAEkIKE2NsaWVudF9tZXNzYWdlX2NoYXQYBCABKAsyIy5w",
+            "cm90b3MuZ2FtZS5jaGF0LkNsaWVudE1lc3NhZ2VDaGF0SABCCQoHbWVzc2Fn",
+            "ZSLrAgoNU2VydmVyTWVzc2FnZRIyCg1hdXRoX3Jlc3BvbnNlGAEgASgLMhku",
+            "cHJvdG9zLmF1dGguQXV0aFJlc3BvbnNlSAASPwoTc2VydmVyX21lc3NhZ2Vf",
+            "cG9uZxgCIAEoCzIgLnByb3Rvcy5jb21tb24uU2VydmVyTWVzc2FnZVBvbmdI",
+            "ABJPChZzZXJ2ZXJfbWVzc2FnZV9zZXNzaW9uGAMgASgLMi0ucHJvdG9zLmdh",
+            "bWUuc2Vzc2lvbi5TZXJ2ZXJNZXNzYWdlR2FtZVNlc3Npb25IABJCChNzZXJ2",
+            "ZXJfbWVzc2FnZV9jaGF0GAQgASgLMiMucHJvdG9zLmdhbWUuY2hhdC5TZXJ2",
+            "ZXJNZXNzYWdlQ2hhdEgAEkUKFHNlcnZlcl93b3JsZF9tZXNzYWdlGAUgASgL",
+            "MiUucHJvdG9zLmdhbWUud29ybGQuU2VydmVyV29ybGRNZXNzYWdlSABCCQoH",
+            "bWVzc2FnZWIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::Protos.Auth.AuthReflection.Descriptor, global::Protos.Game.Session.SessionReflection.Descriptor, global::Protos.Game.Chat.ChatReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::Protos.Auth.AuthReflection.Descriptor, global::Protos.Game.Session.SessionReflection.Descriptor, global::Protos.Game.Chat.ChatReflection.Descriptor, global::Protos.Game.World.WorldReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Common.ClientMessagePing), global::Protos.Common.ClientMessagePing.Parser, new[]{ "Message" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Common.ServerMessagePong), global::Protos.Common.ServerMessagePong.Parser, new[]{ "Message" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Common.ClientMessage), global::Protos.Common.ClientMessage.Parser, new[]{ "AuthRequest", "ClientMessagePing", "ClientMessageSession", "ClientMessageChat" }, new[]{ "Message" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Common.ServerMessage), global::Protos.Common.ServerMessage.Parser, new[]{ "AuthResponse", "ServerMessagePong", "ServerMessageSession", "ServerMessageChat" }, new[]{ "Message" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Common.ServerMessage), global::Protos.Common.ServerMessage.Parser, new[]{ "AuthResponse", "ServerMessagePong", "ServerMessageSession", "ServerMessageChat", "ServerWorldMessage" }, new[]{ "Message" }, null, null, null)
           }));
     }
     #endregion
@@ -899,6 +901,9 @@ namespace Protos.Common {
         case MessageOneofCase.ServerMessageChat:
           ServerMessageChat = other.ServerMessageChat.Clone();
           break;
+        case MessageOneofCase.ServerWorldMessage:
+          ServerWorldMessage = other.ServerWorldMessage.Clone();
+          break;
       }
 
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -958,6 +963,18 @@ namespace Protos.Common {
       }
     }
 
+    /// <summary>Field number for the "server_world_message" field.</summary>
+    public const int ServerWorldMessageFieldNumber = 5;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Protos.Game.World.ServerWorldMessage ServerWorldMessage {
+      get { return messageCase_ == MessageOneofCase.ServerWorldMessage ? (global::Protos.Game.World.ServerWorldMessage) message_ : null; }
+      set {
+        message_ = value;
+        messageCase_ = value == null ? MessageOneofCase.None : MessageOneofCase.ServerWorldMessage;
+      }
+    }
+
     private object message_;
     /// <summary>Enum of possible cases for the "message" oneof.</summary>
     public enum MessageOneofCase {
@@ -966,6 +983,7 @@ namespace Protos.Common {
       ServerMessagePong = 2,
       ServerMessageSession = 3,
       ServerMessageChat = 4,
+      ServerWorldMessage = 5,
     }
     private MessageOneofCase messageCase_ = MessageOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1000,6 +1018,7 @@ namespace Protos.Common {
       if (!object.Equals(ServerMessagePong, other.ServerMessagePong)) return false;
       if (!object.Equals(ServerMessageSession, other.ServerMessageSession)) return false;
       if (!object.Equals(ServerMessageChat, other.ServerMessageChat)) return false;
+      if (!object.Equals(ServerWorldMessage, other.ServerWorldMessage)) return false;
       if (MessageCase != other.MessageCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -1012,6 +1031,7 @@ namespace Protos.Common {
       if (messageCase_ == MessageOneofCase.ServerMessagePong) hash ^= ServerMessagePong.GetHashCode();
       if (messageCase_ == MessageOneofCase.ServerMessageSession) hash ^= ServerMessageSession.GetHashCode();
       if (messageCase_ == MessageOneofCase.ServerMessageChat) hash ^= ServerMessageChat.GetHashCode();
+      if (messageCase_ == MessageOneofCase.ServerWorldMessage) hash ^= ServerWorldMessage.GetHashCode();
       hash ^= (int) messageCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -1047,6 +1067,10 @@ namespace Protos.Common {
         output.WriteRawTag(34);
         output.WriteMessage(ServerMessageChat);
       }
+      if (messageCase_ == MessageOneofCase.ServerWorldMessage) {
+        output.WriteRawTag(42);
+        output.WriteMessage(ServerWorldMessage);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -1073,6 +1097,10 @@ namespace Protos.Common {
         output.WriteRawTag(34);
         output.WriteMessage(ServerMessageChat);
       }
+      if (messageCase_ == MessageOneofCase.ServerWorldMessage) {
+        output.WriteRawTag(42);
+        output.WriteMessage(ServerWorldMessage);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -1094,6 +1122,9 @@ namespace Protos.Common {
       }
       if (messageCase_ == MessageOneofCase.ServerMessageChat) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(ServerMessageChat);
+      }
+      if (messageCase_ == MessageOneofCase.ServerWorldMessage) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ServerWorldMessage);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -1131,6 +1162,12 @@ namespace Protos.Common {
             ServerMessageChat = new global::Protos.Game.Chat.ServerMessageChat();
           }
           ServerMessageChat.MergeFrom(other.ServerMessageChat);
+          break;
+        case MessageOneofCase.ServerWorldMessage:
+          if (ServerWorldMessage == null) {
+            ServerWorldMessage = new global::Protos.Game.World.ServerWorldMessage();
+          }
+          ServerWorldMessage.MergeFrom(other.ServerWorldMessage);
           break;
       }
 
@@ -1189,6 +1226,15 @@ namespace Protos.Common {
             ServerMessageChat = subBuilder;
             break;
           }
+          case 42: {
+            global::Protos.Game.World.ServerWorldMessage subBuilder = new global::Protos.Game.World.ServerWorldMessage();
+            if (messageCase_ == MessageOneofCase.ServerWorldMessage) {
+              subBuilder.MergeFrom(ServerWorldMessage);
+            }
+            input.ReadMessage(subBuilder);
+            ServerWorldMessage = subBuilder;
+            break;
+          }
         }
       }
     #endif
@@ -1242,6 +1288,15 @@ namespace Protos.Common {
             }
             input.ReadMessage(subBuilder);
             ServerMessageChat = subBuilder;
+            break;
+          }
+          case 42: {
+            global::Protos.Game.World.ServerWorldMessage subBuilder = new global::Protos.Game.World.ServerWorldMessage();
+            if (messageCase_ == MessageOneofCase.ServerWorldMessage) {
+              subBuilder.MergeFrom(ServerWorldMessage);
+            }
+            input.ReadMessage(subBuilder);
+            ServerWorldMessage = subBuilder;
             break;
           }
         }

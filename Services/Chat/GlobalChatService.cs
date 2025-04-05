@@ -6,9 +6,9 @@ public class GlobalChatService: ChatMessageChannel
 
     
 
-    public void SendGlobalMessage(Guid[] accountIdToBroadcast, ChatSend message, string playerName,   Action<Guid, IMessage> sendServerPacketByAccountI)
+    public void SendGlobalMessage(   List<Guid> accountIdToBroadcast, ChatSend message, string playerName,   Action<Guid, IMessage> sendServerPacketByAccountI)
     {
-        this.SendMessageToAccountIds(accountIdToBroadcast, sendServerPacketByAccountI, playerName, message, ChatChannel.General );
+        this.SendMessageToAccountIds(accountIdToBroadcast, sendServerPacketByAccountI, playerName, message, ChatChannel.GLOBAL.ToString() );
     }
 
 }

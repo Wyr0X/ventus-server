@@ -9,7 +9,7 @@ using Protos.Auth;
 using Protos.Common;
 using VentusServer;
 
-public class WebSocketServerController
+public class WebSocketServerController2
 {
     private readonly FirebaseService _firebaseService;
     private readonly ConcurrentDictionary<string, WebSocket> _pendingConnections; // Conexiones pendientes de autenticación
@@ -19,7 +19,7 @@ public class WebSocketServerController
     private readonly MessageHandler _messageHandler; // Conexiones ya autenticadas
     private readonly JwtService _jwtService;
 
-    public WebSocketServerController(FirebaseService firebaseService, MessageHandler messageHandler, JwtService jwtService)
+    public WebSocketServerController2(FirebaseService firebaseService, MessageHandler messageHandler, JwtService jwtService)
     {
         _firebaseService = firebaseService;
         _pendingConnections = new ConcurrentDictionary<string, WebSocket>();
@@ -100,7 +100,6 @@ public class WebSocketServerController
             );
 
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine($"✅ Mensaje enviado al usuario {accountId}.");
             Console.ResetColor();
         }
         else
@@ -110,7 +109,13 @@ public class WebSocketServerController
             Console.ResetColor();
         }
     }
-
+    public async void SendBroadcastServerPacketByAccountId(List<Guid> accountsId, IMessage message)
+    {
+        foreach (var accountId in accountsId)
+        {
+            SendServerPacketByAccountId(accountId, message);
+        }
+    }
     private async Task HandleWebSocket(WebSocket webSocket, string connectionId)
     {
         var buffer = new byte[1024];
@@ -217,7 +222,7 @@ public class WebSocketServerController
                 {
                     var clientMessage = ClientMessage.Parser.ParseFrom(receivedData);
 
-
+                    accountId = _connectionsByAccountId[connectionId];
                     Console.ForegroundColor = ConsoleColor.Magenta;
                     Console.WriteLine($"Llego un paquete del tipo {clientMessage.MessageCase}");
                     Console.ResetColor();
@@ -245,8 +250,6 @@ public class WebSocketServerController
                 }
                 else
                 {
-                    Console.WriteLine("Cerrado 4");
-
                     await webSocket.CloseAsync(
                         WebSocketCloseStatus.InvalidMessageType,
                         "Usuario no autenticado",

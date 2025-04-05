@@ -17,9 +17,9 @@ public class EntityManager
         AddComponents(entity, components);
         return entity;
     }
-    public Entity CreateUserEntity(Guid accountId, IComponent[] components)
+    public Entity CreateUserEntity(Guid accountId, int playerId,  IComponent[] components)
     {
-        PlayerEntity entity = new PlayerEntity(nextId++, accountId);
+        PlayerEntity entity = new PlayerEntity(nextId++, accountId, playerId);
         AddComponents(entity, components);
         playersEntities[accountId] = entity;
         return entity;

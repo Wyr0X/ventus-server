@@ -1,8 +1,8 @@
 class WorldEntity : Entity
 {
-    private int _worldId { get; set;}
+    private int _worldId { get; set; }
 
-  public WorldEntity(int id, int worldId) : base(id) // Llamada al constructor base
+    public WorldEntity(int id, int worldId) : base(id) // Llamada al constructor base
     {
         _worldId = worldId;
     }

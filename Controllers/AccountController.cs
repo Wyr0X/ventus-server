@@ -40,7 +40,7 @@ namespace VentusServer.Controllers
                 return Ok(new
                 {
                     account.Email,
-                    account.Name,
+                    account.AccountName,
                     account.Credits,
                     account.CreatedAt,
                     account.IsBanned

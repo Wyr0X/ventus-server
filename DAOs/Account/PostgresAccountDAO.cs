@@ -23,12 +23,12 @@ namespace VentusServer.DataAccess.Postgres
 
 
                 Email = reader.GetString(reader.GetOrdinal("email")),
-                Name = reader.GetString(reader.GetOrdinal("name")),
-                Password = reader.GetString(reader.GetOrdinal("password")),
+                AccountName = reader.GetString(reader.GetOrdinal("name")),
+                PasswordHash = reader.GetString(reader.GetOrdinal("password")),
                 IsDeleted = reader.GetBoolean(reader.GetOrdinal("is_deleted")),
                 IsBanned = reader.GetBoolean(reader.GetOrdinal("is_banned")),
                 Credits = reader.GetInt32(reader.GetOrdinal("credits")),
-                LastIp = reader.GetString(reader.GetOrdinal("last_ip")),
+                LastIpAddress = reader.GetString(reader.GetOrdinal("last_ip")),
                 LastLogin = reader.GetDateTime(reader.GetOrdinal("last_login")).ToUniversalTime(),
                 CreatedAt = reader.GetDateTime(reader.GetOrdinal("created_at")).ToUniversalTime()
             };
@@ -92,12 +92,12 @@ namespace VentusServer.DataAccess.Postgres
             await using var command = new NpgsqlCommand(query, connection);
             command.Parameters.AddWithValue("@AccountId", account.AccountId);
             command.Parameters.AddWithValue("@Email", account.Email);
-            command.Parameters.AddWithValue("@Name", account.Name);
-            command.Parameters.AddWithValue("@Password", account.Password);
+            command.Parameters.AddWithValue("@Name", account.AccountName);
+            command.Parameters.AddWithValue("@Password", account.PasswordHash);
             command.Parameters.AddWithValue("@IsDeleted", account.IsDeleted);
             command.Parameters.AddWithValue("@IsBanned", account.IsBanned);
             command.Parameters.AddWithValue("@Credits", account.Credits);
-            command.Parameters.AddWithValue("@LastIp", (object?)account.LastIp ?? DBNull.Value);
+            command.Parameters.AddWithValue("@LastIp", (object?)account.LastIpAddress ?? DBNull.Value);
             command.Parameters.AddWithValue("@LastLogin", account.LastLogin);
             command.Parameters.AddWithValue("@CreatedAt", account.CreatedAt);
 
@@ -153,12 +153,12 @@ namespace VentusServer.DataAccess.Postgres
             await using var command = new NpgsqlCommand(query, connection);
             command.Parameters.AddWithValue("@AccountId", account.AccountId);
             command.Parameters.AddWithValue("@Email", account.Email);
-            command.Parameters.AddWithValue("@Name", account.Name);
-            command.Parameters.AddWithValue("@Password", account.Password);
+            command.Parameters.AddWithValue("@Name", account.AccountName);
+            command.Parameters.AddWithValue("@Password", account.PasswordHash);
             command.Parameters.AddWithValue("@IsDeleted", account.IsDeleted);
             command.Parameters.AddWithValue("@IsBanned", account.IsBanned);
             command.Parameters.AddWithValue("@Credits", account.Credits);
-            command.Parameters.AddWithValue("@LastIp", (object?)account.LastIp ?? DBNull.Value);
+            command.Parameters.AddWithValue("@LastIp", (object?)account.LastIpAddress ?? DBNull.Value);
             command.Parameters.AddWithValue("@LastLogin", account.LastLogin);
             command.Parameters.AddWithValue("@CreatedAt", account.CreatedAt);
 

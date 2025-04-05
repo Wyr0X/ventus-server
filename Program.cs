@@ -14,6 +14,7 @@ using VentusServer.Controllers;
 using VentusServer.DataAccess;
 using VentusServer.DataAccess.Postgres;
 using VentusServer.Services;
+using Microsoft.Extensions.Logging;
 
 DotEnv.Load();
 
@@ -140,19 +141,28 @@ try
 
     // Obtener las instancias de otros servicios y arrancar el servidor WebSocket
     var webSocketServerController = serviceProvider.GetRequiredService<WebSocketServerController>();
+    var game = serviceProvider.GetRequiredService<GameEngine>();
+
     var webSocketServerTask = webSocketServerController.StartServerAsync(); // Hacer esto asíncrono pero no bloqueante
     var worldService = serviceProvider.GetRequiredService<WorldService>();
     var webSocketQueueTask = Task.Run(() => webSocketServerController.StartLoop());
+    var gameLoop = Task.Run(() => game.Run());
 
     // Iniciar el servidor web (Kestrel)
     var webHost = WebHost
-        .CreateDefaultBuilder()
-        .ConfigureServices(services =>
-        {
-            services.AddSingleton(serviceProvider); // Usar el serviceProvider configurado
-        })
-        .UseStartup<Startup>() // Usar la clase Startup para configurar el servidor web
-        .Build();
+    .CreateDefaultBuilder()
+    .ConfigureLogging(logging =>
+    {
+        logging.ClearProviders(); // Elimina los loggers por defecto
+        logging.AddConsole();     // Agrega consola si aún querés ver logs críticos
+        logging.SetMinimumLevel(LogLevel.Warning); // Solo mostrar Warning, Error y Critical
+    })
+    .ConfigureServices(services =>
+    {
+        services.AddSingleton(serviceProvider); // Usar el serviceProvider configurado
+    })
+    .UseStartup<Startup>() // Usar la clase Startup para configurar el servidor web
+    .Build();
 
     // Iniciar ambos servidores (web y WebSocket)
     await Task.WhenAny(webHost.RunAsync(), webSocketServerTask); // Ejecutar ambos simultáneamente

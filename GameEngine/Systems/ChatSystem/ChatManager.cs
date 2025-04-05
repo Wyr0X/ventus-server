@@ -11,15 +11,17 @@ public class ChatManager
     Lazy<WebSocketServerController> _websocketServerController;
 
     private readonly GlobalChatService _globalChatService;
+    private readonly PrivateChatService _privateChatService;
     private readonly ModerationService _moderationService;
     public ChatManager(PlayerService playerService, PlayerLocationService playerLocationService, GameEngine game, Lazy<WebSocketServerController>
-    websocketServerController, GlobalChatService globalChatService, ModerationService moderationService)
+    websocketServerController, ModerationService moderationService)
     {
         _playerService = playerService;
         _playerLocationService = playerLocationService;
         _game = game;
         _websocketServerController = websocketServerController;
-        _globalChatService = globalChatService;
+        _globalChatService = new GlobalChatService();
+        _privateChatService = new PrivateChatService();
         _moderationService = moderationService;
     }
     public void HandleChatSend(Guid senderId, ChatSend chatSend)
@@ -29,17 +31,17 @@ public class ChatManager
             Console.WriteLine("❌ Mensaje bloqueado por moderación.");
             return;
         }
-Console.WriteLine(chatSend.ToString());
+        Console.WriteLine(chatSend.Channel);
 
 
         switch (chatSend.Channel)
         {
-            case ChatChannel.General:
+            case "GLOBAL":
                 HandleGlobalChat(senderId, chatSend);
                 break;
-                // case ChatChannel.PRIVATE:
-                //     _privateChatService.SendMessage(senderId, message);
-                //     break;
+            case "PRIVATE":
+                HandlePrivateChatService(senderId, chatSend);
+                break;
                 // case ChatChannel.PARTY:
                 //     _partyChatService.SendMessage(senderId, message);
                 //     break;
@@ -52,6 +54,27 @@ Console.WriteLine(chatSend.ToString());
         }
     }
 
+    public async void HandlePrivateChatService(Guid accountId, ChatSend chatSend)
+    {
+        int playerId = chatSend.PlayerId;
+
+        PlayerModel? playerModel = await _playerService.GetPlayerByIdAsync(playerId);
+        string? nickNameToSend = chatSend.NickNameToSend;
+        if (nickNameToSend != null)
+        {
+            PlayerLocation? playerLocation = await _playerLocationService.GetPlayerLocationAsync(playerId);
+            PlayerModel? playerToSend = await _playerService.GetPlayerByName(nickNameToSend);
+            if (playerLocation != null && playerModel != null && playerToSend != null && playerToSend.isSpawned)
+            {
+
+                _privateChatService.SendPrivateMessage(playerToSend.AccountId, chatSend, playerModel.Name, _websocketServerController.Value.SendServerPacketByAccountId);
+
+            }
+
+        }
+
+
+    }
     public async void HandleGlobalChat(Guid accountId, ChatSend chatSend)
     {
         int playerId = chatSend.PlayerId;
@@ -61,13 +84,18 @@ Console.WriteLine(chatSend.ToString());
         if (playerLocation != null && playerModel != null)
         {
             List<Entity> playersInTheWorld = _game._worldManager.GetCharactersInWorld(playerLocation.World.Id);
-            Guid[] accountsIdToBroadcast = [];
+            List<Guid> accountsIdToBroadcast = [];
+            Console.WriteLine($"playersInTheWorld {playersInTheWorld}");
+
             foreach (var _playerEntity in playersInTheWorld)
             {
                 PlayerEntity playerEntity = (PlayerEntity)_playerEntity;
-                accountsIdToBroadcast.Append(playerEntity.GetAccountId());
+                Console.WriteLine($"playerEntity.GetAccountId() {playerEntity.GetAccountId()}");
+
+                accountsIdToBroadcast.Add(playerEntity.GetAccountId());
 
             }
+            Console.WriteLine($"accountsIdToBroadcast {accountsIdToBroadcast} {accountsIdToBroadcast.Count()}");
             _globalChatService.SendGlobalMessage(accountsIdToBroadcast, chatSend, playerModel.Name, _websocketServerController.Value.SendServerPacketByAccountId);
 
         }

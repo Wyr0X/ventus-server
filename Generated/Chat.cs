@@ -31,26 +31,26 @@ namespace Protos.Game.Chat {
             "ChFTZXJ2ZXJNZXNzYWdlQ2hhdBJGChVvdXRnb2luZ19jaGF0X21lc3NhZ2UY",
             "ASABKAsyJS5wcm90b3MuZ2FtZS5jaGF0Lk91dGdvaW5nQ2hhdE1lc3NhZ2VI",
             "ABI5Cg5zeXN0ZW1fbWVzc2FnZRgCIAEoCzIfLnByb3Rvcy5nYW1lLmNoYXQu",
-            "U3lzdGVtTWVzc2FnZUgAQgkKB21lc3NhZ2UicwoIQ2hhdFNlbmQSEAoIcGxh",
-            "eWVySWQYASABKAUSDwoHbWVzc2FnZRgCIAEoCRIUCgx0aW1lc3RhbXBfbXMY",
-            "AyABKAMSLgoHY2hhbm5lbBgEIAEoDjIdLnByb3Rvcy5nYW1lLmNoYXQuQ2hh",
-            "dENoYW5uZWwikgEKE091dGdvaW5nQ2hhdE1lc3NhZ2USEAoIcGxheWVySWQY",
-            "ASABKAUSEgoKcGxheWVyTmFtZRgCIAEoCRIPCgdtZXNzYWdlGAMgASgJEhQK",
-            "DHRpbWVzdGFtcF9tcxgEIAEoAxIuCgdjaGFubmVsGAUgASgOMh0ucHJvdG9z",
-            "LmdhbWUuY2hhdC5DaGF0Q2hhbm5lbCI+CgtDaGF0Q29tbWFuZBIQCghwbGF5",
-            "ZXJJZBgBIAEoBRIPCgdjb21tYW5kGAIgASgJEgwKBGFyZ3MYAyADKAkiUwoN",
-            "U3lzdGVtTWVzc2FnZRIPCgdtZXNzYWdlGAEgASgJEjEKBHR5cGUYAiABKA4y",
-            "Iy5wcm90b3MuZ2FtZS5jaGF0LlN5c3RlbU1lc3NhZ2VUeXBlKkkKC0NoYXRD",
-            "aGFubmVsEgsKB0dFTkVSQUwQABILCgdQUklWQVRFEAESCQoFUEFSVFkQAhIJ",
-            "CgVHVUlMRBADEgoKBlNZU1RFTRAEKkwKEVN5c3RlbU1lc3NhZ2VUeXBlEggK",
-            "BElORk8QABILCgdXQVJOSU5HEAESCQoFRVJST1IQAhIVChFNVVRFX05PVElG",
-            "SUNBVElPThADYgZwcm90bzM="));
+            "U3lzdGVtTWVzc2FnZUgAQgkKB21lc3NhZ2UihAEKCENoYXRTZW5kEhAKCHBs",
+            "YXllcklkGAEgASgFEg8KB21lc3NhZ2UYAiABKAkSFAoMdGltZXN0YW1wX21z",
+            "GAMgASgDEg8KB2NoYW5uZWwYBCABKAkSGwoObmlja05hbWVUb1NlbmQYBSAB",
+            "KAlIAIgBAUIRCg9fbmlja05hbWVUb1NlbmQicwoTT3V0Z29pbmdDaGF0TWVz",
+            "c2FnZRIQCghwbGF5ZXJJZBgBIAEoBRISCgpwbGF5ZXJOYW1lGAIgASgJEg8K",
+            "B21lc3NhZ2UYAyABKAkSFAoMdGltZXN0YW1wX21zGAQgASgDEg8KB2NoYW5u",
+            "ZWwYBSABKAkiPgoLQ2hhdENvbW1hbmQSEAoIcGxheWVySWQYASABKAUSDwoH",
+            "Y29tbWFuZBgCIAEoCRIMCgRhcmdzGAMgAygJIlMKDVN5c3RlbU1lc3NhZ2US",
+            "DwoHbWVzc2FnZRgBIAEoCRIxCgR0eXBlGAIgASgOMiMucHJvdG9zLmdhbWUu",
+            "Y2hhdC5TeXN0ZW1NZXNzYWdlVHlwZSpJCgtDaGF0Q2hhbm5lbBILCgdHRU5F",
+            "UkFMEAASCwoHUFJJVkFURRABEgkKBVBBUlRZEAISCQoFR1VJTEQQAxIKCgZT",
+            "WVNURU0QBCpMChFTeXN0ZW1NZXNzYWdlVHlwZRIICgRJTkZPEAASCwoHV0FS",
+            "TklORxABEgkKBUVSUk9SEAISFQoRTVVURV9OT1RJRklDQVRJT04QA2IGcHJv",
+            "dG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Protos.Game.Chat.ChatChannel), typeof(global::Protos.Game.Chat.SystemMessageType), }, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Game.Chat.ClientMessageChat), global::Protos.Game.Chat.ClientMessageChat.Parser, new[]{ "ChatSend", "ChatCommand" }, new[]{ "Message" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Game.Chat.ServerMessageChat), global::Protos.Game.Chat.ServerMessageChat.Parser, new[]{ "OutgoingChatMessage", "SystemMessage" }, new[]{ "Message" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Game.Chat.ChatSend), global::Protos.Game.Chat.ChatSend.Parser, new[]{ "PlayerId", "Message", "TimestampMs", "Channel" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Game.Chat.ChatSend), global::Protos.Game.Chat.ChatSend.Parser, new[]{ "PlayerId", "Message", "TimestampMs", "Channel", "NickNameToSend" }, new[]{ "NickNameToSend" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Game.Chat.OutgoingChatMessage), global::Protos.Game.Chat.OutgoingChatMessage.Parser, new[]{ "PlayerId", "PlayerName", "Message", "TimestampMs", "Channel" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Game.Chat.ChatCommand), global::Protos.Game.Chat.ChatCommand.Parser, new[]{ "PlayerId", "Command", "Args" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protos.Game.Chat.SystemMessage), global::Protos.Game.Chat.SystemMessage.Parser, new[]{ "Message", "Type" }, null, null, null, null)
@@ -726,6 +726,7 @@ namespace Protos.Game.Chat {
       message_ = other.message_;
       timestampMs_ = other.timestampMs_;
       channel_ = other.channel_;
+      nickNameToSend_ = other.nickNameToSend_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -773,17 +774,43 @@ namespace Protos.Game.Chat {
 
     /// <summary>Field number for the "channel" field.</summary>
     public const int ChannelFieldNumber = 4;
-    private global::Protos.Game.Chat.ChatChannel channel_ = global::Protos.Game.Chat.ChatChannel.General;
+    private string channel_ = "";
     /// <summary>
     /// 📌 Nuevo: canal del mensaje
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Protos.Game.Chat.ChatChannel Channel {
+    public string Channel {
       get { return channel_; }
       set {
-        channel_ = value;
+        channel_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
+    }
+
+    /// <summary>Field number for the "nickNameToSend" field.</summary>
+    public const int NickNameToSendFieldNumber = 5;
+    private readonly static string NickNameToSendDefaultValue = "";
+
+    private string nickNameToSend_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string NickNameToSend {
+      get { return nickNameToSend_ ?? NickNameToSendDefaultValue; }
+      set {
+        nickNameToSend_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+    /// <summary>Gets whether the "nickNameToSend" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasNickNameToSend {
+      get { return nickNameToSend_ != null; }
+    }
+    /// <summary>Clears the value of the "nickNameToSend" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearNickNameToSend() {
+      nickNameToSend_ = null;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -805,6 +832,7 @@ namespace Protos.Game.Chat {
       if (Message != other.Message) return false;
       if (TimestampMs != other.TimestampMs) return false;
       if (Channel != other.Channel) return false;
+      if (NickNameToSend != other.NickNameToSend) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -815,7 +843,8 @@ namespace Protos.Game.Chat {
       if (PlayerId != 0) hash ^= PlayerId.GetHashCode();
       if (Message.Length != 0) hash ^= Message.GetHashCode();
       if (TimestampMs != 0L) hash ^= TimestampMs.GetHashCode();
-      if (Channel != global::Protos.Game.Chat.ChatChannel.General) hash ^= Channel.GetHashCode();
+      if (Channel.Length != 0) hash ^= Channel.GetHashCode();
+      if (HasNickNameToSend) hash ^= NickNameToSend.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -846,9 +875,13 @@ namespace Protos.Game.Chat {
         output.WriteRawTag(24);
         output.WriteInt64(TimestampMs);
       }
-      if (Channel != global::Protos.Game.Chat.ChatChannel.General) {
-        output.WriteRawTag(32);
-        output.WriteEnum((int) Channel);
+      if (Channel.Length != 0) {
+        output.WriteRawTag(34);
+        output.WriteString(Channel);
+      }
+      if (HasNickNameToSend) {
+        output.WriteRawTag(42);
+        output.WriteString(NickNameToSend);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -872,9 +905,13 @@ namespace Protos.Game.Chat {
         output.WriteRawTag(24);
         output.WriteInt64(TimestampMs);
       }
-      if (Channel != global::Protos.Game.Chat.ChatChannel.General) {
-        output.WriteRawTag(32);
-        output.WriteEnum((int) Channel);
+      if (Channel.Length != 0) {
+        output.WriteRawTag(34);
+        output.WriteString(Channel);
+      }
+      if (HasNickNameToSend) {
+        output.WriteRawTag(42);
+        output.WriteString(NickNameToSend);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
@@ -895,8 +932,11 @@ namespace Protos.Game.Chat {
       if (TimestampMs != 0L) {
         size += 1 + pb::CodedOutputStream.ComputeInt64Size(TimestampMs);
       }
-      if (Channel != global::Protos.Game.Chat.ChatChannel.General) {
-        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Channel);
+      if (Channel.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Channel);
+      }
+      if (HasNickNameToSend) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(NickNameToSend);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -919,8 +959,11 @@ namespace Protos.Game.Chat {
       if (other.TimestampMs != 0L) {
         TimestampMs = other.TimestampMs;
       }
-      if (other.Channel != global::Protos.Game.Chat.ChatChannel.General) {
+      if (other.Channel.Length != 0) {
         Channel = other.Channel;
+      }
+      if (other.HasNickNameToSend) {
+        NickNameToSend = other.NickNameToSend;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -953,8 +996,12 @@ namespace Protos.Game.Chat {
             TimestampMs = input.ReadInt64();
             break;
           }
-          case 32: {
-            Channel = (global::Protos.Game.Chat.ChatChannel) input.ReadEnum();
+          case 34: {
+            Channel = input.ReadString();
+            break;
+          }
+          case 42: {
+            NickNameToSend = input.ReadString();
             break;
           }
         }
@@ -988,8 +1035,12 @@ namespace Protos.Game.Chat {
             TimestampMs = input.ReadInt64();
             break;
           }
-          case 32: {
-            Channel = (global::Protos.Game.Chat.ChatChannel) input.ReadEnum();
+          case 34: {
+            Channel = input.ReadString();
+            break;
+          }
+          case 42: {
+            NickNameToSend = input.ReadString();
             break;
           }
         }
@@ -1101,16 +1152,16 @@ namespace Protos.Game.Chat {
 
     /// <summary>Field number for the "channel" field.</summary>
     public const int ChannelFieldNumber = 5;
-    private global::Protos.Game.Chat.ChatChannel channel_ = global::Protos.Game.Chat.ChatChannel.General;
+    private string channel_ = "";
     /// <summary>
     /// 📌 Nuevo: canal del mensaje
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Protos.Game.Chat.ChatChannel Channel {
+    public string Channel {
       get { return channel_; }
       set {
-        channel_ = value;
+        channel_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
@@ -1145,7 +1196,7 @@ namespace Protos.Game.Chat {
       if (PlayerName.Length != 0) hash ^= PlayerName.GetHashCode();
       if (Message.Length != 0) hash ^= Message.GetHashCode();
       if (TimestampMs != 0L) hash ^= TimestampMs.GetHashCode();
-      if (Channel != global::Protos.Game.Chat.ChatChannel.General) hash ^= Channel.GetHashCode();
+      if (Channel.Length != 0) hash ^= Channel.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -1180,9 +1231,9 @@ namespace Protos.Game.Chat {
         output.WriteRawTag(32);
         output.WriteInt64(TimestampMs);
       }
-      if (Channel != global::Protos.Game.Chat.ChatChannel.General) {
-        output.WriteRawTag(40);
-        output.WriteEnum((int) Channel);
+      if (Channel.Length != 0) {
+        output.WriteRawTag(42);
+        output.WriteString(Channel);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -1210,9 +1261,9 @@ namespace Protos.Game.Chat {
         output.WriteRawTag(32);
         output.WriteInt64(TimestampMs);
       }
-      if (Channel != global::Protos.Game.Chat.ChatChannel.General) {
-        output.WriteRawTag(40);
-        output.WriteEnum((int) Channel);
+      if (Channel.Length != 0) {
+        output.WriteRawTag(42);
+        output.WriteString(Channel);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
@@ -1236,8 +1287,8 @@ namespace Protos.Game.Chat {
       if (TimestampMs != 0L) {
         size += 1 + pb::CodedOutputStream.ComputeInt64Size(TimestampMs);
       }
-      if (Channel != global::Protos.Game.Chat.ChatChannel.General) {
-        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Channel);
+      if (Channel.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Channel);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -1263,7 +1314,7 @@ namespace Protos.Game.Chat {
       if (other.TimestampMs != 0L) {
         TimestampMs = other.TimestampMs;
       }
-      if (other.Channel != global::Protos.Game.Chat.ChatChannel.General) {
+      if (other.Channel.Length != 0) {
         Channel = other.Channel;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
@@ -1301,8 +1352,8 @@ namespace Protos.Game.Chat {
             TimestampMs = input.ReadInt64();
             break;
           }
-          case 40: {
-            Channel = (global::Protos.Game.Chat.ChatChannel) input.ReadEnum();
+          case 42: {
+            Channel = input.ReadString();
             break;
           }
         }
@@ -1340,8 +1391,8 @@ namespace Protos.Game.Chat {
             TimestampMs = input.ReadInt64();
             break;
           }
-          case 40: {
-            Channel = (global::Protos.Game.Chat.ChatChannel) input.ReadEnum();
+          case 42: {
+            Channel = input.ReadString();
             break;
           }
         }

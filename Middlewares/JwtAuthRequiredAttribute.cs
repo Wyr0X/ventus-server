@@ -15,7 +15,6 @@ namespace VentusServer.Auth
             var jwtService = context.HttpContext.RequestServices.GetService<JwtService>();
             var authorizationHeader = context.HttpContext.Request.Headers["Authorization"].ToString();
 
-            Console.WriteLine($"[JwtAuthRequired] Authorization Header: {authorizationHeader}");
 
             if (jwtService == null)
             {

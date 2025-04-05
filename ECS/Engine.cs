@@ -4,10 +4,11 @@ public abstract class Engine
 {
     public const int TILE_SIZE = 32;
     public const double TIME_STEP = 1000.0 / 60.0; // 60fps
+    
     public const double MAX_DELTA_TIME = 50;
 
     // Engine vars
-    protected EntityManager Entities = new EntityManager();
+    public EntityManager Entities = new EntityManager();
 
     //  protected Items Items = new Items();
     //protected GameWorld World = new GameWorld();

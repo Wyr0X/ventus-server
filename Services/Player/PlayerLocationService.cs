@@ -5,7 +5,7 @@ using VentusServer.DataAccess.Postgres;
 
 namespace VentusServer.Services
 {
-    public class PlayerLocationService
+    public class PlayerLocationService : BaseCachedService<PlayerLocation, int>
     {
         private readonly PostgresPlayerLocationDAO _playerLocationDAO;
         private readonly MapService _mapService;
@@ -18,8 +18,10 @@ namespace VentusServer.Services
             _worldService = worldService;
         }
 
-        // Obtener la ubicación de un jugador
-        public async Task<PlayerLocation?> GetPlayerLocationAsync(int playerId)
+        /// <summary>
+        /// Carga la ubicación de un jugador desde la fuente original (DAO).
+        /// </summary>
+        protected override async Task<PlayerLocation?> LoadModelAsync(int playerId)
         {
             try
             {
@@ -27,17 +29,22 @@ namespace VentusServer.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Error al obtener la ubicación del jugador: {ex.Message}");
+                Console.WriteLine($"❌ Error al cargar ubicación del jugador: {ex.Message}");
                 return null;
             }
         }
 
-        // Guardar la ubicación de un jugador
+        public async Task<PlayerLocation?> GetPlayerLocationAsync(int playerId)
+        {
+            return await GetOrLoadAsync(playerId);
+        }
+
         public async Task SavePlayerLocationAsync(PlayerLocation location)
         {
             try
             {
                 await _playerLocationDAO.SavePlayerLocationAsync(location);
+                Set(location.Player.Id, location); // Refrescar cache
                 Console.WriteLine("✅ Ubicación del jugador guardada correctamente.");
             }
             catch (Exception ex)
@@ -46,31 +53,27 @@ namespace VentusServer.Services
             }
         }
 
-
         public async Task CreatePlayerLocation(PlayerLocation playerLocation)
         {
             try
             {
                 await _playerLocationDAO.CreatePlayerLocationAsync(playerLocation);
-                Console.WriteLine("✅ Ubicación del jugador eliminada correctamente.");
+                Set(playerLocation.Player.Id, playerLocation); // Agregar a la cache
+                Console.WriteLine("✅ Ubicación del jugador creada correctamente.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Error al eliminar la ubicación del jugador: {ex.Message}");
+                Console.WriteLine($"❌ Error al crear la ubicación del jugador: {ex.Message}");
             }
         }
+
         public async Task<PlayerLocation?> CreateDefaultPlayerLocation(PlayerModel player)
         {
-            //Avisarle al world 
+            int defaultWorldId = 1;
+            int defaultMapId = 1;
 
-            // Avisarle al Map
-
-            int worldId = 1;
-            int mapId = 1;
-
-            MapModel? map = await _mapService.GetMapByIdAsync(mapId);
-
-            WorldModel? world = await _worldService.GetWorldByIdAsync(worldId);
+            MapModel? map = await _mapService.GetMapByIdAsync(defaultMapId);
+            WorldModel? world = await _worldService.GetWorldByIdAsync(defaultWorldId);
 
             if (world != null && map != null)
             {
@@ -88,6 +91,7 @@ namespace VentusServer.Services
             }
             return null;
         }
+
         public async Task DeletePlayerLocationAsync(int playerId)
         {
             PlayerLocation? playerLocation = await GetPlayerLocationAsync(playerId);
@@ -100,14 +104,16 @@ namespace VentusServer.Services
                 {
                     await _worldService.RemovePlayerFromWorld(playerId, world.Id);
                 }
+
                 if (map != null)
                 {
                     await _mapService.RemovePlayerFromMap(playerId, map.Id);
                 }
-                await _playerLocationDAO.DeletePlayerLocationAsync(playerId);
 
+                await _playerLocationDAO.DeletePlayerLocationAsync(playerId);
+                Invalidate(playerId); // Eliminar de la cache
+                Console.WriteLine("🗑️ Ubicación del jugador eliminada correctamente.");
             }
         }
-
     }
 }

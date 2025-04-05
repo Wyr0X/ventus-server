@@ -39,7 +39,7 @@ namespace VentusServer.Controllers
                     return Unauthorized("Correo o contraseña incorrectos.");
                 }
 
-                if (!_passwordService.VerifyPassword(request.Password, user.Password))
+                if (!_passwordService.VerifyPassword(request.Password, user.PasswordHash))
                 {
                     Console.WriteLine("[Login] Contraseña incorrecta.");
                     return Unauthorized("Correo o contraseña incorrectos.");
@@ -81,11 +81,11 @@ namespace VentusServer.Controllers
             {
                 AccountId = accountId,
                 Email = request.Email,
-                Name = request.Name,
-                Password = hashedPassword,
+                AccountName = request.Name,
+                PasswordHash = hashedPassword,
                 CreatedAt = DateTime.UtcNow,
                 IsBanned = false,
-                LastIp = "test",
+                LastIpAddress = "test",
                 Credits = 0
             };
 
@@ -141,7 +141,7 @@ namespace VentusServer.Controllers
                 }
 
                 Console.WriteLine($"[ValidateToken] ✅ Token válido para {user.Email}");
-                return Ok(new { accountId = user.AccountId, email = user.Email, name = user.Name });
+                return Ok(new { accountId = user.AccountId, email = user.Email, name = user.AccountName });
             }
             catch (Exception ex)
             {

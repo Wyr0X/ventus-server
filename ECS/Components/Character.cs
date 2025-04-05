@@ -5,18 +5,20 @@ public class Character : Component
 {
     private double startTime = 0;
     public int PlayerId { get; set; }
+    public string PlayerName { get; set; }
     public Guid AccountId { get; set; }
 
     public int CurrentMapId { get; set; }
     public int CurrentWorldId { get; set; }
     private DirectionComponent _direction;
 
-    public Character( Guid accountId, int playerId, int currentMapId, int currentWorldId)
+    public Character( Guid accountId, int playerId, string playerName, int currentMapId, int currentWorldId)
     {
         AccountId = accountId;
         PlayerId = playerId;
         CurrentMapId = currentMapId;
         CurrentWorldId = currentWorldId;
+        PlayerName = playerName;
     }
     
     public int GetCurrentWorldId(){

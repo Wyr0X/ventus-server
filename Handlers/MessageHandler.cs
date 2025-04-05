@@ -25,7 +25,7 @@ public class MessageHandler
         {
             ClientMessage clientMessage = (ClientMessage)messagePair.ClientMessage;
 
-            Console.WriteLine($"🔹 Tipo de mensaje recibido: {clientMessage.GetType().Name}");
+            Console.WriteLine($"🔹 Tipo de mensaje recibido: {clientMessage.ToString()}");
             if (clientMessage.MessageCase == ClientMessage.MessageOneofCase.ClientMessageSession)
             {
                 _sessionHandler.HandleSessionMessage(messagePair);

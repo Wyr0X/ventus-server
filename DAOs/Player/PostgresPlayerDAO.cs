@@ -227,5 +227,30 @@ namespace VentusServer.DataAccess.Postgres
 
             return players;
         }
+        public async Task<PlayerModel?> GetPlayerByNameAsync(string name)
+        {
+            await using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            const string query = "SELECT * FROM players WHERE name = @Name LIMIT 1";
+            await using var command = new NpgsqlCommand(query, connection);
+            command.Parameters.AddWithValue("@Name", name);
+
+            await using var reader = await command.ExecuteReaderAsync();
+            if (await reader.ReadAsync())
+            {
+                return new PlayerModel(
+                    reader.GetInt32(reader.GetOrdinal("id")),
+                    reader.GetGuid(reader.GetOrdinal("account_id")),
+                    reader.GetString(reader.GetOrdinal("name")),
+                    reader.GetString(reader.GetOrdinal("gender")),
+                    reader.GetString(reader.GetOrdinal("race")),
+                    reader.GetInt32(reader.GetOrdinal("level")),
+                    reader.GetString(reader.GetOrdinal("class"))
+                );
+            }
+
+            return null;
+        }
     }
 }

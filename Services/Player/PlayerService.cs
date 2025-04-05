@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Game.Models;
 using VentusServer.DataAccess.Postgres;
@@ -9,6 +10,7 @@ namespace VentusServer.Services
     {
         private readonly PostgresPlayerDAO _playerDAO;
         private readonly PlayerLocationService _playerLocationService;
+        private readonly Dictionary<string, int> _nameToIdCache = new();
 
         public PlayerService(PostgresPlayerDAO playerDAO, PlayerLocationService playerLocationService)
         {
@@ -16,7 +18,10 @@ namespace VentusServer.Services
             _playerLocationService = playerLocationService;
         }
 
-        // Obtener un jugador por su ID
+        // =============================
+        // CRUD BÁSICO
+        // =============================
+
         public async Task<PlayerModel?> GetPlayerByIdAsync(int playerId)
         {
             try
@@ -30,7 +35,6 @@ namespace VentusServer.Services
             }
         }
 
-        // Guardar un jugador (crear o actualizar)
         public async Task SavePlayerAsync(PlayerModel player)
         {
             try
@@ -44,22 +48,21 @@ namespace VentusServer.Services
             }
         }
 
-        // Eliminar un jugador por su ID
         public async Task<bool> DeletePlayerAsync(int playerId)
         {
             try
             {
-                return await _playerDAO.DeletePlayerAsync(playerId);
-                Console.WriteLine("✅ Jugador eliminado correctamente.");
+                var deleted = await _playerDAO.DeletePlayerAsync(playerId);
+                if (deleted) Console.WriteLine("✅ Jugador eliminado correctamente.");
+                return deleted;
             }
             catch (Exception ex)
             {
-                return false;
                 Console.WriteLine($"❌ Error al eliminar el jugador: {ex.Message}");
+                return false;
             }
         }
 
-        // Verificar si un jugador existe
         public async Task<bool> PlayerExistsAsync(int playerId)
         {
             try
@@ -72,21 +75,29 @@ namespace VentusServer.Services
                 return false;
             }
         }
+
+        // =============================
+        // CREACIÓN DE JUGADOR
+        // =============================
+
         public async Task<PlayerModel?> CreatePlayer(Guid accountId, string name, string gender, string race, string playerClass)
         {
             try
             {
-                PlayerModel player = await _playerDAO.CreatePlayerAsync(accountId, name, gender, race, playerClass);
+                var player = await _playerDAO.CreatePlayerAsync(accountId, name, gender, race, playerClass);
                 await _playerLocationService.CreateDefaultPlayerLocation(player);
                 return player;
-
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Error al verificar la existencia del jugador: {ex.Message}");
+                Console.WriteLine($"❌ Error al crear el jugador: {ex.Message}");
                 return null;
             }
         }
+
+        // =============================
+        // CONSULTAS
+        // =============================
 
         public async Task<List<PlayerModel>> GetAllPlayers()
         {
@@ -95,7 +106,7 @@ namespace VentusServer.Services
 
         public async Task<List<PlayerModel>> GetPlayerWithCompleteInfo()
         {
-            return await _playerDAO.GetAllPlayersAsync();
+            return await _playerDAO.GetAllPlayersAsync(); // Puede ajustarse si se necesita info extra
         }
 
         public async Task<List<PlayerModel>> GetPlayersByAccountId(Guid accountId)
@@ -103,7 +114,27 @@ namespace VentusServer.Services
             return await _playerDAO.GetPlayersByAccountIdAsync(accountId);
         }
 
-        //Cache
+        public async Task<PlayerModel?> GetPlayerByName(string name)
+        {
+            if (_nameToIdCache.TryGetValue(name, out int cachedId))
+            {
+                return await GetOrLoadAsync(cachedId); // Usa el método del BaseCachedService
+            }
+
+            var player = await _playerDAO.GetPlayerByNameAsync(name); // ⚠️ Esto debería ser por nombre
+            if (player != null)
+            {
+                Set(player.Id, player);
+                _nameToIdCache[name] = player.Id;
+            }
+
+            return player;
+        }
+
+
+        // =============================
+        // CACHE
+        // =============================
 
         public async Task<PlayerModel?> GetOrCreatePlayerInCacheAsync(int playerId)
         {
@@ -114,18 +145,28 @@ namespace VentusServer.Services
             var player = await _playerDAO.GetPlayerByIdAsync(playerId);
             if (player != null)
             {
-                _cache[playerId] = player; // ahora sí accedés al diccionario protegido
+                Set(player.Id, player);
+                _nameToIdCache[player.Name] = playerId;
             }
 
             return player;
         }
-
-        protected override PlayerModel CreateModel(int playerId)
+        protected override async Task<PlayerModel?> LoadModelAsync(int playerId)
         {
-            // Nota: si necesitas que sea async, hay formas de adaptarlo (por ejemplo, cargar todo antes de llamar)
-            var task = _playerDAO.GetPlayerByIdAsync(playerId);
-            task.Wait();
-            return task.Result!;
+            try
+            {
+                var player = await _playerDAO.GetPlayerByIdAsync(playerId);
+                if (player != null)
+                {
+                    _nameToIdCache[player.Name] = player.Id;
+                }
+                return player;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Error al cargar el jugador desde LoadModelAsync: {ex.Message}");
+                return null;
+            }
         }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Game.Models;
 using Protos.Common;
+using Protos.Game.Chat;
 using Protos.Game.Movement;
 using Protos.Game.Session;
 using VentusServer.Services;
@@ -13,12 +14,15 @@ public class SessionManager
     PlayerLocationService _playerLocationService;
     PlayerService _playerService;
     AccountService _accountService;
+    SystemChatService _systemService = new SystemChatService();
+    Lazy<WebSocketServerController> _websocketServerController;
 
     public SessionManager(
         GameEngine game,
         PlayerLocationService playerLocationService,
         PlayerService playerService,
-        AccountService accountService
+        AccountService accountService,
+         Lazy<WebSocketServerController> websocketServerController
 
     )
     {
@@ -26,6 +30,10 @@ public class SessionManager
         _playerLocationService = playerLocationService;
         _playerService = playerService;
         _accountService = accountService;
+        _websocketServerController = websocketServerController;
+
+
+
     }
 
     public async void HandlePlayerJoin(UserMessagePair messagePair)
@@ -46,11 +54,11 @@ public class SessionManager
         PlayerModel? playerModel = await _playerService.GetOrCreatePlayerInCacheAsync(
             playerJoinMessage.PlayerId
         );
-        AccountModel? accountModel = await _accountService.GetAccountByIdAsync(messagePair.AccountId);
+        AccountModel? accountModel = await _accountService.GetOrLoadAsync(messagePair.AccountId);
 
         if (accountModel != null)
         {
-            int? currentActivePlayer = accountModel.ActivePlayer;
+            int? currentActivePlayer = accountModel.ActivePlayerId;
             if (currentActivePlayer != null)
             {
                 _game.UnSpawnPlayer(messagePair.AccountId, playerModel, playerLocation);
@@ -74,10 +82,22 @@ public class SessionManager
             if (!playerModel.isSpawned)
             {
                 playerModel.isSpawned = true;
-                accountModel.ActivePlayer = playerModel.Id;
+                accountModel.ActivePlayerId = playerModel.Id;
 
                 Console.WriteLine($"Player {playerModel.Id} joined the game");
                 _game.SpawnPlayer(messagePair.AccountId, playerModel, playerLocation);
+                List<Entity> _playersInTheWorld = _game._worldManager.GetCharactersInWorld(playerLocation.World.Id);
+                List<Guid> accountsIdInTheWorld = new List<Guid>();
+                foreach (var entityC in _playersInTheWorld)
+                {
+                    Character? character = (Character?)entityC.Get(typeof(Character));
+
+                    if (character == null) continue;
+                    accountsIdInTheWorld.Append(character.AccountId);
+                }
+
+                // _systemService.BroadcastInfo(accountsIdInTheWorld,
+                // $"El jugador {playerModel.Name} ha entrado al Mundo", _websocketServerController.Value.SendServerPacketByAccountId);
             }
             await _accountService.SaveAccountAsync(accountModel);
             accountModel.PrintInfo();

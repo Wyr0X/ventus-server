@@ -22,7 +22,8 @@ message ChatSend {
     int32 playerId = 1;
     string message = 2;
     int64 timestamp_ms = 3;
-    ChatChannel channel = 4;  // 📌 Nuevo: canal del mensaje
+    string channel = 4;  // 📌 Nuevo: canal del mensaje
+    optional string nickNameToSend = 5;
 }
 
 // 📢 Mensaje que los jugadores reciben en el chat
@@ -31,7 +32,7 @@ message OutgoingChatMessage {
     string playerName = 2;
     string message = 3;
     int64 timestamp_ms = 4;
-    ChatChannel channel = 5;  // 📌 Nuevo: canal del mensaje
+    string channel = 5;  // 📌 Nuevo: canal del mensaje
 }
 
 // 📜 Mensaje de comandos (/mute, /w, /roll)
