@@ -35,7 +35,7 @@ public class GameEngine : Engine
     {
 
         // worldManager.Update();
-        _worldManager.UpdateWorld();
+      //  _worldManager.UpdateWorld();
     }
 
     private void HandleMouseDown(int X, int Y)

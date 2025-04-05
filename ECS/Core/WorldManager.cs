@@ -111,8 +111,8 @@ public class WorldManager
 
                 // _syncSystem.UpdatePosition(character.AccountId, character.PlayerId, position.X, position.Y);
             }
-            WorldStateUpdate worldStateUpdate =  CreateWorldStateUpdate(playersState);
-           // _syncSystem.SendWorlState(accountsId, worldStateUpdate);
+            WorldStateUpdate worldStateUpdate = CreateWorldStateUpdate(playersState);
+            // _syncSystem.SendWorlState(accountsId, worldStateUpdate);
         }
     }
     public void SpawnPlayer(int worldId, Entity playerSpawnEntity, Character characterSpawn, Position positionOfPlayerSpawn)
@@ -120,6 +120,7 @@ public class WorldManager
         PlayerEntity playerSpawn = (PlayerEntity)playerSpawnEntity;
         if (playerSpawn != null)
         {
+
 
             WorldEntity world = _worlds[worldId];
 
@@ -152,6 +153,7 @@ public class WorldManager
         List<Entity> characteresEntity = new List<Entity>();
         foreach (var (component, entity) in characters)
         {
+
             Entity _entityCharacter = entity;
             Character _componentCharacter = (Character)component;
 

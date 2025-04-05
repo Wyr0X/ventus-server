@@ -86,16 +86,19 @@ public class SessionManager
 
                 _game.SpawnPlayer(messagePair.AccountId, playerModel, playerLocation);
                 List<Entity> _playersInTheWorld = _game._worldManager.GetCharactersInWorld(playerLocation.World.Id);
+
                 List<Guid> accountsIdInTheWorld = new List<Guid>();
                 foreach (var entityC in _playersInTheWorld)
                 {
+
                     Character? character = (Character?)entityC.Get(typeof(Character));
 
                     if (character == null) continue;
-                    accountsIdInTheWorld.Append(character.AccountId);
+
+                    accountsIdInTheWorld.Add(character.AccountId);
                 }
 
-                 _systemService.BroadcastInfo(accountsIdInTheWorld, $"El jugador {playerModel.Name} ha entrado al Mundo", _websocketServerController.Value.SendServerPacketByAccountId);
+                _systemService.BroadcastInfo(accountsIdInTheWorld, $"El jugador {playerModel.Name} ha entrado al Mundo", _websocketServerController.Value.SendServerPacketByAccountId);
             }
             await _accountService.SaveAccountAsync(accountModel);
             accountModel.PrintInfo();
