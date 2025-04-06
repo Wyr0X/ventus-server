@@ -7,6 +7,8 @@ using VentusServer.DataAccess.Postgres;
 using VentusServer.Services;
 using VentusServer.DataAccess;
 using Game.Models;
+using VentusServer.DataAccess.Interfaces;
+using VentusServer.DataAccess.Dapper;
 
 namespace VentusServer
 {
@@ -45,8 +47,9 @@ namespace VentusServer
         private static void RegisterDAOs(IServiceCollection services, string connectionString)
         {
             services
-                .AddScoped<PostgresAccountDAO>(_ => new PostgresAccountDAO(connectionString))
-                .AddScoped<PostgresPlayerDAO>(_ => new PostgresPlayerDAO(connectionString))
+                .AddScoped<IPlayerDAO>(_ => new DapperPlayerDAO(connectionString))
+
+                .AddScoped<IAccountDAO>(_ => new DapperAccountDAO(connectionString))
                 .AddScoped<PostgresWorldDAO>(_ => new PostgresWorldDAO(connectionString))
                 .AddScoped<PostgresMapDAO>(sp =>
                     new PostgresMapDAO(
@@ -59,7 +62,7 @@ namespace VentusServer
                         connectionString,
                         sp.GetRequiredService<PostgresWorldDAO>(),
                         sp.GetRequiredService<PostgresMapDAO>(),
-                        sp.GetRequiredService<PostgresPlayerDAO>()
+                        sp.GetRequiredService<IPlayerDAO>()
                     )
                 );
         }
@@ -83,6 +86,7 @@ namespace VentusServer
         private static void RegisterServices(IServiceCollection services)
         {
             services
+
                 .AddSingleton<PasswordService>()
                 .AddSingleton<WorldService>()
                 .AddSingleton<MapService>()

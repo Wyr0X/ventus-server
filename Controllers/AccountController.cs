@@ -12,9 +12,9 @@ namespace VentusServer.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private readonly PostgresAccountDAO _accountDAO;
+        private readonly IAccountDAO _accountDAO;
 
-        public AccountController(PostgresAccountDAO accountDAO)
+        public AccountController(IAccountDAO accountDAO)
         {
             _accountDAO = accountDAO;
         }

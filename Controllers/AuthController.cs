@@ -43,7 +43,7 @@ namespace VentusServer.Controllers
                     LoggerUtil.Log("Login", "Usuario no encontrado.", ConsoleColor.Yellow);
                     return Unauthorized("Correo o contraseña incorrectos.");
                 }
-                LoggerUtil.Log("Login", $"Iniciando proceso de autenticación para 3: {request.Email}", ConsoleColor.Cyan);
+                LoggerUtil.Log("Login", $"Iniciando proceso de autenticación para 3: {request.Password} {account.PasswordHash}", ConsoleColor.Cyan);
 
                 if (!_passwordService.VerifyPassword(request.Password, account.PasswordHash))
                 {

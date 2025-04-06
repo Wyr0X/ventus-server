@@ -38,7 +38,7 @@ namespace VentusServer.DataAccess.Postgres
             CREATE TABLE IF NOT EXISTS accounts (
                 account_id UUID PRIMARY KEY,
                 email VARCHAR(255) NOT NULL,
-                name VARCHAR(100) NOT NULL,
+                account_name VARCHAR(100) NOT NULL,
                 password VARCHAR(255) NOT NULL,
                 is_deleted BOOLEAN DEFAULT FALSE,
                 is_banned BOOLEAN DEFAULT FALSE,
@@ -47,7 +47,7 @@ namespace VentusServer.DataAccess.Postgres
                 last_login TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
                 session_id UUID, -- 🆕 Agregado campo para sesión
                 created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-                UNIQUE (email, name)
+                UNIQUE (email, account_name)
             );
         ";
 
@@ -65,19 +65,19 @@ namespace VentusServer.DataAccess.Postgres
             try
             {
                 string createTableQuery = @"
-                    CREATE TABLE IF NOT EXISTS players (
-                        id SERIAL PRIMARY KEY,
-                        account_id UUID NOT NULL REFERENCES accounts(account_id) ON DELETE CASCADE,
-                        name VARCHAR(100) NOT NULL,
-                        gender VARCHAR(10) NOT NULL,
-                        race VARCHAR(50) NOT NULL,
-                        level INT DEFAULT 1,
-                        class VARCHAR(50) NOT NULL,
-                        created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-                        last_login TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-                        status VARCHAR(50) DEFAULT 'active'
-                    );
-                ";
+            CREATE TABLE IF NOT EXISTS players (
+                id SERIAL PRIMARY KEY,
+                account_id UUID NOT NULL REFERENCES accounts(account_id) ON DELETE CASCADE,
+                name VARCHAR(100) NOT NULL UNIQUE,
+                gender VARCHAR(10) NOT NULL,
+                race VARCHAR(50) NOT NULL,
+                level INT DEFAULT 1,
+                class VARCHAR(50) NOT NULL,
+                created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                last_login TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                status VARCHAR(50) DEFAULT 'active'
+            );
+        ";
 
                 await _postgresDbService.ExecuteQueryAsync(createTableQuery);
                 Console.WriteLine("✅ Tabla 'players' creada correctamente (si no existía).");

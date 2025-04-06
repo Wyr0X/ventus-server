@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Npgsql;
 using Game.Models;
 using System.Data;
+using VentusServer.DataAccess.Interfaces;
 
 namespace VentusServer.DataAccess.Postgres
 {
@@ -12,11 +13,11 @@ namespace VentusServer.DataAccess.Postgres
         private readonly string _connectionString;
         private PostgresWorldDAO _worldDAO;
         private PostgresMapDAO _mapDAO;
-        private PostgresPlayerDAO _playerDAO;
+        private IPlayerDAO _playerDAO;
 
 
 
-        public PostgresPlayerLocationDAO(string connectionString, PostgresWorldDAO worldDAO, PostgresMapDAO mapDAO, PostgresPlayerDAO playerDAO)
+        public PostgresPlayerLocationDAO(string connectionString, PostgresWorldDAO worldDAO, PostgresMapDAO mapDAO, IPlayerDAO playerDAO)
         {
             _connectionString = connectionString;
             _worldDAO = worldDAO;

@@ -14,7 +14,7 @@ public class PlayerModel
     public DateTime LastLogin { get; set; }
     public Boolean isSpawned { get; set; } = false;
 
-    public string Status { get; private set; } // Estado: "Online", "Offline", "Banned"
+    public string Status { get; set; } // Estado: "Online", "Offline", "Banned"
 
 
     public PlayerModel(int id, Guid accountId, string name, string gender, string race, int level, string playerClass)

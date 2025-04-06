@@ -2,17 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Game.Models;
-using VentusServer.DataAccess.Postgres;
+using VentusServer.DataAccess.Interfaces;
 
 namespace VentusServer.Services
 {
     public class PlayerService : BaseCachedService<PlayerModel, int>
     {
-        private readonly PostgresPlayerDAO _playerDAO;
+        private readonly IPlayerDAO _playerDAO;
         private readonly PlayerLocationService _playerLocationService;
         private readonly Dictionary<string, int> _nameToIdCache = new();
 
-        public PlayerService(PostgresPlayerDAO playerDAO, PlayerLocationService playerLocationService)
+        public PlayerService(IPlayerDAO playerDAO, PlayerLocationService playerLocationService)
         {
             _playerDAO = playerDAO;
             _playerLocationService = playerLocationService;
@@ -39,7 +39,15 @@ namespace VentusServer.Services
         {
             try
             {
+                var existingPlayer = await _playerDAO.GetPlayerByNameAsync(player.Name);
+                if (existingPlayer != null && existingPlayer.Id != player.Id)
+                {
+                    Console.WriteLine($"⚠️ Ya existe un jugador con el nombre '{player.Name}'.");
+                    return;
+                }
+
                 await _playerDAO.SavePlayerAsync(player);
+                _nameToIdCache[player.Name] = player.Id;
                 Console.WriteLine("✅ Jugador guardado correctamente.");
             }
             catch (Exception ex)
@@ -84,6 +92,14 @@ namespace VentusServer.Services
         {
             try
             {
+                bool nameExists = await _playerDAO.PlayerNameExistsAsync(name);
+                if (nameExists)
+                {
+                    Console.WriteLine($"⚠️ Ya existe un jugador con el nombre '{name}'.");
+                    return null;
+                }
+                    Console.WriteLine($"Aca {accountId}'.");
+
                 var player = await _playerDAO.CreatePlayerAsync(accountId, name, gender, race, playerClass);
                 await _playerLocationService.CreateDefaultPlayerLocation(player);
                 return player;
@@ -118,10 +134,10 @@ namespace VentusServer.Services
         {
             if (_nameToIdCache.TryGetValue(name, out int cachedId))
             {
-                return await GetOrLoadAsync(cachedId); // Usa el método del BaseCachedService
+                return await GetOrLoadAsync(cachedId);
             }
 
-            var player = await _playerDAO.GetPlayerByNameAsync(name); // ⚠️ Esto debería ser por nombre
+            var player = await _playerDAO.GetPlayerByNameAsync(name);
             if (player != null)
             {
                 Set(player.Id, player);
@@ -130,7 +146,6 @@ namespace VentusServer.Services
 
             return player;
         }
-
 
         // =============================
         // CACHE
@@ -151,6 +166,7 @@ namespace VentusServer.Services
 
             return player;
         }
+
         protected override async Task<PlayerModel?> LoadModelAsync(int playerId)
         {
             try

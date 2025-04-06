@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using VentusServer.Auth;
+using VentusServer.DataAccess;
 
 namespace VentusServer.Controllers
 {
@@ -16,9 +17,9 @@ namespace VentusServer.Controllers
     {
         private readonly PlayerService _playerService;
         private readonly PlayerLocationService _playerLocationService;
-        private readonly PostgresAccountDAO _accountDAO;
+        private readonly IAccountDAO _accountDAO;
 
-        public PlayerController(PlayerService playerService, PlayerLocationService playerLocationService, PostgresAccountDAO accountDAO)
+        public PlayerController(PlayerService playerService, PlayerLocationService playerLocationService, IAccountDAO accountDAO)
         {
             _playerService = playerService;
             _playerLocationService = playerLocationService;
@@ -59,10 +60,10 @@ namespace VentusServer.Controllers
                 }
 
                 Console.ForegroundColor = ConsoleColor.Blue;
-                Console.WriteLine($"[INFO] Creando personaje para la cuenta {accountId}: {createPlayerRequest.Name}");
+                Console.WriteLine($"[INFO] Creando personaje para la cuenta {accountId} {account.AccountId}: {createPlayerRequest.Name}");
                 Console.ResetColor();
 
-                var newPlayer = await _playerService.CreatePlayer(account.AccountId, createPlayerRequest.Name, createPlayerRequest.Gender, createPlayerRequest.Race, createPlayerRequest.Class);
+                var newPlayer = await _playerService.CreatePlayer(accountId, createPlayerRequest.Name, createPlayerRequest.Gender, createPlayerRequest.Race, createPlayerRequest.Class);
                 if (newPlayer == null)
                 {
                     Console.ForegroundColor = ConsoleColor.Yellow;

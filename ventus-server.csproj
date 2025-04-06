@@ -13,7 +13,7 @@
   <Target Name="UpdateAndGenerateProtobuf" BeforeTargets="BeforeBuild">
     <Exec Command="git submodule update --init --recursive" />
     <Exec Command="git -C protos pull origin main" />
-     <Exec Command='protoc --proto_path="protos" --csharp_out="Generated" %(Protos.Identity)' />
+     <Exec Command="protoc --proto_path=&quot;protos&quot; --csharp_out=&quot;Generated&quot; %(Protos.Identity)" />
   </Target>
 
  
@@ -22,6 +22,7 @@
 </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.1.66" />
     <PackageReference Include="dotenv.net" Version="3.2.1" />
     <PackageReference Include="FirebaseAdmin" Version="3.0.0" />
     <PackageReference Include="Google.Apis.Auth" Version="1.69.0" />

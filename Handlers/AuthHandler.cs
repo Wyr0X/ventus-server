@@ -8,10 +8,10 @@ using VentusServer.DataAccess.Postgres;
 public class AuthHandler
 {
     private readonly JwtService _jwtService;
-    private readonly PostgresAccountDAO _accountDAO;
+    private readonly IAccountDAO _accountDAO;
     private readonly ResponseService _responseService;
 
-    public AuthHandler(JwtService jwtService, PostgresAccountDAO accountDAO, ResponseService responseService)
+    public AuthHandler(JwtService jwtService, IAccountDAO accountDAO, ResponseService responseService)
     {
         _jwtService = jwtService;
         _accountDAO = accountDAO;

@@ -252,5 +252,16 @@ namespace VentusServer.DataAccess.Postgres
 
             return null;
         }
+        public async Task<bool> PlayerNameExistsAsync(string name)
+        {
+            await using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            const string query = "SELECT EXISTS(SELECT 1 FROM players WHERE name = @name);";
+            using var cmd = new NpgsqlCommand(query, connection);
+            cmd.Parameters.AddWithValue("name", name);
+            var result = await cmd.ExecuteScalarAsync();
+            return result is bool exists && exists;
+        }
     }
 }

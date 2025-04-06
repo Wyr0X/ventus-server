@@ -19,11 +19,8 @@ namespace VentusServer.DataAccess.Postgres
             return new AccountModel
             {
                 AccountId = reader.GetGuid(reader.GetOrdinal("account_id")),
-
-
-
                 Email = reader.GetString(reader.GetOrdinal("email")),
-                AccountName = reader.GetString(reader.GetOrdinal("name")),
+                AccountName = reader.GetString(reader.GetOrdinal("account_name")),
                 PasswordHash = reader.GetString(reader.GetOrdinal("password")),
                 IsDeleted = reader.GetBoolean(reader.GetOrdinal("is_deleted")),
                 IsBanned = reader.GetBoolean(reader.GetOrdinal("is_banned")),
@@ -63,14 +60,14 @@ namespace VentusServer.DataAccess.Postgres
             return await reader.ReadAsync() ? MapAccount(reader) : null;
         }
 
-        public async Task<AccountModel?> GetAccountByNameAsync(string name)
+        public async Task<AccountModel?> GetAccountByNameAsync(string accountName)
         {
             await using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            const string query = "SELECT * FROM accounts WHERE Name = @Name LIMIT 1";
+            const string query = "SELECT * FROM accounts WHERE account_name = @AccountName LIMIT 1";
             await using var command = new NpgsqlCommand(query, connection);
-            command.Parameters.AddWithValue("@Name", name);
+            command.Parameters.AddWithValue("@AccountName", accountName);
 
             await using var reader = await command.ExecuteReaderAsync();
             return await reader.ReadAsync() ? MapAccount(reader) : null;
@@ -80,10 +77,11 @@ namespace VentusServer.DataAccess.Postgres
         {
             await using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
+
             const string query = @"
-            INSERT INTO accounts (account_id, email, Name, password, is_deleted, is_banned, credits, last_ip, last_login, created_at, session_id)
-            VALUES (@AccountId, @Email, @Name, @Password, @IsDeleted, @IsBanned, @Credits, @LastIp, @LastLogin, @CreatedAt, @SessionId)
-            ON CONFLICT (email, Name) 
+            INSERT INTO accounts (account_id, email, account_name, password, is_deleted, is_banned, credits, last_ip, last_login, created_at, session_id)
+            VALUES (@AccountId, @Email, @AccountName, @Password, @IsDeleted, @IsBanned, @Credits, @LastIp, @LastLogin, @CreatedAt, @SessionId)
+            ON CONFLICT (email, account_name) 
             DO UPDATE SET 
                 password = COALESCE(@Password, accounts.password), 
                 is_deleted = EXCLUDED.is_deleted, 
@@ -96,7 +94,7 @@ namespace VentusServer.DataAccess.Postgres
             await using var command = new NpgsqlCommand(query, connection);
             command.Parameters.AddWithValue("@AccountId", account.AccountId);
             command.Parameters.AddWithValue("@Email", account.Email);
-            command.Parameters.AddWithValue("@Name", account.AccountName);
+            command.Parameters.AddWithValue("@AccountName", account.AccountName);
             command.Parameters.AddWithValue("@Password", account.PasswordHash);
             command.Parameters.AddWithValue("@IsDeleted", account.IsDeleted);
             command.Parameters.AddWithValue("@IsBanned", account.IsBanned);
@@ -105,7 +103,6 @@ namespace VentusServer.DataAccess.Postgres
             command.Parameters.AddWithValue("@LastLogin", account.LastLogin);
             command.Parameters.AddWithValue("@CreatedAt", account.CreatedAt);
             command.Parameters.AddWithValue("@SessionId", account.SessionId);
-
 
             await command.ExecuteNonQueryAsync();
         }
@@ -134,14 +131,14 @@ namespace VentusServer.DataAccess.Postgres
             return await reader.ReadAsync();
         }
 
-        public async Task<bool> AccountExistsByNameAsync(string name)
+        public async Task<bool> AccountExistsByNameAsync(string accountName)
         {
             await using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            const string query = "SELECT 1 FROM accounts WHERE Name = @Name LIMIT 1";
+            const string query = "SELECT 1 FROM accounts WHERE account_name = @AccountName LIMIT 1";
             await using var command = new NpgsqlCommand(query, connection);
-            command.Parameters.AddWithValue("@Name", name);
+            command.Parameters.AddWithValue("@AccountName", accountName);
 
             await using var reader = await command.ExecuteReaderAsync();
             return await reader.ReadAsync();
@@ -153,13 +150,13 @@ namespace VentusServer.DataAccess.Postgres
             await connection.OpenAsync();
 
             const string query = @"
-                INSERT INTO accounts (account_id, email, Name, password, is_deleted, is_banned, credits, last_ip, last_login, created_at, session_id)
-                VALUES (@AccountId, @Email, @Name, @Password, @IsDeleted, @IsBanned, @Credits, @LastIp, @LastLogin, @CreatedAt, @SessionId)";
+                INSERT INTO accounts (account_id, email, account_name, password, is_deleted, is_banned, credits, last_ip, last_login, created_at, session_id)
+                VALUES (@AccountId, @Email, @AccountName, @Password, @IsDeleted, @IsBanned, @Credits, @LastIp, @LastLogin, @CreatedAt, @SessionId)";
 
             await using var command = new NpgsqlCommand(query, connection);
             command.Parameters.AddWithValue("@AccountId", account.AccountId);
             command.Parameters.AddWithValue("@Email", account.Email);
-            command.Parameters.AddWithValue("@Name", account.AccountName);
+            command.Parameters.AddWithValue("@AccountName", account.AccountName);
             command.Parameters.AddWithValue("@Password", account.PasswordHash);
             command.Parameters.AddWithValue("@IsDeleted", account.IsDeleted);
             command.Parameters.AddWithValue("@IsBanned", account.IsBanned);
@@ -171,6 +168,7 @@ namespace VentusServer.DataAccess.Postgres
 
             await command.ExecuteNonQueryAsync();
         }
+
         public async Task<bool> UpdateAccountPasswordAsync(Guid accountId, string newPassword)
         {
             await using var connection = new NpgsqlConnection(_connectionString);
@@ -184,18 +182,19 @@ namespace VentusServer.DataAccess.Postgres
             return await command.ExecuteNonQueryAsync() > 0;
         }
 
-        public async Task<bool> UpdateAccountNameAsync(Guid accountId, string newName)
+        public async Task<bool> UpdateAccountNameAsync(Guid accountId, string accountName)
         {
             await using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            const string query = "UPDATE accounts SET name = @Name WHERE account_id = @AccountId";
+            const string query = "UPDATE accounts SET account_name = @AccountName WHERE account_id = @AccountId";
             await using var command = new NpgsqlCommand(query, connection);
-            command.Parameters.AddWithValue("@Name", newName);
+            command.Parameters.AddWithValue("@AccountName", accountName);
             command.Parameters.AddWithValue("@AccountId", accountId);
 
             return await command.ExecuteNonQueryAsync() > 0;
         }
+
         public async Task<bool> UpdateSessionIdAsync(Guid accountId, Guid sessionId)
         {
             await using var connection = new NpgsqlConnection(_connectionString);
@@ -209,5 +208,26 @@ namespace VentusServer.DataAccess.Postgres
             return await command.ExecuteNonQueryAsync() > 0;
         }
 
+        public async Task<bool> IsEmailTakenAsync(string email)
+        {
+            await using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync();
+            const string query = "SELECT 1 FROM accounts WHERE LOWER(email) = LOWER(@Email) LIMIT 1";
+            using var cmd = new NpgsqlCommand(query, connection);
+            cmd.Parameters.AddWithValue("Email", email);
+            using var reader = await cmd.ExecuteReaderAsync();
+            return await reader.ReadAsync();
+        }
+
+        public async Task<bool> IsNameTakenAsync(string accountName)
+        {
+            await using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync();
+            const string query = "SELECT 1 FROM accounts WHERE LOWER(account_name) = LOWER(@AccountName) LIMIT 1";
+            using var cmd = new NpgsqlCommand(query, connection);
+            cmd.Parameters.AddWithValue("AccountName", accountName);
+            using var reader = await cmd.ExecuteReaderAsync();
+            return await reader.ReadAsync();
+        }
     }
 }

@@ -2,41 +2,37 @@ using System;
 
 public class AccountModel
 {
-    public Guid AccountId { get; set; } = Guid.NewGuid();
+    public Guid AccountId { get; set; }
 
     public required string AccountName { get; set; }
 
     public required string Email { get; set; }
 
-    public required string PasswordHash { get; set; } // Hasheada y salteada
+    public required string PasswordHash { get; set; }
 
-    public bool IsDeleted { get; set; } = false;
+    public bool IsDeleted { get; set; }
 
-    public bool IsBanned { get; set; } = false;
+    public bool IsBanned { get; set; }
 
-    public int Credits { get; set; } = 0;
+    public int Credits { get; set; }
 
     public required string LastIpAddress { get; set; }
 
-    public int? ActivePlayerId { get; set; } = null;
+    public int? ActivePlayerId { get; set; }
 
-    public Guid SessionId { get; set; } = Guid.Empty;
-    public DateTime TokenIssuedAt { get; set; } 
-    public DateTime LastLogin { get; set; } = DateTime.UtcNow;
+    public Guid SessionId { get; set; }
 
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime TokenIssuedAt { get; set; }
 
-    /// <summary>
-    /// Devuelve si la cuenta está activa y no bloqueada.
-    /// </summary>
+    public DateTime LastLogin { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+
     public bool IsActive()
     {
         return !IsDeleted && !IsBanned;
     }
 
-    /// <summary>
-    /// Debug friendly info con colores en consola.
-    /// </summary>
     public void PrintInfo()
     {
         Console.ForegroundColor = ConsoleColor.Blue;
@@ -51,6 +47,8 @@ public class AccountModel
         Console.WriteLine($"Credits:         {Credits}");
         Console.WriteLine($"LastIpAddress:   {LastIpAddress}");
         Console.WriteLine($"ActivePlayerId:  {ActivePlayerId}");
+        Console.WriteLine($"SessionId:       {SessionId}");
+        Console.WriteLine($"TokenIssuedAt:   {TokenIssuedAt}");
         Console.WriteLine($"LastLogin:       {LastLogin}");
         Console.WriteLine($"CreatedAt:       {CreatedAt}");
         Console.WriteLine("############################\n");
