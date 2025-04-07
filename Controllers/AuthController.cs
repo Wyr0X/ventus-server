@@ -34,23 +34,23 @@ namespace VentusServer.Controllers
         {
             try
             {
-                LoggerUtil.Log("Login", $"Iniciando proceso de autenticación para: {request.Email}", ConsoleColor.Cyan);
+                LoggerUtil.Log(LoggerUtil.LogTag.AuthController, $"Iniciando proceso de autenticación para: {request.Email}");
                 var account = await _accountService.GetAccountByEmailAsync(request.Email);
-                LoggerUtil.Log("Login", $"Iniciando proceso de autenticación para 2: {request.Email}", ConsoleColor.Cyan);
+                LoggerUtil.Log(LoggerUtil.LogTag.AuthController, $"Iniciando proceso de autenticación para 2: {request.Email}");
 
                 if (account == null)
                 {
-                    LoggerUtil.Log("Login", "Usuario no encontrado.", ConsoleColor.Yellow);
+                    LoggerUtil.Log(LoggerUtil.LogTag.AuthController, "Usuario no encontrado.");
                     return Unauthorized("Correo o contraseña incorrectos.");
                 }
-                LoggerUtil.Log("Login", $"Iniciando proceso de autenticación para 3: {request.Password} {account.PasswordHash}", ConsoleColor.Cyan);
+                LoggerUtil.Log(LoggerUtil.LogTag.AuthController, $"Iniciando proceso de autenticación para 3: {request.Password} {account.PasswordHash}");
 
                 if (!_passwordService.VerifyPassword(request.Password, account.PasswordHash))
                 {
-                    LoggerUtil.Log("Login", "Contraseña incorrecta.", ConsoleColor.Yellow);
+                    LoggerUtil.Log(LoggerUtil.LogTag.AuthController, "Contraseña incorrecta.");
                     return Unauthorized("Correo o contraseña incorrectos.");
                 }
-                LoggerUtil.Log("Login", $"Iniciando proceso de autenticación para 4: {request.Email}", ConsoleColor.Cyan);
+                LoggerUtil.Log(LoggerUtil.LogTag.AuthController, $"Iniciando proceso de autenticación para 4: {request.Email}");
 
                 var sessionId = Guid.NewGuid();
                 var token = _jwtService.GenerateToken(account.AccountId, account.Email, sessionId);
@@ -59,17 +59,17 @@ namespace VentusServer.Controllers
                 var messageToClient = "";
                 if (account.SessionId != Guid.Empty)
                 {
-                    LoggerUtil.Log("Login", $"El usuario ${account.AccountName} intento inciar desde otro navegador.", ConsoleColor.Green);
+                    LoggerUtil.Log(LoggerUtil.LogTag.AuthController, $"El usuario ${account.AccountName} intento inciar desde otro navegador.");
                     messageToClient = "Había otra sesión activa. Se cerró automáticamente para continuar con este inicio de sesión.";
                     await _webSocketServerController.RemoveConnectionByAccountId(account.AccountId);
                 }
                 _ = await _accountService.UpdateSessionId(account.AccountId, sessionId);
-                LoggerUtil.Log("Login", "Usuario autenticado correctamente.", ConsoleColor.Green);
+                LoggerUtil.Log(LoggerUtil.LogTag.AuthController, "Usuario autenticado correctamente.");
                 return Ok(new { login = true, token, message = messageToClient });
             }
             catch (Exception ex)
             {
-                LoggerUtil.Log("Login", $"Error: {ex.Message}", ConsoleColor.Red);
+                LoggerUtil.Log(LoggerUtil.LogTag.AuthController, $"Error: {ex.Message}");
                 return BadRequest("Error en Login: " + ex.Message);
             }
         }
@@ -82,12 +82,12 @@ namespace VentusServer.Controllers
                 return BadRequest(ModelState);
             }
 
-            LoggerUtil.Log("Register", $"Iniciando proceso de registro para: {request.Email}", ConsoleColor.Cyan);
+            LoggerUtil.Log(LoggerUtil.LogTag.AuthController, $"Iniciando proceso de registro para: {request.Email}");
 
             var existingUser = await _accountService.GetAccountByEmailAsync(request.Email);
             if (existingUser != null)
             {
-                LoggerUtil.Log("Register", "Error: Correo ya en uso.", ConsoleColor.Yellow);
+                LoggerUtil.Log(LoggerUtil.LogTag.AuthController, "Error: Correo ya en uso.");
                 return BadRequest("El correo ya está en uso.");
             }
 
@@ -107,7 +107,7 @@ namespace VentusServer.Controllers
             };
 
             await _accountService.CreateAccountAsync(newAccount);
-            LoggerUtil.Log("Register", $"Usuario registrado con éxito: {request.Email}", ConsoleColor.Green);
+            LoggerUtil.Log(LoggerUtil.LogTag.AuthController, $"Usuario registrado con éxito: {request.Email}");
             var sessionId = Guid.NewGuid();
 
             var token = _jwtService.GenerateToken(accountId, request.Email, sessionId);
@@ -121,7 +121,7 @@ namespace VentusServer.Controllers
         {
             try
             {
-                // LoggerUtil.Log("ValidateToken", "Iniciando validación de token...", ConsoleColor.Cyan);
+                // LoggerUtil.Log(LoggerUtil.LogTag.AuthController, "Iniciando validación de token...");
 
                 var token = Request.Cookies["authToken"];
 
@@ -136,7 +136,7 @@ namespace VentusServer.Controllers
 
                 if (string.IsNullOrEmpty(token))
                 {
-                    LoggerUtil.Log("ValidateToken", "❌ Token no encontrado.", ConsoleColor.Yellow);
+                    LoggerUtil.Log(LoggerUtil.LogTag.AuthController, "❌ Token no encontrado.");
                     return Unauthorized(new { message = "Token no encontrado" });
                 }
 
@@ -147,7 +147,7 @@ namespace VentusServer.Controllers
                 }
                 if (!Guid.TryParse(validateAccountId.ToString(), out Guid validatedAccountId))
                 {
-                    LoggerUtil.Log("ValidateToken", "❌ Token inválido: no es un UUID válido.", ConsoleColor.Yellow);
+                    LoggerUtil.Log(LoggerUtil.LogTag.AuthController, "❌ Token inválido: no es un UUID válido.");
                     return Unauthorized(new { message = "Token inválido o expirado" });
                 }
                 if (!Guid.TryParse(sessionIdStr, out Guid sessionId))
@@ -159,22 +159,22 @@ namespace VentusServer.Controllers
                 var account = await _accountService.GetOrCreateAccountInCacheAsync(validatedAccountId);
                 if (account != null && account.SessionId != sessionId)
                 {
-                    LoggerUtil.Log("Logout", "SessionId no corresponde a la sesión actual.", ConsoleColor.Yellow);
+                    LoggerUtil.Log(LoggerUtil.LogTag.AuthController, "SessionId no corresponde a la sesión actual.");
                     await _webSocketServerController.RemoveConnectionByAccountId(account.AccountId);
                     return Unauthorized(new { message = "SessionId no corresponde a la sesión actuala" });
                 }
                 if (account == null)
                 {
-                    LoggerUtil.Log("ValidateToken", "❌ Usuario no encontrado.", ConsoleColor.Yellow);
+                    LoggerUtil.Log(LoggerUtil.LogTag.AuthController, "❌ Usuario no encontrado.");
                     return Unauthorized(new { message = "Usuario no encontrado" });
                 }
 
-                // LoggerUtil.Log("ValidateToken", $"✅ Token válido para {account.Email}", ConsoleColor.Green);
+                // LoggerUtil.Log(LoggerUtil.LogTag.AuthController, $"✅ Token válido para {account.Email}");
                 return Ok(new { accountId = account.AccountId, email = account.Email, name = account.AccountName });
             }
             catch (Exception ex)
             {
-                LoggerUtil.Log("ValidateToken", $"⚠️ Error: {ex.Message}", ConsoleColor.Red);
+                LoggerUtil.Log(LoggerUtil.LogTag.AuthController, $"⚠️ Error: {ex.Message}");
                 return BadRequest(new { message = "Error en validación: " + ex.Message });
             }
         }
@@ -183,7 +183,7 @@ namespace VentusServer.Controllers
         {
             try
             {
-                LoggerUtil.Log("Logout", "Cerrando sesión...", ConsoleColor.Cyan);
+                LoggerUtil.Log(LoggerUtil.LogTag.AuthController, "Cerrando sesión...");
 
                 var token = Request.Cookies["authToken"];
 
@@ -220,13 +220,13 @@ namespace VentusServer.Controllers
                 // Verificamos que el sessionId del token coincida con el actual
                 if (account.SessionId != sessionId)
                 {
-                    LoggerUtil.Log("Logout", "Token no corresponde a la sesión actual.", ConsoleColor.Yellow);
+                    LoggerUtil.Log(LoggerUtil.LogTag.AuthController, "Token no corresponde a la sesión actual.");
                     return Unauthorized(new { message = "Token no corresponde a la sesión activa" });
                 }
 
                 await _webSocketServerController.RemoveConnectionByAccountId(account.AccountId);
 
-                LoggerUtil.Log("Logout", $"Sesión cerrada para {account.Email}", ConsoleColor.Green);
+                LoggerUtil.Log(LoggerUtil.LogTag.AuthController, $"Sesión cerrada para {account.Email}");
 
                 // Opcional: eliminar cookie
                 Response.Cookies.Delete("authToken");
@@ -235,7 +235,7 @@ namespace VentusServer.Controllers
             }
             catch (Exception ex)
             {
-                LoggerUtil.Log("Logout", $"Error: {ex.Message}", ConsoleColor.Red);
+                LoggerUtil.Log(LoggerUtil.LogTag.AuthController, $"Error: {ex.Message}");
                 return BadRequest(new { message = "Error al cerrar sesión: " + ex.Message });
             }
         }

@@ -21,16 +21,15 @@ public class WebSocketAuthenticationService
             var (accountIdStr, sessionIdStr) = _jwtService.ValidateToken(token);
             var result = Guid.TryParse(accountIdStr, out accountId);
 
-            LoggerUtil.Log("AuthService", result
+            LoggerUtil.Log(LoggerUtil.LogTag.AuthService, result
                 ? $"Token válido. AccountId: {accountId}"
-                : $"Token inválido: no se pudo convertir a Guid", 
-                result ? ConsoleColor.Green : ConsoleColor.Red);
+                : $"Token inválido: no se pudo convertir a Guid");
 
             return result;
         }
         catch (Exception ex)
         {
-            LoggerUtil.Log("AuthService", $"Error validando token: {ex.Message}", ConsoleColor.Red);
+            LoggerUtil.Log(LoggerUtil.LogTag.AuthService, $"Error validando token: {ex.Message}");
             return false;
         }
     }

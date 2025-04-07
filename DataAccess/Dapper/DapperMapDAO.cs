@@ -23,37 +23,37 @@ namespace VentusServer.DataAccess.Dapper
 
         public async Task InitializeMapsAsync()
         {
-            Log("MapDAO", "Inicializando tabla 'maps'...", ConsoleColor.Cyan);
+            LoggerUtil.Log(LoggerUtil.LogTag.DapperMapDAO, "Inicializando tabla 'maps'...");
 
             using var connection = GetConnection();
             await connection.ExecuteAsync(MapQueries.CreateTableQuery);
 
-            Log("MapDAO", "Tabla 'maps' inicializada correctamente", ConsoleColor.Green);
+            LoggerUtil.Log(LoggerUtil.LogTag.DapperMapDAO, "Tabla 'maps' inicializada correctamente");
         }
 
         public async Task<MapModel?> GetMapByIdAsync(int id)
         {
-            Log("MapDAO", $"Buscando mapa con ID: {id}", ConsoleColor.Cyan);
+            LoggerUtil.Log(LoggerUtil.LogTag.DapperMapDAO, $"Buscando mapa con ID: {id}");
 
             using var connection = GetConnection();
             var row = await connection.QuerySingleOrDefaultAsync(MapQueries.SelectById, new { Id = id });
 
             if (row == null)
             {
-                Log("MapDAO", $"Mapa con ID {id} no encontrado", ConsoleColor.Yellow);
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperMapDAO, $"Mapa con ID {id} no encontrado");
                 return null;
             }
 
             var map = MapMapper.Map(row);
             map.WorldModel = await _worldDAO.GetWorldByIdAsync(map.WorldId);
 
-            Log("MapDAO", $"Mapa encontrado: {map.Name}", ConsoleColor.Green);
+            LoggerUtil.Log(LoggerUtil.LogTag.DapperMapDAO, $"Mapa encontrado: {map.Name}");
             return map;
         }
 
         public async Task<IEnumerable<MapModel>> GetAllMapsAsync()
         {
-            Log("MapDAO", "Obteniendo todos los mapas", ConsoleColor.Cyan);
+            LoggerUtil.Log(LoggerUtil.LogTag.DapperMapDAO, "Obteniendo todos los mapas");
 
             using var connection = GetConnection();
             var rows = await connection.QueryAsync(MapQueries.SelectAll);
@@ -64,42 +64,41 @@ namespace VentusServer.DataAccess.Dapper
                 map.WorldModel = await _worldDAO.GetWorldByIdAsync(map.WorldId);
             }
 
-            Log("MapDAO", $"Total mapas encontrados: {maps.Count}", ConsoleColor.Green);
+            LoggerUtil.Log(LoggerUtil.LogTag.DapperMapDAO, $"Total mapas encontrados: {maps.Count}");
             return maps;
         }
 
         public async Task<MapModel?> CreateMapAsync(MapModel map)
         {
-            Log("MapDAO", $"Creando mapa: {map.Name}", ConsoleColor.Cyan);
+            LoggerUtil.Log(LoggerUtil.LogTag.DapperMapDAO, $"Creando mapa: {map.Name}");
 
             using var connection = GetConnection();
             var id = await connection.ExecuteScalarAsync<int>(MapQueries.Insert, MapMapper.ToEntity(map));
 
             map.Id = id;
 
-            Log("MapDAO", $"Mapa creado con ID: {id}", ConsoleColor.Green);
+            LoggerUtil.Log(LoggerUtil.LogTag.DapperMapDAO, $"Mapa creado con ID: {id}");
             return map;
         }
 
         public async Task UpdateMapAsync(MapModel map)
         {
-            Log("MapDAO", $"Actualizando mapa: {map.Name} (ID: {map.Id})", ConsoleColor.Cyan);
+            LoggerUtil.Log(LoggerUtil.LogTag.DapperMapDAO, $"Actualizando mapa: {map.Name} (ID: {map.Id})");
 
             using var connection = GetConnection();
             await connection.ExecuteAsync(MapQueries.Update, MapMapper.ToEntity(map));
 
-            Log("MapDAO", "Mapa actualizado correctamente", ConsoleColor.Green);
+            LoggerUtil.Log(LoggerUtil.LogTag.DapperMapDAO, "Mapa actualizado correctamente");
         }
 
         public async Task<bool> DeleteMapAsync(int id)
         {
-            Log("MapDAO", $"Eliminando mapa con ID: {id}", ConsoleColor.Cyan);
+            LoggerUtil.Log(LoggerUtil.LogTag.DapperMapDAO, $"Eliminando mapa con ID: {id}");
 
             using var connection = GetConnection();
             var rowsAffected = await connection.ExecuteAsync(MapQueries.Delete, new { Id = id });
 
-            Log("MapDAO", rowsAffected > 0 ? "Mapa eliminado correctamente" : "No se encontró el mapa",
-                rowsAffected > 0 ? ConsoleColor.Green : ConsoleColor.Yellow);
+            LoggerUtil.Log(LoggerUtil.LogTag.DapperMapDAO, rowsAffected > 0 ? "Mapa eliminado correctamente" : "No se encontró el mapa");
 
             return rowsAffected > 0;
         }

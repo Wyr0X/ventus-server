@@ -13,14 +13,14 @@ namespace VentusServer.DataAccess.Dapper
     {
         public async Task<WorldModel?> CreateWorldAsync(string name, string description, int maxMaps, int maxPlayers, int levelRequirements)
         {
-            LoggerUtil.Log("DapperWorldDAO", "Iniciando la creación del mundo...", ConsoleColor.Yellow);
+            LoggerUtil.Log(LoggerUtil.LogTag.DapperWorldDAO, "Iniciando la creación del mundo...");
 
             using var connection = _connectionFactory.CreateConnection();
 
             try
             {
                 // Log de los parámetros antes de la consulta
-                LoggerUtil.Log("DapperWorldDAO", $"Ejecutando consulta con parámetros: Name = {name}, Description = {description}, MaxMaps = {maxMaps}, MaxPlayers = {maxPlayers}, LevelRequirements = {levelRequirements}", ConsoleColor.Cyan);
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperWorldDAO, $"Ejecutando consulta con parámetros: Name = {name}, Description = {description}, MaxMaps = {maxMaps}, MaxPlayers = {maxPlayers}, LevelRequirements = {levelRequirements}");
 
                 var row = await connection.QuerySingleOrDefaultAsync(WorldQueries.Insert, new
                 {
@@ -33,31 +33,31 @@ namespace VentusServer.DataAccess.Dapper
 
                 if (row == null)
                 {
-                    LoggerUtil.Log("DapperWorldDAO", "No se encontró el resultado al ejecutar la consulta.", ConsoleColor.Red);
+                    LoggerUtil.Log(LoggerUtil.LogTag.DapperWorldDAO, "No se encontró el resultado al ejecutar la consulta.");
                     return null;
                 }
 
                 // Log después de la consulta
-                LoggerUtil.Log("DapperWorldDAO", "Consulta ejecutada con éxito, mapeando resultado...", ConsoleColor.Green);
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperWorldDAO, "Consulta ejecutada con éxito, mapeando resultado...");
                 WorldMapper.PrintRow(row);
                 WorldModel worldModel = WorldMapper.Map(row);
 
                 if (worldModel == null)
                 {
-                    LoggerUtil.Log("DapperWorldDAO", "El mapeo de la fila ha fallado, el modelo resultante es null.", ConsoleColor.Red);
+                    LoggerUtil.Log(LoggerUtil.LogTag.DapperWorldDAO, "El mapeo de la fila ha fallado, el modelo resultante es null.");
                     return null;
                 }
 
                 // Log final
 
                 worldModel.Id = row.id;
-                LoggerUtil.Log("DapperWorldDAO", $"Mundo creado exitosamente. ${worldModel.ToString()}", ConsoleColor.Green);
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperWorldDAO, $"Mundo creado exitosamente. ${worldModel.ToString()}");
                 worldModel.PrintInfo();
                 return worldModel;
             }
             catch (Exception ex)
             {
-                LoggerUtil.Log("DapperWorldDAO", $"Error al crear el mundo: {ex.Message}", ConsoleColor.Red);
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperWorldDAO, $"Error al crear el mundo: {ex.Message}");
                 throw; // Re-lanzar la excepción para manejarla más arriba
             }
         }

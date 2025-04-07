@@ -15,7 +15,7 @@ namespace VentusServer.Services
 
         public WorldService(MapService mapService, IWorldDAO worldDAO)
         {
-            LoggerUtil.Log("WorldService", "Iniciando WorldService...", ConsoleColor.Cyan);
+            LoggerUtil.Log(LoggerUtil.LogTag.WorldService, "Iniciando WorldService...");
             _mapService = mapService;
             _worldDAO = worldDAO;
             createDefaultWorld();
@@ -23,18 +23,18 @@ namespace VentusServer.Services
 
         private async void createDefaultWorld()
         {
-            LoggerUtil.Log("WorldService", "Verificando existencia del mundo predeterminado...", ConsoleColor.Yellow);
+            LoggerUtil.Log(LoggerUtil.LogTag.WorldService, "Verificando existencia del mundo predeterminado...");
             WorldModel? existDefaultWorld = await this.GetWorldByIdAsync(1);
             MapModel? existDefaultMap = await _mapService.GetMapByIdAsync(1);
             
             if (existDefaultWorld == null)
             {
-                LoggerUtil.Log("WorldService", "El mundo predeterminado no existe, creando uno nuevo...", ConsoleColor.Green);
+                LoggerUtil.Log(LoggerUtil.LogTag.WorldService, "El mundo predeterminado no existe, creando uno nuevo...");
                 WorldModel? defaultWorld = await CreateWorldAsync("Nuevo Mundo", "Este es un mundo de ejemplo con parámetros predeterminados.", 10, 100, 1);
                 
                 if (existDefaultMap == null && defaultWorld != null)
                 {
-                    LoggerUtil.Log("WorldService", "El mapa predeterminado no existe, creando uno...", ConsoleColor.Green);
+                    LoggerUtil.Log(LoggerUtil.LogTag.WorldService, "El mapa predeterminado no existe, creando uno...");
                     MapModel map = new MapModel
                     {
                         Id = 1,
@@ -46,17 +46,17 @@ namespace VentusServer.Services
                     };
                     
                     MapModel? defaultMap = await _mapService.CreateMapAsync(map);
-                    LoggerUtil.Log("WorldService", $"Mapa predeterminado creado exitosamente ${existDefaultMap}.", ConsoleColor.Green);
+                    LoggerUtil.Log(LoggerUtil.LogTag.WorldService, $"Mapa predeterminado creado exitosamente ${existDefaultMap}.");
                 }
                 else
                 {
            
-                    LoggerUtil.Log("WorldService", $"El mapa predeterminado ya existe.  ${existDefaultMap} - ${defaultWorld}", ConsoleColor.Yellow);
+                    LoggerUtil.Log(LoggerUtil.LogTag.WorldService, $"El mapa predeterminado ya existe.  ${existDefaultMap} - ${defaultWorld}");
                 }
             }
             else
             {
-                LoggerUtil.Log("WorldService", "El mundo predeterminado ya existe.", ConsoleColor.Yellow);
+                LoggerUtil.Log(LoggerUtil.LogTag.WorldService, "El mundo predeterminado ya existe.");
             }
         }
 
@@ -64,12 +64,12 @@ namespace VentusServer.Services
         {
             try
             {
-                LoggerUtil.Log("WorldService", "Creando un nuevo mundo...", ConsoleColor.Green);
+                LoggerUtil.Log(LoggerUtil.LogTag.WorldService, "Creando un nuevo mundo...");
                 return await _worldDAO.CreateWorldAsync(name, description, maxMaps, maxPlayers, levelRequirements);
             }
             catch (Exception ex)
             {
-                LoggerUtil.Log("WorldService", $"Error al crear el mundo: {ex.Message}", ConsoleColor.Red);
+                LoggerUtil.Log(LoggerUtil.LogTag.WorldService, $"Error al crear el mundo: {ex.Message}");
                 return null;
             }
         }
@@ -78,12 +78,12 @@ namespace VentusServer.Services
         {
             try
             {
-                LoggerUtil.Log("WorldService", $"Obteniendo el mundo con ID {worldId}...", ConsoleColor.Yellow);
+                LoggerUtil.Log(LoggerUtil.LogTag.WorldService, $"Obteniendo el mundo con ID {worldId}...");
                 return await _worldDAO.GetWorldByIdAsync(worldId);
             }
             catch (Exception ex)
             {
-                LoggerUtil.Log("WorldService", $"Error al obtener el mundo con ID {worldId}: {ex.Message}", ConsoleColor.Red);
+                LoggerUtil.Log(LoggerUtil.LogTag.WorldService, $"Error al obtener el mundo con ID {worldId}: {ex.Message}");
                 return null;
             }
         }
@@ -92,12 +92,12 @@ namespace VentusServer.Services
         {
             try
             {
-                LoggerUtil.Log("WorldService", "Obteniendo todos los mundos...", ConsoleColor.Yellow);
+                LoggerUtil.Log(LoggerUtil.LogTag.WorldService, "Obteniendo todos los mundos...");
                 return await _worldDAO.GetAllWorldsAsync();
             }
             catch (Exception ex)
             {
-                LoggerUtil.Log("WorldService", $"Error al obtener todos los mundos: {ex.Message}", ConsoleColor.Red);
+                LoggerUtil.Log(LoggerUtil.LogTag.WorldService, $"Error al obtener todos los mundos: {ex.Message}");
                 return new List<WorldModel>(); // Retorna una lista vacía en caso de error
             }
         }
@@ -106,13 +106,13 @@ namespace VentusServer.Services
         {
             try
             {
-                LoggerUtil.Log("WorldService", $"Guardando mundo con ID {world.Id}...", ConsoleColor.Yellow);
+                LoggerUtil.Log(LoggerUtil.LogTag.WorldService, $"Guardando mundo con ID {world.Id}...");
                 await _worldDAO.SaveWorldAsync(world);
-                LoggerUtil.Log("WorldService", $"Mundo con ID {world.Id} guardado correctamente.", ConsoleColor.Green);
+                LoggerUtil.Log(LoggerUtil.LogTag.WorldService, $"Mundo con ID {world.Id} guardado correctamente.");
             }
             catch (Exception ex)
             {
-                LoggerUtil.Log("WorldService", $"Error al guardar el mundo con ID {world.Id}: {ex.Message}", ConsoleColor.Red);
+                LoggerUtil.Log(LoggerUtil.LogTag.WorldService, $"Error al guardar el mundo con ID {world.Id}: {ex.Message}");
             }
         }
 
@@ -120,13 +120,13 @@ namespace VentusServer.Services
         {
             try
             {
-                LoggerUtil.Log("WorldService", $"Eliminando mundo con ID {worldId}...", ConsoleColor.Yellow);
+                LoggerUtil.Log(LoggerUtil.LogTag.WorldService, $"Eliminando mundo con ID {worldId}...");
                 await _worldDAO.DeleteWorldAsync(worldId);
-                LoggerUtil.Log("WorldService", $"Mundo con ID {worldId} eliminado correctamente.", ConsoleColor.Green);
+                LoggerUtil.Log(LoggerUtil.LogTag.WorldService, $"Mundo con ID {worldId} eliminado correctamente.");
             }
             catch (Exception ex)
             {
-                LoggerUtil.Log("WorldService", $"Error al eliminar el mundo con ID {worldId}: {ex.Message}", ConsoleColor.Red);
+                LoggerUtil.Log(LoggerUtil.LogTag.WorldService, $"Error al eliminar el mundo con ID {worldId}: {ex.Message}");
             }
         }
 
@@ -134,22 +134,22 @@ namespace VentusServer.Services
         {
             try
             {
-                LoggerUtil.Log("WorldService", $"Removiendo jugador con ID {playerId} del mundo con ID {worldId}...", ConsoleColor.Yellow);
+                LoggerUtil.Log(LoggerUtil.LogTag.WorldService, $"Removiendo jugador con ID {playerId} del mundo con ID {worldId}...");
                 WorldModel? world = await GetWorldByIdAsync(worldId);
                 if (world != null)
                 {
                     world.RemovePlayer(playerId);
                     await _worldDAO.SaveWorldAsync(world);
-                    LoggerUtil.Log("WorldService", $"Jugador con ID {playerId} removido del mundo con ID {worldId}.", ConsoleColor.Green);
+                    LoggerUtil.Log(LoggerUtil.LogTag.WorldService, $"Jugador con ID {playerId} removido del mundo con ID {worldId}.");
                 }
                 else
                 {
-                    LoggerUtil.Log("WorldService", $"No se encontró el mundo con ID {worldId}.", ConsoleColor.Red);
+                    LoggerUtil.Log(LoggerUtil.LogTag.WorldService, $"No se encontró el mundo con ID {worldId}.");
                 }
             }
             catch (Exception ex)
             {
-                LoggerUtil.Log("WorldService", $"Error al remover jugador con ID {playerId} del mundo con ID {worldId}: {ex.Message}", ConsoleColor.Red);
+                LoggerUtil.Log(LoggerUtil.LogTag.WorldService, $"Error al remover jugador con ID {playerId} del mundo con ID {worldId}: {ex.Message}");
             }
         }
     }

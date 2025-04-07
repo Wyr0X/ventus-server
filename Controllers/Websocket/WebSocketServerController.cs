@@ -27,7 +27,7 @@ public class WebSocketServerController
         listener.Prefixes.Add("http://localhost:5331/");
         listener.Start();
 
-        LoggerUtil.Log("WebSocket", "✅ WebSocket iniciado en ws://localhost:5331", ConsoleColor.Green);
+        LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, "✅ WebSocket iniciado en ws://localhost:5331");
 
         while (true)
         {
@@ -37,7 +37,7 @@ public class WebSocketServerController
                 var connectionId = Guid.NewGuid().ToString();
                 var socket = (await context.AcceptWebSocketAsync(null)).WebSocket;
 
-                LoggerUtil.Log("WebSocket", $"🆔 Conexión iniciada: {connectionId}", ConsoleColor.Yellow);
+                LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"🆔 Conexión iniciada: {connectionId}");
 
                 _connectionManager.AddPendingConnection(connectionId, socket);
                 _ = Task.Run(() => HandleWebSocket(socket, connectionId));
@@ -46,7 +46,7 @@ public class WebSocketServerController
             {
                 context.Response.StatusCode = 400;
                 context.Response.Close();
-                LoggerUtil.Log("WebSocket", "❌ Petición no válida (400)", ConsoleColor.Red);
+                LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, "❌ Petición no válida (400)");
             }
         }
     }
@@ -71,11 +71,11 @@ public class WebSocketServerController
 
             byte[] data = message.ToByteArray();
             await socket.SendAsync(new(data), WebSocketMessageType.Binary, true, CancellationToken.None);
-         //   LoggerUtil.Log("WebSocket", $"📤 Enviado mensaje a {accountId}: {message.GetType().Name}", ConsoleColor.Blue);
+         //   LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"📤 Enviado mensaje a {accountId}: {message.GetType().Name}");
         }
         else
         {
-            LoggerUtil.Log("WebSocket", $"❌ No se encontró WebSocket para {accountId}", ConsoleColor.Red);
+            LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"❌ No se encontró WebSocket para {accountId}");
         }
 
     }
@@ -100,19 +100,19 @@ public class WebSocketServerController
             ms.Write(buffer, 0, result.Count);
             if (result.MessageType != WebSocketMessageType.Binary)
             {
-                LoggerUtil.Log("WebSocket", $"❌ Mensaje no binario recibido de {connectionId}", ConsoleColor.Red);
+                LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"❌ Mensaje no binario recibido de {connectionId}");
                 return;
             }
 
             var clientMessage = ClientMessage.Parser.ParseFrom(ms.ToArray());
-            LoggerUtil.Log("WebSocketServerController", $"Bytes :{ms.ToArray()}", ConsoleColor.Magenta);
+            LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"Bytes :{ms.ToArray()}");
 
-            LoggerUtil.Log("WebSocketServerController", $"Paquete recibido - Tipo :{clientMessage.MessageCase}", ConsoleColor.Magenta);
+            LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"Paquete recibido - Tipo :{clientMessage.MessageCase}");
             if (clientMessage.MessageCase == ClientMessage.MessageOneofCase.AuthRequest)
             {
                 if (!_authService.TryAuthenticate(clientMessage.AuthRequest.Token, out accountId))
                 {
-                    LoggerUtil.Log("Auth", $"❌ Token inválido recibido de {connectionId}", ConsoleColor.Red);
+                    LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"❌ Token inválido recibido de {connectionId}");
                     await socket.CloseAsync(WebSocketCloseStatus.PolicyViolation, "Token inválido", CancellationToken.None);
                     return;
                 }
@@ -120,12 +120,12 @@ public class WebSocketServerController
 
                 if (!_connectionManager.TryAuthenticateConnection(connectionId, accountId, clientMessage.AuthRequest.Token, out socket))
                 {
-                    LoggerUtil.Log("Auth", $"❌ Fallo al autenticar conexión {connectionId}", ConsoleColor.Red);
+                    LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"❌ Fallo al autenticar conexión {connectionId}");
                     await socket.CloseAsync(WebSocketCloseStatus.InternalServerError, "No se pudo autenticar", CancellationToken.None);
                     return;
                 }
                 SendWebSocketStatusOpen(accountId);
-                LoggerUtil.Log("Auth", $"🔓 Usuario autenticado: {accountId}", ConsoleColor.Green);
+                LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"🔓 Usuario autenticado: {accountId}");
             }
 
             while (socket.State == WebSocketState.Open)
@@ -137,35 +137,34 @@ public class WebSocketServerController
 
                 if (!_connectionManager.TryGetAccountId(connectionId, out accountId))
                 {
-                    LoggerUtil.Log("WebSocket", $"❌ Usuario no autenticado para {connectionId}", ConsoleColor.Red);
+                    LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"❌ Usuario no autenticado para {connectionId}");
                     await socket.CloseAsync(WebSocketCloseStatus.PolicyViolation, "Usuario no autenticado", CancellationToken.None);
                     return;
                 }
-                LoggerUtil.Log("WebSocketServerController", $"Paquete recibido - Tipo :{clientMessage.MessageCase}", ConsoleColor.Magenta);
+                LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"Paquete recibido - Tipo :{clientMessage.MessageCase}");
 
                 if (clientMessage.MessageCase == ClientMessage.MessageOneofCase.ClientMessagePing)
                 {
                     var pong = new ServerMessage { ServerMessagePong = new ServerMessagePong { Message = "Pong" } };
                     SendServerPacketByAccountId(accountId, pong);
-                    LoggerUtil.Log("[Message]", "Ping Recibido", ConsoleColor.Magenta);
                 }
                 else
                 {
-                    LoggerUtil.Log("WebSocket", $"📥 Mensaje recibido de {accountId}: {clientMessage.MessageCase}", ConsoleColor.Cyan);
+                    LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"📥 Mensaje recibido de {accountId}: {clientMessage.MessageCase}");
                     _messageQueue.Enqueue(new UserMessagePair(accountId, clientMessage));
                 }
             }
         }
         catch (Exception ex)
         {
-            LoggerUtil.Log("WebSocket", $"❌ Error en WebSocket {connectionId}: {ex.Message}", ConsoleColor.Red);
+            LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"❌ Error en WebSocket {connectionId}: {ex.Message}");
         }
         finally
         {
             if (accountId != Guid.Empty)
             {
                 _connectionManager.RemoveConnection(connectionId, accountId);
-                LoggerUtil.Log("WebSocket", $"🔌 Conexión cerrada para {accountId}", ConsoleColor.DarkYellow);
+                LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"🔌 Conexión cerrada para {accountId}");
             }
             await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Cerrado", CancellationToken.None);
             socket.Dispose();

@@ -20,14 +20,14 @@ namespace VentusServer.DataAccess.Dapper
 
             try
             {
-                Log("PlayerDAO", $"Buscando jugador por ID: {playerId}", ConsoleColor.Cyan);
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperPlayerDAO,  $"Buscando jugador por ID: {playerId}");
                 using var connection = _connectionFactory.CreateConnection();
                 var row = await connection.QueryFirstOrDefaultAsync(PlayerQueries.SelectById, new { PlayerId = playerId });
                 return row == null ? null : PlayerMapper.FromRow(row);
             }
             catch (Exception ex)
             {
-                Log("PlayerDAO", $"Error en GetPlayerByIdAsync: {ex.Message}", ConsoleColor.Red);
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperPlayerDAO, $"Error en GetPlayerByIdAsync: {ex.Message}");
                 return null;
             }
         }
@@ -38,14 +38,14 @@ namespace VentusServer.DataAccess.Dapper
 
             try
             {
-                Log("PlayerDAO", $"Buscando jugador por nombre: {name}", ConsoleColor.Cyan);
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperPlayerDAO, $"Buscando jugador por nombre: {name}");
                 using var connection = _connectionFactory.CreateConnection();
                 var row = await connection.QueryFirstOrDefaultAsync(PlayerQueries.SelectByName, new { Name = name });
                 return row == null ? null : PlayerMapper.FromRow(row);
             }
             catch (Exception ex)
             {
-                Log("PlayerDAO", $"Error en GetPlayerByNameAsync: {ex.Message}", ConsoleColor.Red);
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperPlayerDAO, $"Error en GetPlayerByNameAsync: {ex.Message}");
                 return null;
             }
         }
@@ -60,7 +60,7 @@ namespace VentusServer.DataAccess.Dapper
             }
             catch (Exception ex)
             {
-                Log("PlayerDAO", $"Error en GetAllPlayersAsync: {ex.Message}", ConsoleColor.Red);
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperPlayerDAO, $"Error en GetAllPlayersAsync: {ex.Message}");
                 return new List<PlayerModel>();
             }
         }
@@ -69,55 +69,55 @@ namespace VentusServer.DataAccess.Dapper
         {
             if (accountId == Guid.Empty)
             {
-                Log("PlayerDAO", "Se ha recibido un GUID vacío, retornando lista vacía.", ConsoleColor.Yellow);
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperPlayerDAO, "Se ha recibido un GUID vacío, retornando lista vacía.");
                 return new List<PlayerModel>();
             }
 
             try
             {
-                Log("PlayerDAO", $"Consultando jugadores para el AccountId: {accountId}", ConsoleColor.Cyan);
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperPlayerDAO, $"Consultando jugadores para el AccountId: {accountId}");
 
                 using var connection = _connectionFactory.CreateConnection();
 
-                // Log de la consulta antes de ejecutarla
-                Log("PlayerDAO", $"Ejecutando consulta con AccountId = {accountId}", ConsoleColor.Cyan);
+                // LoggerUtil.Log de la consulta antes de ejecutarla
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperPlayerDAO, $"Ejecutando consulta con AccountId = {accountId}");
 
                 var result = await connection.QueryAsync(PlayerQueries.SelectByAccountId, new { AccountId = accountId });
 
-                // Log del resultado crudo (antes de mapear)
+                // LoggerUtil.Log del resultado crudo (antes de mapear)
                 if (result != null && result.Any())
                 {
-                    Log("PlayerDAO", $"Se encontraron {result.Count()} jugadores para el AccountId {accountId}.", ConsoleColor.Green);
+                    LoggerUtil.Log(LoggerUtil.LogTag.DapperPlayerDAO, $"Se encontraron {result.Count()} jugadores para el AccountId {accountId}.");
                 }
                 else
                 {
-                    Log("PlayerDAO", $"No se encontraron jugadores para el AccountId {accountId}.", ConsoleColor.Yellow);
+                    LoggerUtil.Log(LoggerUtil.LogTag.DapperPlayerDAO, $"No se encontraron jugadores para el AccountId {accountId}.");
                 }
 
-                // Log del contenido de los resultados para ver los datos crudos
+                // LoggerUtil.Log del contenido de los resultados para ver los datos crudos
                 foreach (var row in result)
                 {
-                    Log("PlayerDAO", $"Resultado obtenido: {row}", ConsoleColor.Magenta);
+                    LoggerUtil.Log(LoggerUtil.LogTag.DapperPlayerDAO, $"Resultado obtenido: {row}");
                 }
 
                 // Mapeo de los resultados
                 var players = PlayerMapper.FromRows(result);
 
-                // Log del mapeo
+                // LoggerUtil.Log del mapeo
                 if (players != null && players.Any())
                 {
-                    Log("PlayerDAO", $"Se mapeó correctamente a {players.Count} jugadores.", ConsoleColor.Green);
+                    LoggerUtil.Log(LoggerUtil.LogTag.DapperPlayerDAO, $"Se mapeó correctamente a {players.Count} jugadores.");
                 }
                 else
                 {
-                    Log("PlayerDAO", "El mapeo no produjo jugadores.", ConsoleColor.Red);
+                    LoggerUtil.Log(LoggerUtil.LogTag.DapperPlayerDAO, "El mapeo no produjo jugadores.");
                 }
 
                 return players ?? new List<PlayerModel>();
             }
             catch (Exception ex)
             {
-                Log("PlayerDAO", $"Error en GetPlayersByAccountIdAsync: {ex.Message}", ConsoleColor.Red);
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperPlayerDAO, $"Error en GetPlayersByAccountIdAsync: {ex.Message}");
                 return new List<PlayerModel>();
             }
         }
@@ -156,7 +156,7 @@ namespace VentusServer.DataAccess.Dapper
             }
             catch (Exception ex)
             {
-                Log("PlayerDAO", $"Error creando jugador: {ex.Message}", ConsoleColor.Red);
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperPlayerDAO, $"Error creando jugador: {ex.Message}");
                 throw;
             }
         }
@@ -173,7 +173,7 @@ namespace VentusServer.DataAccess.Dapper
             }
             catch (Exception ex)
             {
-                Log("PlayerDAO", $"Error guardando jugador: {ex.Message}", ConsoleColor.Red);
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperPlayerDAO, $"Error guardando jugador: {ex.Message}");
                 throw;
             }
         }
@@ -188,7 +188,7 @@ namespace VentusServer.DataAccess.Dapper
             }
             catch (Exception ex)
             {
-                Log("PlayerDAO", $"Error eliminando jugador: {ex.Message}", ConsoleColor.Red);
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperPlayerDAO, $"Error eliminando jugador: {ex.Message}");
                 return false;
             }
         }
@@ -202,7 +202,7 @@ namespace VentusServer.DataAccess.Dapper
             }
             catch (Exception ex)
             {
-                Log("PlayerDAO", $"Error en PlayerExistsAsync: {ex.Message}", ConsoleColor.Red);
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperPlayerDAO, $"Error en PlayerExistsAsync: {ex.Message}");
                 return false;
             }
         }
@@ -218,7 +218,7 @@ namespace VentusServer.DataAccess.Dapper
             }
             catch (Exception ex)
             {
-                Log("PlayerDAO", $"Error en PlayerNameExistsAsync: {ex.Message}", ConsoleColor.Red);
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperPlayerDAO, $"Error en PlayerNameExistsAsync: {ex.Message}");
                 return false;
             }
         }

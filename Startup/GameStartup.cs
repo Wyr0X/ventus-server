@@ -11,6 +11,6 @@ public static class GameStartup
         Task.Run(() => webSocketServerController.StartLoop());
         Task.Run(() => gameEngine.Run());
 
-        LoggerUtil.Log("SERVER", "Servidores iniciados correctamente.", ConsoleColor.Yellow);
+        LoggerUtil.Log(LoggerUtil.LogTag.Game, "Servidores iniciados correctamente.");
     }
 }

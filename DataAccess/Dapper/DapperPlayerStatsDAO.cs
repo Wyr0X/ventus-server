@@ -22,14 +22,14 @@ namespace VentusServer.DataAccess.Dapper
 
             try
             {
-                Log("PlayerStatsDAO", $"Buscando estadísticas de jugador por ID: {playerId}", ConsoleColor.Cyan);
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperPlayerStatsDAO, $"Buscando estadísticas de jugador por ID: {playerId}");
                 using var connection = _connectionFactory.CreateConnection();
                 var row = await connection.QueryFirstOrDefaultAsync(PlayerStatsQueries.SelectByPlayerId, new { PlayerId = playerId });
                 return row == null ? null : PlayerStatsMapper.FromRow(row);
             }
             catch (Exception ex)
             {
-                Log("PlayerStatsDAO", $"Error en GetPlayerStatsByIdAsync: {ex.Message}", ConsoleColor.Red);
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperPlayerStatsDAO, $"Error en GetPlayerStatsByIdAsync: {ex.Message}");
                 return null;
             }
         }
@@ -70,7 +70,7 @@ namespace VentusServer.DataAccess.Dapper
             }
             catch (Exception ex)
             {
-                Log("PlayerStatsDAO", $"Error creando estadísticas de jugador: {ex.Message}", ConsoleColor.Red);
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperPlayerStatsDAO, $"Error creando estadísticas de jugador: {ex.Message}");
                 throw;
             }
         }
@@ -87,7 +87,7 @@ namespace VentusServer.DataAccess.Dapper
             }
             catch (Exception ex)
             {
-                Log("PlayerStatsDAO", $"Error guardando estadísticas de jugador: {ex.Message}", ConsoleColor.Red);
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperPlayerStatsDAO, $"Error guardando estadísticas de jugador: {ex.Message}");
                 throw;
             }
         }
@@ -103,7 +103,7 @@ namespace VentusServer.DataAccess.Dapper
             }
             catch (Exception ex)
             {
-                Log("PlayerStatsDAO", $"Error eliminando estadísticas de jugador: {ex.Message}", ConsoleColor.Red);
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperPlayerStatsDAO, $"Error eliminando estadísticas de jugador: {ex.Message}");
                 return false;
             }
         }
@@ -118,7 +118,7 @@ namespace VentusServer.DataAccess.Dapper
             }
             catch (Exception ex)
             {
-                Log("PlayerStatsDAO", $"Error en PlayerStatsExistsAsync: {ex.Message}", ConsoleColor.Red);
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperPlayerStatsDAO, $"Error en PlayerStatsExistsAsync: {ex.Message}");
                 return false;
             }
         }

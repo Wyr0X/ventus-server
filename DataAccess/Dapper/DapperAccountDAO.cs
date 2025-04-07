@@ -22,12 +22,12 @@ namespace VentusServer.DataAccess.Postgres
 
             if (rawResult == null)
             {
-                LoggerUtil.Log("AccountDAO", $"❌ No se encontró cuenta con {identifier}", ConsoleColor.Red);
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperAccountDAO, $"❌ No se encontró cuenta con {identifier}");
                 return null;
             }
 
             var mapped = AccountMapper.Map(rawResult); // 👈 Uso del mapper
-            LoggerUtil.Log("AccountDAO", $"✅ Cuenta encontrada: {mapped.AccountId}", ConsoleColor.Green);
+            LoggerUtil.Log(LoggerUtil.LogTag.DapperAccountDAO, $"✅ Cuenta encontrada: {mapped.AccountId}");
             return mapped;
         }
 
@@ -131,11 +131,11 @@ namespace VentusServer.DataAccess.Postgres
             {
                 using var conn = GetConnection();
                 await conn.ExecuteAsync(AccountQueries.CreateTableQuery);
-                LoggerUtil.Log("AccountDAO", "✅ Tabla 'accounts' creada correctamente (si no existía).", ConsoleColor.Green);
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperAccountDAO, "✅ Tabla 'accounts' creada correctamente (si no existía).");
             }
             catch (Exception ex)
             {
-                LoggerUtil.Log("AccountDAO", $"❌ Error al crear la tabla 'accounts': {ex.Message}", ConsoleColor.Red);
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperAccountDAO, $"❌ Error al crear la tabla 'accounts': {ex.Message}");
             }
         }
     }

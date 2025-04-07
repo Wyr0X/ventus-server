@@ -3,36 +3,36 @@ using Microsoft.AspNetCore.Hosting;
 using VentusServer;
 
 DotEnv.Load();
-LoggerUtil.Log("ENV", "Variables de entorno cargadas.", ConsoleColor.Cyan);
+LoggerUtil.Log(LoggerUtil.LogTag.Init, "Variables de entorno cargadas.");
 
 (string credentialsPath, string postgresConnectionString) = EnvValidator.ValidateAndBuild();
-LoggerUtil.Log("ENV", "Credenciales y cadena de conexión construidas correctamente.", ConsoleColor.Cyan);
+LoggerUtil.Log(LoggerUtil.LogTag.Init, "Credenciales y cadena de conexión construidas correctamente.");
 
 var serviceModule = ServiceProviderModule.Build(credentialsPath, postgresConnectionString);
 var serviceProvider = serviceModule.Provider;
-LoggerUtil.Log("DI", "Contenedor de dependencias configurado.", ConsoleColor.Blue);
+LoggerUtil.Log(LoggerUtil.LogTag.Init, "Contenedor de dependencias configurado.");
 
 try
 {
-    LoggerUtil.Log("DB", "Iniciando verificación e inicialización de la base de datos...", ConsoleColor.Yellow);
+    LoggerUtil.Log(LoggerUtil.LogTag.Init, "Iniciando verificación e inicialización de la base de datos...");
     bool dbReady = await DatabaseStartup.InitDatabase(serviceProvider);
     if (!dbReady)
     {
-        LoggerUtil.Log("DB", "Inicialización de base de datos fallida. Terminando ejecución.", ConsoleColor.Red);
+        LoggerUtil.Log(LoggerUtil.LogTag.Init, "Inicialización de base de datos fallida. Terminando ejecución.");
         return;
     }
 
-    LoggerUtil.Log("GAME", "Iniciando componentes del juego...", ConsoleColor.Yellow);
+    LoggerUtil.Log(LoggerUtil.LogTag.Init, "Iniciando componentes del juego...");
     GameStartup.StartGameComponents(serviceProvider);
 
-    LoggerUtil.Log("HTTP", "Inicializando servidor HTTP...", ConsoleColor.Yellow);
+    LoggerUtil.Log(LoggerUtil.LogTag.Init, "Inicializando servidor HTTP...");
     var webHost = HttpServerBuilder.BuildHost(serviceModule.Services);
 
-    LoggerUtil.Log("HTTP", "Servidor HTTP corriendo en http://localhost:5000", ConsoleColor.Green);
+    LoggerUtil.Log(LoggerUtil.LogTag.Init, "Servidor HTTP corriendo en http://localhost:5000");
     await webHost.RunAsync();
 }
 catch (Exception ex)
 {
-    LoggerUtil.Log("ERROR", $"Error durante la inicialización: {ex.Message}", ConsoleColor.Red);
-    LoggerUtil.Log("ERROR", $"StackTrace: {ex.StackTrace}", ConsoleColor.DarkRed);
+    LoggerUtil.Log(LoggerUtil.LogTag.Init, $"Error durante la inicialización: {ex.Message}");
+    LoggerUtil.Log(LoggerUtil.LogTag.Init, $"StackTrace: {ex.StackTrace}");
 }

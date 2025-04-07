@@ -55,14 +55,14 @@ namespace Game.Models
         // Método para imprimir los detalles del mapa
         public void PrintMapDetails()
         {
-            LoggerUtil.Log("MapModel - Info", "### Map Details ###", ConsoleColor.Cyan);
-            LoggerUtil.Log("MapModel - Info", $"ID: {Id}", ConsoleColor.Cyan);
-            LoggerUtil.Log("MapModel - Info", $"Name: {Name}", ConsoleColor.Cyan);
-            LoggerUtil.Log("MapModel - Info", $"Min Level: {MinLevel}", ConsoleColor.Cyan);
-            LoggerUtil.Log("MapModel - Info", $"Max Players: {MaxPlayers}", ConsoleColor.Cyan);
-            LoggerUtil.Log("MapModel - Info", $"World ID: {WorldId}", ConsoleColor.Cyan);
-            LoggerUtil.Log("MapModel - Info", $"Players Count: {PlayersLocation.Count}", ConsoleColor.Cyan);
-            LoggerUtil.Log("MapModel - Info", "### End of Map Details ###", ConsoleColor.Cyan);
+            LoggerUtil.Log(LoggerUtil.LogTag.MapModel, "### Map Details ###");
+            LoggerUtil.Log(LoggerUtil.LogTag.MapModel, $"ID: {Id}");
+            LoggerUtil.Log(LoggerUtil.LogTag.MapModel, $"Name: {Name}");
+            LoggerUtil.Log(LoggerUtil.LogTag.MapModel, $"Min Level: {MinLevel}");
+            LoggerUtil.Log(LoggerUtil.LogTag.MapModel, $"Max Players: {MaxPlayers}");
+            LoggerUtil.Log(LoggerUtil.LogTag.MapModel, $"World ID: {WorldId}");
+            LoggerUtil.Log(LoggerUtil.LogTag.MapModel, $"Players Count: {PlayersLocation.Count}");
+            LoggerUtil.Log(LoggerUtil.LogTag.MapModel, "### End of Map Details ###");
         }
     }
 }

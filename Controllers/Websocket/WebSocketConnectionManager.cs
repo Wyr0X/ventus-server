@@ -12,7 +12,7 @@ public class WebSocketConnectionManager
     public void AddPendingConnection(string connectionId, WebSocket socket)
     {
         _pendingConnections[connectionId] = socket;
-        LoggerUtil.Log("WebSocket", $"Pending connection added: {connectionId}", ConsoleColor.Yellow);
+        LoggerUtil.Log(LoggerUtil.LogTag.WebSocketConnectionManager, $"Pending connection added: {connectionId}");
     }
 
     public bool TryAuthenticateConnection(string connectionId, Guid accountId, string currentToken, out WebSocket socket)
@@ -26,20 +26,20 @@ public class WebSocketConnectionManager
 
             socket = pending;
 
-            LoggerUtil.Log("WebSocket", $"Connection {connectionId} authenticated for Account {accountId}", ConsoleColor.Green);
+            LoggerUtil.Log(LoggerUtil.LogTag.WebSocketConnectionManager, $"Connection {connectionId} authenticated for Account {accountId}");
             return true;
         }
 
-        LoggerUtil.Log("WebSocket", $"Authentication failed for Connection {connectionId}", ConsoleColor.Red);
+        LoggerUtil.Log(LoggerUtil.LogTag.WebSocketConnectionManager, $"Authentication failed for Connection {connectionId}");
         return false;
     }
 
     public bool TryGetAccountId(string connectionId, out Guid accountId)
     {
         var result = _accountIdsByConnectionId.TryGetValue(connectionId, out accountId);
-        LoggerUtil.Log("WebSocket", result
+        LoggerUtil.Log(LoggerUtil.LogTag.WebSocketConnectionManager, result
             ? $"Retrieved AccountId {accountId} for ConnectionId {connectionId}"
-            : $"Failed to retrieve AccountId for ConnectionId {connectionId}", ConsoleColor.Cyan);
+            : $"Failed to retrieve AccountId for ConnectionId {connectionId}");
         return result;
     }
 
@@ -58,7 +58,7 @@ public class WebSocketConnectionManager
         _connectionIdsByAccountId.TryRemove(accountId, out _);
 
 
-        LoggerUtil.Log("WebSocket", $"Removed connection {connectionId} and Account {accountId}", ConsoleColor.DarkMagenta);
+        LoggerUtil.Log(LoggerUtil.LogTag.WebSocketConnectionManager, $"Removed connection {connectionId} and Account {accountId}");
     }
     public async Task RemoveConnectionByAccountId(Guid accountId)
     {
