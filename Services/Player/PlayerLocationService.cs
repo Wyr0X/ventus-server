@@ -1,17 +1,18 @@
 using System;
 using System.Threading.Tasks;
 using Game.Models;
+using VentusServer.DataAccess.Interfaces;
 using VentusServer.DataAccess.Postgres;
 
 namespace VentusServer.Services
 {
     public class PlayerLocationService : BaseCachedService<PlayerLocation, int>
     {
-        private readonly PostgresPlayerLocationDAO _playerLocationDAO;
+        private readonly IPlayerLocationDAO _playerLocationDAO;
         private readonly MapService _mapService;
         private readonly WorldService _worldService;
 
-        public PlayerLocationService(PostgresPlayerLocationDAO playerLocationDAO, MapService mapService, WorldService worldService)
+        public PlayerLocationService(IPlayerLocationDAO playerLocationDAO, MapService mapService, WorldService worldService)
         {
             _playerLocationDAO = playerLocationDAO;
             _mapService = mapService;

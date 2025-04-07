@@ -38,7 +38,7 @@ namespace VentusServer.Services
             }
         }
 
-        public async Task CreateMapAsync(MapModel map)
+        public async Task<MapModel?> CreateMapAsync(MapModel map)
         {
             try
             {
@@ -46,10 +46,12 @@ namespace VentusServer.Services
                 await _mapDAO.CreateMapAsync(map);
                 // Después de crearlo, lo agregamos a la caché
                 Set(map.Id, map);
+                return map;
                 Console.WriteLine("✅ Mapa creado correctamente.");
             }
             catch (Exception ex)
             {
+                return null;
                 Console.WriteLine($"❌ Error al crear el mapa: {ex.Message}");
             }
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using Dapper;
+using Npgsql;
 using VentusServer.DataAccess.Interfaces;
 using VentusServer.Models;
 using static LoggerUtil;
@@ -11,12 +12,14 @@ namespace VentusServer.DataAccess.Dapper
 {
     public class DapperPlayerDAO : IPlayerDAO
     {
-        private readonly IDbConnectionFactory _connectionFactory;
+        private readonly string _connectionString;
 
-        public DapperPlayerDAO(IDbConnectionFactory connectionFactory)
+        public DapperPlayerDAO(string connectionString)
         {
-            _connectionFactory = connectionFactory;
+            _connectionString = connectionString;
         }
+
+        private IDbConnection CreateConnection() => new NpgsqlConnection(_connectionString);
 
         public async Task<PlayerModel?> GetPlayerByIdAsync(int playerId)
         {
@@ -24,7 +27,7 @@ namespace VentusServer.DataAccess.Dapper
 
             const string query = "SELECT * FROM players WHERE id = @PlayerId LIMIT 1";
 
-            using var connection = _connectionFactory.CreateConnection();
+            using var connection = CreateConnection();
             var row = await connection.QueryFirstOrDefaultAsync(query, new { PlayerId = playerId });
 
             if (row == null)
@@ -45,7 +48,7 @@ namespace VentusServer.DataAccess.Dapper
 
             const string query = "SELECT * FROM players WHERE name = @Name LIMIT 1";
 
-            using var connection = _connectionFactory.CreateConnection();
+            using var connection = CreateConnection();
             var row = await connection.QueryFirstOrDefaultAsync(query, new { Name = name });
 
             if (row == null)
@@ -66,7 +69,7 @@ namespace VentusServer.DataAccess.Dapper
 
             const string query = "SELECT * FROM players";
 
-            using var connection = _connectionFactory.CreateConnection();
+            using var connection = CreateConnection();
             var result = await connection.QueryAsync(query);
 
             var players = new List<PlayerModel>();
@@ -83,7 +86,7 @@ namespace VentusServer.DataAccess.Dapper
 
             const string query = "SELECT * FROM players WHERE account_id = @AccountId";
 
-            using var connection = _connectionFactory.CreateConnection();
+            using var connection = CreateConnection();
             var result = await connection.QueryAsync(query, new { AccountId = accountId });
 
             var players = new List<PlayerModel>();
@@ -100,7 +103,7 @@ namespace VentusServer.DataAccess.Dapper
 
             const string query = "SELECT * FROM players WHERE account_id = @UserId";
 
-            using var connection = _connectionFactory.CreateConnection();
+            using var connection = CreateConnection();
             var result = await connection.QueryAsync(query, new { UserId = Guid.Parse(userId) });
 
             var players = new List<PlayerModel>();
@@ -136,7 +139,7 @@ namespace VentusServer.DataAccess.Dapper
                 Status = "active"
             };
 
-            using var connection = _connectionFactory.CreateConnection();
+            using var connection = CreateConnection();
             var newId = await connection.ExecuteScalarAsync<int>(query, newPlayer);
             newPlayer.Id = newId;
 
@@ -162,7 +165,7 @@ namespace VentusServer.DataAccess.Dapper
                     status = EXCLUDED.status;
             ";
 
-            using var connection = _connectionFactory.CreateConnection();
+            using var connection = CreateConnection();
             await connection.ExecuteAsync(query, player);
 
             Log("PlayerDAO", $"Jugador guardado correctamente: {player.Name}", ConsoleColor.Green);
@@ -174,7 +177,7 @@ namespace VentusServer.DataAccess.Dapper
 
             const string query = "DELETE FROM players WHERE id = @PlayerId";
 
-            using var connection = _connectionFactory.CreateConnection();
+            using var connection = CreateConnection();
             var affected = await connection.ExecuteAsync(query, new { PlayerId = playerId });
 
             Log("PlayerDAO", affected > 0 ? "Jugador eliminado." : "Jugador no encontrado.",
@@ -189,7 +192,7 @@ namespace VentusServer.DataAccess.Dapper
 
             const string query = "SELECT EXISTS(SELECT 1 FROM players WHERE id = @PlayerId)";
 
-            using var connection = _connectionFactory.CreateConnection();
+            using var connection = CreateConnection();
             var exists = await connection.ExecuteScalarAsync<bool>(query, new { PlayerId = playerId });
 
             Log("PlayerDAO", $"Jugador {(exists ? "existe" : "no existe")}.", exists ? ConsoleColor.Green : ConsoleColor.Yellow);
@@ -202,7 +205,7 @@ namespace VentusServer.DataAccess.Dapper
 
             const string query = "SELECT EXISTS(SELECT 1 FROM players WHERE name = @Name)";
 
-            using var connection = _connectionFactory.CreateConnection();
+            using var connection = CreateConnection();
             var exists = await connection.ExecuteScalarAsync<bool>(query, new { Name = name });
 
             Log("PlayerDAO", $"Nombre {(exists ? "ya existe" : "disponible")}.", exists ? ConsoleColor.Yellow : ConsoleColor.Green);

@@ -2,21 +2,20 @@ using System;
 using System.Data;
 using System.Threading.Tasks;
 using Dapper;
-using Npgsql;
 using VentusServer.DataAccess;
 
 namespace VentusServer.DataAccess.Postgres
 {
     public class DapperAccountDAO : IAccountDAO
     {
-        private readonly string _connectionString;
+        private readonly IDbConnectionFactory _connectionFactory;
 
-        public DapperAccountDAO(string connectionString)
+        public DapperAccountDAO(IDbConnectionFactory connectionFactory)
         {
-            _connectionString = connectionString;
+            _connectionFactory = connectionFactory;
         }
 
-        private IDbConnection CreateConnection() => new NpgsqlConnection(_connectionString);
+        private IDbConnection CreateConnection() => _connectionFactory.CreateConnection();
 
         private AccountModel MapToAccountModel(dynamic row)
         {

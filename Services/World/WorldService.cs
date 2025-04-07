@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Npgsql;
 using Game.Models;
 using VentusServer.DataAccess.Postgres;
+using VentusServer.DataAccess.Interfaces;
 
 namespace VentusServer.Services
 {
@@ -11,10 +12,10 @@ namespace VentusServer.Services
     {
         private MapService _mapService;
 
-        private PostgresWorldDAO _worldDAO;
+        private IWorldDAO _worldDAO;
 
 
-        public WorldService(MapService mapService, PostgresWorldDAO worldDAO)
+        public WorldService(MapService mapService, IWorldDAO worldDAO)
         {
             Console.WriteLine("createDefaultWorld");
 
@@ -37,7 +38,15 @@ namespace VentusServer.Services
                 defaultWorld = await CreateWorldAsync("Nuevo Mundo", "Este es un mundo de ejemplo con parámetros predeterminados.", 10, 100, 1);
                 if (existDefaultMap == null && defaultWorld != null)
                 {
-                    MapModel? defaultMap = await _mapService.CreateMapAsync("Mapa Predeterminado", 1, 10, defaultWorld.Id);
+                    MapModel map = new MapModel
+                    {
+                        Id = 1,
+                        Name =  "Mapa Predeterminado",
+                        MinLevel = 1,
+                        MaxPlayers = 10,
+                        WorldModel = defaultWorld
+                    };
+                    MapModel? defaultMap = await _mapService.CreateMapAsync(map);
                 }
 
 
@@ -72,14 +81,14 @@ namespace VentusServer.Services
 
         public async Task RemovePlayerFromWorld(int playerId, int worldId)
         {
-          
-                WorldModel? world = await GetWorldByIdAsync(worldId);
 
-                if (world != null)
-                {
-                    world.RemovePlayer(playerId);
-                    await _worldDAO.SaveWorldAsync(world);
-                }
+            WorldModel? world = await GetWorldByIdAsync(worldId);
+
+            if (world != null)
+            {
+                world.RemovePlayer(playerId);
+                await _worldDAO.SaveWorldAsync(world);
+            }
 
         }
     }

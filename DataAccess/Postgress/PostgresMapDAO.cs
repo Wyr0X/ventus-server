@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Npgsql;
 using Game.Models;
+using VentusServer.DataAccess.Interfaces;
 
 namespace VentusServer.DataAccess.Postgres
 {
@@ -10,9 +11,9 @@ namespace VentusServer.DataAccess.Postgres
     public class PostgresMapDAO
     {
         private readonly string _connectionString;
-        private PostgresWorldDAO _worldDAO;
+        private IWorldDAO _worldDAO;
 
-        public PostgresMapDAO(string connectionString, PostgresWorldDAO worldDao)
+        public PostgresMapDAO(string connectionString, IWorldDAO worldDao)
         {
             _connectionString = connectionString;
             _worldDAO = worldDao;

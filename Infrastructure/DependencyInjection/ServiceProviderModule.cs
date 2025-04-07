@@ -18,7 +18,7 @@ namespace VentusServer
         {
             var services = new ServiceCollection();
 
-            RegisterInfrastructure(services, firebaseCredentialsPath);
+            RegisterInfrastructure(services, firebaseCredentialsPath, postgresConnectionString);
             RegisterDAOs(services, postgresConnectionString);
             RegisterHandlers(services);
             RegisterManagers(services);
@@ -31,7 +31,7 @@ namespace VentusServer
         }
 
 
-        private static void RegisterInfrastructure(IServiceCollection services, string firebaseCredentialsPath)
+        private static void RegisterInfrastructure(IServiceCollection services, string firebaseCredentialsPath, string postgresConnectionString)
         {
             services
                 .AddSingleton<PostgresDbService>()
@@ -41,28 +41,40 @@ namespace VentusServer
                 .AddSingleton<DatabaseInitializer>()
                 .AddSingleton<ConcurrentDictionary<string, WebSocket>>()
                 .AddSingleton<MessageSender>()
-                .AddSingleton(provider => new Lazy<MessageSender>(provider.GetRequiredService<MessageSender>));
+                .AddSingleton(provider => new Lazy<MessageSender>(provider.GetRequiredService<MessageSender>))
+                .AddSingleton<IDbConnectionFactory>(sp =>
+                    new NpgsqlConnectionFactory(
+                        postgresConnectionString
+                    )
+                );
         }
 
         private static void RegisterDAOs(IServiceCollection services, string connectionString)
         {
-            services
-                .AddScoped<IPlayerDAO>(_ => new DapperPlayerDAO(connectionString))
 
-                .AddScoped<IAccountDAO>(_ => new DapperAccountDAO(connectionString))
-                .AddScoped<PostgresWorldDAO>(_ => new PostgresWorldDAO(connectionString))
-                .AddScoped<PostgresMapDAO>(sp =>
-                    new PostgresMapDAO(
-                        connectionString,
-                        sp.GetRequiredService<PostgresWorldDAO>()
-                    )
+            // Ahora usamos la fábrica en vez del connectionString
+            services
+                .AddScoped<IPlayerDAO>(sp =>
+                    new DapperPlayerDAO(sp.GetRequiredService<IDbConnectionFactory>())
                 )
-                .AddScoped<PostgresPlayerLocationDAO>(sp =>
-                    new PostgresPlayerLocationDAO(
-                        connectionString,
-                        sp.GetRequiredService<PostgresWorldDAO>(),
-                        sp.GetRequiredService<PostgresMapDAO>(),
-                        sp.GetRequiredService<IPlayerDAO>()
+
+                .AddScoped<IAccountDAO>(sp =>
+                    new DapperAccountDAO(sp.GetRequiredService<IDbConnectionFactory>())
+                )
+
+                .AddScoped<IWorldDAO>(sp =>
+                    new DapperWorldDAO(sp.GetRequiredService<IDbConnectionFactory>())
+                )
+                .AddScoped<IMapDAO>(sp =>
+                    new DapperMapDAO(sp.GetRequiredService<IDbConnectionFactory>(), sp.GetRequiredService<IWorldDAO>())
+                )
+
+                .AddScoped<IPlayerLocationDAO>(sp =>
+                    new DapperPlayerLocationDAO(
+                        sp.GetRequiredService<IDbConnectionFactory>(),
+                        sp.GetRequiredService<IPlayerDAO>(),
+                        sp.GetRequiredService<IWorldDAO>(),
+                        sp.GetRequiredService<IMapDAO>()
                     )
                 );
         }

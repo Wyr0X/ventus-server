@@ -11,13 +11,13 @@ namespace VentusServer.DataAccess.Postgres
     public class PostgresPlayerLocationDAO 
     {
         private readonly string _connectionString;
-        private PostgresWorldDAO _worldDAO;
-        private PostgresMapDAO _mapDAO;
+        private IWorldDAO _worldDAO;
+        private IMapDAO _mapDAO;
         private IPlayerDAO _playerDAO;
 
 
 
-        public PostgresPlayerLocationDAO(string connectionString, PostgresWorldDAO worldDAO, PostgresMapDAO mapDAO, IPlayerDAO playerDAO)
+        public PostgresPlayerLocationDAO(string connectionString, IWorldDAO worldDAO, IMapDAO mapDAO, IPlayerDAO playerDAO)
         {
             _connectionString = connectionString;
             _worldDAO = worldDAO;

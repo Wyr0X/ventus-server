@@ -7,14 +7,14 @@ namespace VentusServer.DataAccess.Dapper
 {
     public class DapperPlayerLocationDAO : IPlayerLocationDAO
     {
-        private readonly IDbConnection _connection;
+        private readonly IDbConnectionFactory _connectionFactory;
         private readonly IPlayerDAO _playerDAO;
-        private readonly WorldModel _worldDAO;
-        private readonly MapModel _mapDAO;
+        private readonly IWorldDAO _worldDAO;
+        private readonly IMapDAO _mapDAO;
 
-        public DapperPlayerLocationDAO(IDbConnection connection, IPlayerDAO playerDAO, IWorldDAO worldDAO, IMapDAO mapDAO)
+        public DapperPlayerLocationDAO(IDbConnectionFactory connectionFactory, IPlayerDAO playerDAO, IWorldDAO worldDAO, IMapDAO mapDAO)
         {
-            _connection = connection;
+            _connectionFactory = connectionFactory;
             _playerDAO = playerDAO;
             _worldDAO = worldDAO;
             _mapDAO = mapDAO;
@@ -29,11 +29,11 @@ namespace VentusServer.DataAccess.Dapper
                 LIMIT 1;
             ";
 
-            var result = await _connection.QuerySingleOrDefaultAsync(query, new { PlayerId = playerId });
+            using var connection = _connectionFactory.CreateConnection();
+            var result = await connection.QuerySingleOrDefaultAsync(query, new { PlayerId = playerId });
 
             if (result == null) return null;
 
-            // Cargar relaciones usando DAOs
             var player = await _playerDAO.GetPlayerByIdAsync(playerId);
             var world = await _worldDAO.GetWorldByIdAsync((int)result.world_id);
             var map = await _mapDAO.GetMapByIdAsync((int)result.map_id);
@@ -62,7 +62,8 @@ namespace VentusServer.DataAccess.Dapper
                     pos_y = EXCLUDED.pos_y;
             ";
 
-            await _connection.ExecuteAsync(query, new
+            using var connection = _connectionFactory.CreateConnection();
+            await connection.ExecuteAsync(query, new
             {
                 PlayerId = location.Player.Id,
                 WorldId = location.World.Id,
@@ -79,7 +80,8 @@ namespace VentusServer.DataAccess.Dapper
                 VALUES (@PlayerId, @WorldId, @MapId, @PosX, @PosY);
             ";
 
-            await _connection.ExecuteAsync(query, new
+            using var connection = _connectionFactory.CreateConnection();
+            await connection.ExecuteAsync(query, new
             {
                 PlayerId = location.Player.Id,
                 WorldId = location.World.Id,
@@ -92,7 +94,9 @@ namespace VentusServer.DataAccess.Dapper
         public async Task DeletePlayerLocationAsync(int playerId)
         {
             const string query = "DELETE FROM player_locations WHERE player_id = @PlayerId";
-            await _connection.ExecuteAsync(query, new { PlayerId = playerId });
+
+            using var connection = _connectionFactory.CreateConnection();
+            await connection.ExecuteAsync(query, new { PlayerId = playerId });
         }
     }
 }
