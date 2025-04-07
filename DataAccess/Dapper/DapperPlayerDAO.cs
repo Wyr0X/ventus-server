@@ -5,122 +5,92 @@ using System.Threading.Tasks;
 using Dapper;
 using VentusServer.DataAccess.Interfaces;
 using VentusServer.Models;
+using VentusServer.DataAccess.Mappers;
 using static LoggerUtil;
+using VentusServer.DataAccess.Queries;
 
 namespace VentusServer.DataAccess.Dapper
 {
-    public class DapperPlayerDAO : IPlayerDAO
+    public class DapperPlayerDAO(IDbConnectionFactory connectionFactory) : BaseDAO(connectionFactory), IPlayerDAO
     {
         private readonly IDbConnectionFactory _connectionFactory;
 
-        public DapperPlayerDAO(IDbConnectionFactory connectionFactory)
-        {
-            _connectionFactory = connectionFactory;
-        }
-
         public async Task<PlayerModel?> GetPlayerByIdAsync(int playerId)
         {
-            Log("PlayerDAO", $"Buscando jugador por ID: {playerId}", ConsoleColor.Cyan);
+            if (playerId <= 0) return null;
 
-            const string query = "SELECT * FROM players WHERE id = @PlayerId LIMIT 1";
-
-            using var connection = _connectionFactory.CreateConnection();
-            var row = await connection.QueryFirstOrDefaultAsync(query, new { PlayerId = playerId });
-
-            if (row == null)
+            try
             {
-                Log("PlayerDAO", $"Jugador con ID {playerId} no encontrado.", ConsoleColor.Yellow);
+                Log("PlayerDAO", $"Buscando jugador por ID: {playerId}", ConsoleColor.Cyan);
+                using var connection = _connectionFactory.CreateConnection();
+                var row = await connection.QueryFirstOrDefaultAsync(PlayerQueries.SelectById, new { PlayerId = playerId });
+                return row == null ? null : PlayerMapper.MapRowToPlayer(row);
+            }
+            catch (Exception ex)
+            {
+                Log("PlayerDAO", $"Error en GetPlayerByIdAsync: {ex.Message}", ConsoleColor.Red);
                 return null;
             }
-
-            var player = MapRowToPlayer(row);
-
-            Log("PlayerDAO", $"Jugador encontrado: {player.Name}", ConsoleColor.Green);
-            return player;
         }
 
         public async Task<PlayerModel?> GetPlayerByNameAsync(string name)
         {
-            Log("PlayerDAO", $"Buscando jugador por nombre: {name}", ConsoleColor.Cyan);
+            if (string.IsNullOrWhiteSpace(name)) return null;
 
-            const string query = "SELECT * FROM players WHERE name = @Name LIMIT 1";
-
-            using var connection = _connectionFactory.CreateConnection();
-            var row = await connection.QueryFirstOrDefaultAsync(query, new { Name = name });
-
-            if (row == null)
+            try
             {
-                Log("PlayerDAO", $"Jugador con nombre '{name}' no encontrado.", ConsoleColor.Yellow);
+                Log("PlayerDAO", $"Buscando jugador por nombre: {name}", ConsoleColor.Cyan);
+                using var connection = _connectionFactory.CreateConnection();
+                var row = await connection.QueryFirstOrDefaultAsync(PlayerQueries.SelectByName, new { Name = name });
+                return row == null ? null : PlayerMapper.MapRowToPlayer(row);
+            }
+            catch (Exception ex)
+            {
+                Log("PlayerDAO", $"Error en GetPlayerByNameAsync: {ex.Message}", ConsoleColor.Red);
                 return null;
             }
-
-            var player = MapRowToPlayer(row);
-
-            Log("PlayerDAO", $"Jugador encontrado: {player.Name}", ConsoleColor.Green);
-            return player;
         }
 
         public async Task<List<PlayerModel>> GetAllPlayersAsync()
         {
-            Log("PlayerDAO", "Obteniendo todos los jugadores", ConsoleColor.Cyan);
-
-            const string query = "SELECT * FROM players";
-
-            using var connection = _connectionFactory.CreateConnection();
-            var result = await connection.QueryAsync(query);
-
-            var players = new List<PlayerModel>();
-            foreach (var row in result)
-                players.Add(MapRowToPlayer(row));
-
-            Log("PlayerDAO", $"Total jugadores encontrados: {players.Count}", ConsoleColor.Green);
-            return players;
+            try
+            {
+                using var connection = _connectionFactory.CreateConnection();
+                var result = await connection.QueryAsync(PlayerQueries.SelectAll);
+                return PlayerMapper.MapRowsToPlayers(result);
+            }
+            catch (Exception ex)
+            {
+                Log("PlayerDAO", $"Error en GetAllPlayersAsync: {ex.Message}", ConsoleColor.Red);
+                return new List<PlayerModel>();
+            }
         }
 
         public async Task<List<PlayerModel>> GetPlayersByAccountIdAsync(Guid accountId)
         {
-            Log("PlayerDAO", $"Buscando jugadores por Account ID: {accountId}", ConsoleColor.Cyan);
+            if (accountId == Guid.Empty) return new();
 
-            const string query = "SELECT * FROM players WHERE account_id = @AccountId";
-
-            using var connection = _connectionFactory.CreateConnection();
-            var result = await connection.QueryAsync(query, new { AccountId = accountId });
-
-            var players = new List<PlayerModel>();
-            foreach (var row in result)
-                players.Add(MapRowToPlayer(row));
-
-            Log("PlayerDAO", $"Se encontraron {players.Count} jugadores para Account ID: {accountId}", ConsoleColor.Green);
-            return players;
+            try
+            {
+                using var connection = _connectionFactory.CreateConnection();
+                var result = await connection.QueryAsync(PlayerQueries.SelectByAccountId, new { AccountId = accountId });
+                return PlayerMapper.MapRowsToPlayers(result);
+            }
+            catch (Exception ex)
+            {
+                Log("PlayerDAO", $"Error en GetPlayersByAccountIdAsync: {ex.Message}", ConsoleColor.Red);
+                return new List<PlayerModel>();
+            }
         }
 
         public async Task<List<PlayerModel>> GetAllPlayersByUserIdAsync(string userId)
         {
-            Log("PlayerDAO", $"Buscando jugadores por User ID: {userId}", ConsoleColor.Cyan);
-
-            const string query = "SELECT * FROM players WHERE account_id = @UserId";
-
-            using var connection = _connectionFactory.CreateConnection();
-            var result = await connection.QueryAsync(query, new { UserId = Guid.Parse(userId) });
-
-            var players = new List<PlayerModel>();
-            foreach (var row in result)
-                players.Add(MapRowToPlayer(row));
-
-            Log("PlayerDAO", $"Jugadores encontrados para User ID {userId}: {players.Count}", ConsoleColor.Green);
-            return players;
+            if (!Guid.TryParse(userId, out var accountId)) return new();
+            return await GetPlayersByAccountIdAsync(accountId);
         }
 
         public async Task<PlayerModel> CreatePlayerAsync(Guid accountId, string name, string gender, string race, string playerClass)
         {
-            Log("PlayerDAO", $"Creando nuevo jugador: {name} para la cuenta {accountId}", ConsoleColor.Cyan);
-
-            const string query = @"
-                INSERT INTO players (account_id, name, gender, race, level, class, created_at, last_login, status)
-                VALUES (@AccountId, @Name, @Gender, @Race, @Level, @Class, @CreatedAt, @LastLogin, @Status)
-                RETURNING id;
-            ";
-
             var newPlayer = new PlayerModel(
                 id: 0,
                 accountId: accountId,
@@ -136,95 +106,77 @@ namespace VentusServer.DataAccess.Dapper
                 Status = "active"
             };
 
-            using var connection = _connectionFactory.CreateConnection();
-            var newId = await connection.ExecuteScalarAsync<int>(query, newPlayer);
-            newPlayer.Id = newId;
-
-            Log("PlayerDAO", $"Jugador creado con ID: {newId}", ConsoleColor.Green);
-            return newPlayer;
+            try
+            {
+                using var connection = _connectionFactory.CreateConnection();
+                var newId = await connection.ExecuteScalarAsync<int>(PlayerQueries.Insert, newPlayer);
+                newPlayer.Id = newId;
+                return newPlayer;
+            }
+            catch (Exception ex)
+            {
+                Log("PlayerDAO", $"Error creando jugador: {ex.Message}", ConsoleColor.Red);
+                throw;
+            }
         }
 
         public async Task SavePlayerAsync(PlayerModel player)
         {
-            Log("PlayerDAO", $"Guardando jugador: {player.Name} (ID: {player.Id})", ConsoleColor.Cyan);
-
-            const string query = @"
-                INSERT INTO players (id, account_id, name, gender, race, level, class, created_at, last_login, status)
-                VALUES (@Id, @AccountId, @Name, @Gender, @Race, @Level, @Class, @CreatedAt, @LastLogin, @Status)
-                ON CONFLICT (id) DO UPDATE SET
-                    account_id = EXCLUDED.account_id,
-                    name = EXCLUDED.name,
-                    gender = EXCLUDED.gender,
-                    race = EXCLUDED.race,
-                    level = EXCLUDED.level,
-                    class = EXCLUDED.class,
-                    last_login = EXCLUDED.last_login,
-                    status = EXCLUDED.status;
-            ";
-
-            using var connection = _connectionFactory.CreateConnection();
-            await connection.ExecuteAsync(query, player);
-
-            Log("PlayerDAO", $"Jugador guardado correctamente: {player.Name}", ConsoleColor.Green);
+            try
+            {
+                using var connection = _connectionFactory.CreateConnection();
+                await connection.ExecuteAsync(PlayerQueries.Upsert, player);
+            }
+            catch (Exception ex)
+            {
+                Log("PlayerDAO", $"Error guardando jugador: {ex.Message}", ConsoleColor.Red);
+                throw;
+            }
         }
 
         public async Task<bool> DeletePlayerAsync(int playerId)
         {
-            Log("PlayerDAO", $"Eliminando jugador con ID: {playerId}", ConsoleColor.Cyan);
-
-            const string query = "DELETE FROM players WHERE id = @PlayerId";
-
-            using var connection = _connectionFactory.CreateConnection();
-            var affected = await connection.ExecuteAsync(query, new { PlayerId = playerId });
-
-            Log("PlayerDAO", affected > 0 ? "Jugador eliminado." : "Jugador no encontrado.",
-                affected > 0 ? ConsoleColor.Green : ConsoleColor.Yellow);
-
-            return affected > 0;
+            try
+            {
+                using var connection = _connectionFactory.CreateConnection();
+                var affected = await connection.ExecuteAsync(PlayerQueries.DeleteById, new { PlayerId = playerId });
+                return affected > 0;
+            }
+            catch (Exception ex)
+            {
+                Log("PlayerDAO", $"Error eliminando jugador: {ex.Message}", ConsoleColor.Red);
+                return false;
+            }
         }
 
         public async Task<bool> PlayerExistsAsync(int playerId)
         {
-            Log("PlayerDAO", $"Verificando si existe el jugador con ID: {playerId}", ConsoleColor.Cyan);
-
-            const string query = "SELECT EXISTS(SELECT 1 FROM players WHERE id = @PlayerId)";
-
-            using var connection = _connectionFactory.CreateConnection();
-            var exists = await connection.ExecuteScalarAsync<bool>(query, new { PlayerId = playerId });
-
-            Log("PlayerDAO", $"Jugador {(exists ? "existe" : "no existe")}.", exists ? ConsoleColor.Green : ConsoleColor.Yellow);
-            return exists;
+            try
+            {
+                using var connection = _connectionFactory.CreateConnection();
+                return await connection.ExecuteScalarAsync<bool>(PlayerQueries.ExistsById, new { PlayerId = playerId });
+            }
+            catch (Exception ex)
+            {
+                Log("PlayerDAO", $"Error en PlayerExistsAsync: {ex.Message}", ConsoleColor.Red);
+                return false;
+            }
         }
 
         public async Task<bool> PlayerNameExistsAsync(string name)
         {
-            Log("PlayerDAO", $"Verificando si existe el nombre de jugador: {name}", ConsoleColor.Cyan);
+            if (string.IsNullOrWhiteSpace(name)) return false;
 
-            const string query = "SELECT EXISTS(SELECT 1 FROM players WHERE name = @Name)";
-
-            using var connection = _connectionFactory.CreateConnection();
-            var exists = await connection.ExecuteScalarAsync<bool>(query, new { Name = name });
-
-            Log("PlayerDAO", $"Nombre {(exists ? "ya existe" : "disponible")}.", exists ? ConsoleColor.Yellow : ConsoleColor.Green);
-            return exists;
-        }
-
-        private static PlayerModel MapRowToPlayer(dynamic row)
-        {
-            return new PlayerModel(
-                id: row.id,
-                accountId: row.account_id,
-                name: row.name,
-                gender: row.gender,
-                race: row.race,
-                level: row.level,
-                playerClass: row.@class
-            )
+            try
             {
-                CreatedAt = row.created_at,
-                LastLogin = row.last_login,
-                Status = row.status
-            };
+                using var connection = _connectionFactory.CreateConnection();
+                return await connection.ExecuteScalarAsync<bool>(PlayerQueries.ExistsByName, new { Name = name });
+            }
+            catch (Exception ex)
+            {
+                Log("PlayerDAO", $"Error en PlayerNameExistsAsync: {ex.Message}", ConsoleColor.Red);
+                return false;
+            }
         }
     }
 }
