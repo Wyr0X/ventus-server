@@ -44,13 +44,13 @@ namespace VentusServer.DataAccess.Dapper
 
             if (player == null || world == null || map == null) return null;
 
-            return PlayerLocationMapper.ToModel(result, player, world, map);
+            return PlayerLocationMapper.Map(result, player, world, map);
         }
 
         public async Task SavePlayerLocationAsync(PlayerLocation location)
         {
             using var connection = GetConnection();
-            await connection.ExecuteAsync(PlayerLocationQueries.InsertOrUpdate, 
+            await connection.ExecuteAsync(PlayerLocationQueries.InsertOrUpdate,
                 PlayerLocationMapper.ToDbParameters(location));
         }
 

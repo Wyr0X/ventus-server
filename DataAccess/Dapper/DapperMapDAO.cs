@@ -15,7 +15,7 @@ namespace VentusServer.DataAccess.Dapper
     {
         private readonly IWorldDAO _worldDAO;
 
-        public DapperMapDAO(IDbConnectionFactory connectionFactory, IWorldDAO worldDAO) 
+        public DapperMapDAO(IDbConnectionFactory connectionFactory, IWorldDAO worldDAO)
             : base(connectionFactory)
         {
             _worldDAO = worldDAO;
@@ -25,7 +25,7 @@ namespace VentusServer.DataAccess.Dapper
         {
             Log("MapDAO", "Inicializando tabla 'maps'...", ConsoleColor.Cyan);
 
-            using var connection = _connectionFactory.CreateConnection();
+            using var connection = GetConnection();
             await connection.ExecuteAsync(MapQueries.CreateTableQuery);
 
             Log("MapDAO", "Tabla 'maps' inicializada correctamente", ConsoleColor.Green);
@@ -35,16 +35,16 @@ namespace VentusServer.DataAccess.Dapper
         {
             Log("MapDAO", $"Buscando mapa con ID: {id}", ConsoleColor.Cyan);
 
-            using var connection = _connectionFactory.CreateConnection();
-            var mapData = await connection.QuerySingleOrDefaultAsync(MapQueries.SelectById, new { Id = id });
+            using var connection = GetConnection();
+            var row = await connection.QuerySingleOrDefaultAsync(MapQueries.SelectById, new { Id = id });
 
-            if (mapData == null)
+            if (row == null)
             {
                 Log("MapDAO", $"Mapa con ID {id} no encontrado", ConsoleColor.Yellow);
                 return null;
             }
 
-            var map = MapMapper.Map(mapData);
+            var map = MapMapper.Map(row);
             map.WorldModel = await _worldDAO.GetWorldByIdAsync(map.WorldId);
 
             Log("MapDAO", $"Mapa encontrado: {map.Name}", ConsoleColor.Green);
@@ -55,16 +55,13 @@ namespace VentusServer.DataAccess.Dapper
         {
             Log("MapDAO", "Obteniendo todos los mapas", ConsoleColor.Cyan);
 
-            using var connection = _connectionFactory.CreateConnection();
-            var results = await connection.QueryAsync(MapQueries.SelectAll);
+            using var connection = GetConnection();
+            var rows = await connection.QueryAsync(MapQueries.SelectAll);
 
-            var maps = new List<MapModel>();
-
-            foreach (var row in results)
+            var maps = MapMapper.MapRowsToMaps(rows);
+            foreach (var map in maps)
             {
-                var map = MapMapper.Map(row);
                 map.WorldModel = await _worldDAO.GetWorldByIdAsync(map.WorldId);
-                maps.Add(map);
             }
 
             Log("MapDAO", $"Total mapas encontrados: {maps.Count}", ConsoleColor.Green);
@@ -75,14 +72,8 @@ namespace VentusServer.DataAccess.Dapper
         {
             Log("MapDAO", $"Creando mapa: {map.Name}", ConsoleColor.Cyan);
 
-            using var connection = _connectionFactory.CreateConnection();
-            var id = await connection.ExecuteScalarAsync<int>(MapQueries.Insert, new
-            {
-                map.Name,
-                map.MinLevel,
-                map.MaxPlayers,
-                map.WorldId
-            });
+            using var connection = GetConnection();
+            var id = await connection.ExecuteScalarAsync<int>(MapQueries.Insert, MapMapper.ToEntity(map));
 
             map.Id = id;
 
@@ -94,15 +85,8 @@ namespace VentusServer.DataAccess.Dapper
         {
             Log("MapDAO", $"Actualizando mapa: {map.Name} (ID: {map.Id})", ConsoleColor.Cyan);
 
-            using var connection = _connectionFactory.CreateConnection();
-            await connection.ExecuteAsync(MapQueries.Update, new
-            {
-                map.Id,
-                map.Name,
-                map.MinLevel,
-                map.MaxPlayers,
-                map.WorldId
-            });
+            using var connection = GetConnection();
+            await connection.ExecuteAsync(MapQueries.Update, MapMapper.ToEntity(map));
 
             Log("MapDAO", "Mapa actualizado correctamente", ConsoleColor.Green);
         }
@@ -111,7 +95,7 @@ namespace VentusServer.DataAccess.Dapper
         {
             Log("MapDAO", $"Eliminando mapa con ID: {id}", ConsoleColor.Cyan);
 
-            using var connection = _connectionFactory.CreateConnection();
+            using var connection = GetConnection();
             var rowsAffected = await connection.ExecuteAsync(MapQueries.Delete, new { Id = id });
 
             Log("MapDAO", rowsAffected > 0 ? "Mapa eliminado correctamente" : "No se encontró el mapa",

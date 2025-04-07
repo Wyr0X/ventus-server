@@ -1,12 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using VentusServer.Models;
+using VentusServer.DataAccess.Entities;
 
 namespace VentusServer.DataAccess.Mappers
 {
     public static class PlayerMapper
     {
-        public static PlayerModel Map(dynamic row)
+        // 🧭 Mapeo desde un resultado dinámico de Dapper a un modelo de jugador
+        public static PlayerModel FromRow(dynamic row)
         {
             return new PlayerModel(
                 id: row.id,
@@ -24,14 +26,47 @@ namespace VentusServer.DataAccess.Mappers
             };
         }
 
-        public static PlayerModel MapRowToPlayer(dynamic row)
+        public static List<PlayerModel> FromRows(IEnumerable<dynamic> rows) =>
+            rows.Select(FromRow).ToList();
+
+        // 🧭 De modelo a entidad de base de datos
+        public static DbPlayerEntity ToEntity(PlayerModel model)
         {
-            return Map(row);
+            return new DbPlayerEntity
+            {
+                Id = model.Id,
+                AccountId = model.AccountId,
+                Name = model.Name,
+                Gender = model.Gender,
+                Race = model.Race,
+                Level = model.Level,
+                Class = model.Class,
+                CreatedAt = model.CreatedAt,
+                LastLogin = model.LastLogin,
+                Status = model.Status
+            };
         }
 
-        public static List<PlayerModel> MapRowsToPlayers(IEnumerable<dynamic> rows)
+        // 🧭 De entidad de base de datos a modelo
+        public static PlayerModel ToModel(DbPlayerEntity entity)
         {
-            return rows.Select(Map).ToList();
+            return new PlayerModel(
+                id: entity.Id,
+                accountId: entity.AccountId,
+                name: entity.Name,
+                gender: entity.Gender,
+                race: entity.Race,
+                level: entity.Level,
+                playerClass: entity.Class
+            )
+            {
+                CreatedAt = entity.CreatedAt,
+                LastLogin = entity.LastLogin,
+                Status = entity.Status,
+
+                // ⚠️ Vive solo en memoria (no se guarda en DB)
+                isSpawned = false
+            };
         }
     }
 }

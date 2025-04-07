@@ -23,7 +23,7 @@ namespace VentusServer.DataAccess.Dapper
                 Log("PlayerDAO", $"Buscando jugador por ID: {playerId}", ConsoleColor.Cyan);
                 using var connection = _connectionFactory.CreateConnection();
                 var row = await connection.QueryFirstOrDefaultAsync(PlayerQueries.SelectById, new { PlayerId = playerId });
-                return row == null ? null : PlayerMapper.MapRowToPlayer(row);
+                return row == null ? null : PlayerMapper.FromRow(row);
             }
             catch (Exception ex)
             {
@@ -41,7 +41,7 @@ namespace VentusServer.DataAccess.Dapper
                 Log("PlayerDAO", $"Buscando jugador por nombre: {name}", ConsoleColor.Cyan);
                 using var connection = _connectionFactory.CreateConnection();
                 var row = await connection.QueryFirstOrDefaultAsync(PlayerQueries.SelectByName, new { Name = name });
-                return row == null ? null : PlayerMapper.MapRowToPlayer(row);
+                return row == null ? null : PlayerMapper.FromRow(row);
             }
             catch (Exception ex)
             {
@@ -56,7 +56,7 @@ namespace VentusServer.DataAccess.Dapper
             {
                 using var connection = _connectionFactory.CreateConnection();
                 var result = await connection.QueryAsync(PlayerQueries.SelectAll);
-                return PlayerMapper.MapRowsToPlayers(result);
+                return PlayerMapper.FromRows(result);
             }
             catch (Exception ex)
             {
@@ -73,7 +73,7 @@ namespace VentusServer.DataAccess.Dapper
             {
                 using var connection = _connectionFactory.CreateConnection();
                 var result = await connection.QueryAsync(PlayerQueries.SelectByAccountId, new { AccountId = accountId });
-                return PlayerMapper.MapRowsToPlayers(result);
+                return PlayerMapper.FromRows(result);
             }
             catch (Exception ex)
             {
@@ -107,8 +107,10 @@ namespace VentusServer.DataAccess.Dapper
 
             try
             {
+                var entity = PlayerMapper.ToEntity(newPlayer); // <-- conversión a entidad
+
                 using var connection = _connectionFactory.CreateConnection();
-                var newId = await connection.ExecuteScalarAsync<int>(PlayerQueries.Insert, newPlayer);
+                var newId = await connection.ExecuteScalarAsync<int>(PlayerQueries.Insert, entity);
                 newPlayer.Id = newId;
                 return newPlayer;
             }
@@ -119,12 +121,15 @@ namespace VentusServer.DataAccess.Dapper
             }
         }
 
+
         public async Task SavePlayerAsync(PlayerModel player)
         {
             try
             {
+                var entity = PlayerMapper.ToEntity(player); // <-- conversión a entidad
+
                 using var connection = _connectionFactory.CreateConnection();
-                await connection.ExecuteAsync(PlayerQueries.Upsert, player);
+                await connection.ExecuteAsync(PlayerQueries.Upsert, entity);
             }
             catch (Exception ex)
             {

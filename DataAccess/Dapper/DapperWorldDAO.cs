@@ -45,7 +45,8 @@ namespace VentusServer.DataAccess.Dapper
         public async Task SaveWorldAsync(WorldModel world)
         {
             using var connection = _connectionFactory.CreateConnection();
-            await connection.ExecuteAsync(WorldQueries.Upsert, world);
+            var entity = WorldMapper.ToEntity(world);
+            await connection.ExecuteAsync(WorldQueries.Upsert, entity);
         }
 
         public async Task DeleteWorldAsync(int worldId)
@@ -53,6 +54,7 @@ namespace VentusServer.DataAccess.Dapper
             using var connection = _connectionFactory.CreateConnection();
             await connection.ExecuteAsync(WorldQueries.Delete, new { WorldId = worldId });
         }
+
         public class WorldInitializer(IDbConnectionFactory connectionFactory)
         {
             private readonly IDbConnectionFactory _connectionFactory = connectionFactory;
