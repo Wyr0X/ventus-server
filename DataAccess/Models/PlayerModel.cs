@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-public class PlayerModel
+public class PlayerModel  : BaseModel
 {
     public int Id { get; set; }
     public Guid AccountId { get; set; }  // Relación con la cuenta

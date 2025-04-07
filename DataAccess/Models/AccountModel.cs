@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-public class AccountModel
+public class AccountModel  : BaseModel
 {
     // Identificación
     public Guid AccountId { get; set; }

@@ -3,7 +3,7 @@ using VentusServer.DataAccess.Entities;
 
 namespace VentusServer.DataAccess.Mappers
 {
-    public static class PlayerLocationMapper
+    public class PlayerLocationMapper  : BaseMapper
     {
         // Desde fila dinámica (por ejemplo, de Dapper) a modelo completo
         public static PlayerLocation Map(dynamic dbRow, PlayerModel player, WorldModel world, MapModel map)
@@ -32,7 +32,7 @@ namespace VentusServer.DataAccess.Mappers
         }
 
         // De modelo de juego a entidad de base de datos
-        public static DbLocationEntity ToEntity(PlayerLocation model, string direction = "down")
+        public static DbLocationEntity ToEntity(PlayerLocation model)
         {
             return new DbLocationEntity
             {
@@ -41,12 +41,11 @@ namespace VentusServer.DataAccess.Mappers
                 MapId = model.Map.Id,
                 PosX = model.PosX,
                 PosY = model.PosY,
-                Direction = direction // Puedes obtenerlo de otro lado si lo manejas en memoria
             };
         }
 
         // Si seguís usando parámetros anónimos para Dapper
-        public static object ToDbParameters(PlayerLocation location, string direction = "down")
+        public static object ToDbParameters(PlayerLocation location)
         {
             return new
             {
@@ -55,7 +54,6 @@ namespace VentusServer.DataAccess.Mappers
                 MapId = location.Map.Id,
                 PosX = location.PosX,
                 PosY = location.PosY,
-                Direction = direction
             };
         }
     }

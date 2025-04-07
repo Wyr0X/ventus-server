@@ -63,14 +63,13 @@ namespace VentusServer.DataAccess.Postgres
             await connection.OpenAsync();
 
             const string query = @"
-                INSERT INTO player_locations (player_id, world_id, map_id, pos_x, pos_y, direction)
-                VALUES (@PlayerId, @WorldId, @MapId, @PosX, @PosY, @Direction)
+                INSERT INTO player_locations (player_id, world_id, map_id, pos_x, pos_y,)
+                VALUES (@PlayerId, @WorldId, @MapId, @PosX, @PosY)
                 ON CONFLICT (player_id) DO UPDATE SET
                     world_id = EXCLUDED.world_id,
                     map_id = EXCLUDED.map_id,
                     pos_x = EXCLUDED.pos_x,
-                    pos_y = EXCLUDED.pos_y,
-                    direction = EXCLUDED.direction;";
+                    pos_y = EXCLUDED.pos_y;";
 
             await using var command = new NpgsqlCommand(query, connection);
             command.Parameters.AddWithValue("@PlayerId", location.Player.Id);
@@ -98,8 +97,8 @@ namespace VentusServer.DataAccess.Postgres
             await connection.OpenAsync();
 
             const string query = @"
-        INSERT INTO player_locations (player_id, world_id, map_id, pos_x, pos_y, direction)
-        VALUES (@PlayerId, @WorldId, @MapId, @PosX, @PosY, @Direction);
+        INSERT INTO player_locations (player_id, world_id, map_id, pos_x, pos_y)
+        VALUES (@PlayerId, @WorldId, @MapId, @PosX, @PosY );
     ";
 
             await using var command = new NpgsqlCommand(query, connection);
@@ -108,7 +107,6 @@ namespace VentusServer.DataAccess.Postgres
             command.Parameters.AddWithValue("@MapId", location.Map.Id);
             command.Parameters.AddWithValue("@PosX", location.PosX);
             command.Parameters.AddWithValue("@PosY", location.PosY);
-            command.Parameters.AddWithValue("@Direction", "NORTH"); // Puedes establecer la dirección como un valor predeterminado si no está en el modelo
 
             await command.ExecuteNonQueryAsync();
         }

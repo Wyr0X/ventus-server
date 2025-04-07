@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Game.Models
 {
-    public class PlayerBasicModel
+    public class PlayerBasicModel  : BaseModel
     {
         public int Id { get; set; }
         public int AccountId { get; set; } // Relación con la cuenta (se asume que la cuenta existe)

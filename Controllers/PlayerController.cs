@@ -34,7 +34,7 @@ namespace VentusServer.Controllers
             try
             {
                 Console.ForegroundColor = ConsoleColor.Blue;
-                Console.WriteLine($"[INFO] Intentando crear un personaje con nombre: {createPlayerRequest.Name}");
+                Console.WriteLine($"[PlayerController] Intentando crear un personaje con nombre: {createPlayerRequest.Name}");
                 Console.ResetColor();
 
                 var accountIdParam = HttpContext.Items["AccountId"]?.ToString();
@@ -47,7 +47,7 @@ namespace VentusServer.Controllers
                 }
 
                 Console.ForegroundColor = ConsoleColor.Blue;
-                Console.WriteLine($"[INFO] Buscando cuenta con ID: {accountId}");
+                Console.WriteLine($"[PlayerController] Buscando cuenta con ID: {accountId}");
                 Console.ResetColor();
 
                 var account = await _accountDAO.GetAccountByAccountIdAsync(accountId);
@@ -60,7 +60,7 @@ namespace VentusServer.Controllers
                 }
 
                 Console.ForegroundColor = ConsoleColor.Blue;
-                Console.WriteLine($"[INFO] Creando personaje para la cuenta {accountId} {account.AccountId}: {createPlayerRequest.Name}");
+                Console.WriteLine($"[PlayerController] Creando personaje para la cuenta {accountId} {account.AccountId}: {createPlayerRequest.Name}");
                 Console.ResetColor();
 
                 var newPlayer = await _playerService.CreatePlayer(accountId, createPlayerRequest.Name, createPlayerRequest.Gender, createPlayerRequest.Race, createPlayerRequest.Class);
@@ -95,12 +95,12 @@ namespace VentusServer.Controllers
             try
             {
                 Console.ForegroundColor = ConsoleColor.Blue;
-                Console.WriteLine("[INFO] Solicitando lista de personajes.");
+                Console.WriteLine("[PlayerController] Solicitando lista de personajes.");
                 Console.ResetColor();
 
                 var accountIdParam = HttpContext.Items["AccountId"]?.ToString();
                 Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine($"[INFO] AccountId {accountIdParam}");
+                Console.WriteLine($"[PlayerController] AccountId {accountIdParam}");
                 if (string.IsNullOrEmpty(accountIdParam) || !Guid.TryParse(accountIdParam, out Guid accountId))
                 {
                     Console.WriteLine("[WARNING] Error al obtener la cuenta. Token inválido o mal formateado.");
@@ -109,7 +109,7 @@ namespace VentusServer.Controllers
                 }
 
                 Console.ForegroundColor = ConsoleColor.Blue;
-                Console.WriteLine($"[INFO] Buscando cuenta con ID: {accountId}");
+                Console.WriteLine($"[PlayerController] Buscando cuenta con ID: {accountId}");
                 Console.ResetColor();
 
                 var account = await _accountDAO.GetAccountByAccountIdAsync(accountId);
@@ -122,15 +122,24 @@ namespace VentusServer.Controllers
                 }
 
                 Console.ForegroundColor = ConsoleColor.Blue;
-                Console.WriteLine($"[INFO] Obteniendo personajes para la cuenta {accountId}");
+                Console.WriteLine($"[PlayerController] Obteniendo personajes para la cuenta {accountId}");
                 Console.ResetColor();
 
                 var players = await _playerService.GetPlayersByAccountId(account.AccountId);
                 var playerDTOs = new List<PlayerDTO>();
+                Console.WriteLine($"[PlayerController] Players obtenido {players.Count}");
 
                 foreach (var player in players)
                 {
                     var playerLocation = await _playerLocationService.GetPlayerLocationAsync(player.Id);
+
+                    if (playerLocation== null)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine($"[PlayerController] La ubicación del jugador {player.Name} tiene datos nulos en Map o World.");
+                        Console.ResetColor();
+                        continue;
+                    }
                     if (playerLocation == null) continue;
 
                     playerDTOs.Add(new PlayerDTO
@@ -188,7 +197,7 @@ namespace VentusServer.Controllers
             try
             {
                 Console.ForegroundColor = ConsoleColor.Blue;
-                Console.WriteLine($"[INFO] Intentando eliminar el personaje con ID: {playerId}");
+                Console.WriteLine($"[PlayerController] Intentando eliminar el personaje con ID: {playerId}");
                 Console.ResetColor();
 
                 var accountIdParam = HttpContext.Items["AccountId"]?.ToString();
@@ -201,7 +210,7 @@ namespace VentusServer.Controllers
                 }
 
                 Console.ForegroundColor = ConsoleColor.Blue;
-                Console.WriteLine($"[INFO] Verificando cuenta con ID: {accountId}");
+                Console.WriteLine($"[PlayerController] Verificando cuenta con ID: {accountId}");
                 Console.ResetColor();
 
                 var account = await _accountDAO.GetAccountByAccountIdAsync(accountId);
@@ -214,7 +223,7 @@ namespace VentusServer.Controllers
                 }
 
                 Console.ForegroundColor = ConsoleColor.Blue;
-                Console.WriteLine($"[INFO] Buscando personaje con ID: {playerId} en la cuenta {accountId}");
+                Console.WriteLine($"[PlayerController] Buscando personaje con ID: {playerId} en la cuenta {accountId}");
                 Console.ResetColor();
 
                 var player = await _playerService.GetPlayerByIdAsync(playerId);
@@ -227,7 +236,7 @@ namespace VentusServer.Controllers
                 }
 
                 Console.ForegroundColor = ConsoleColor.Blue;
-                Console.WriteLine($"[INFO] Eliminando personaje con ID: {playerId}");
+                Console.WriteLine($"[PlayerController] Eliminando personaje con ID: {playerId}");
                 Console.ResetColor();
 
                 bool deleted = await _playerService.DeletePlayerAsync(playerId);

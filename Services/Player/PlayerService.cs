@@ -9,13 +9,16 @@ namespace VentusServer.Services
     public class PlayerService : BaseCachedService<PlayerModel, int>
     {
         private readonly IPlayerDAO _playerDAO;
+        private readonly PlayerStatsService _playerStatsService;
         private readonly PlayerLocationService _playerLocationService;
         private readonly Dictionary<string, int> _nameToIdCache = new();
 
-        public PlayerService(IPlayerDAO playerDAO, PlayerLocationService playerLocationService)
+        public PlayerService(IPlayerDAO playerDAO, PlayerLocationService playerLocationService,
+            PlayerStatsService playerStatsService)
         {
             _playerDAO = playerDAO;
             _playerLocationService = playerLocationService;
+            _playerStatsService = playerStatsService;
         }
 
         // =============================
@@ -102,6 +105,8 @@ namespace VentusServer.Services
 
                 var player = await _playerDAO.CreatePlayerAsync(accountId, name, gender, race, playerClass);
                 await _playerLocationService.CreateDefaultPlayerLocation(player);
+           //     await _playerLocationService.CreateDefaultPlayerLocation(player);
+
                 return player;
             }
             catch (Exception ex)

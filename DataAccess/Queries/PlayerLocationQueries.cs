@@ -8,8 +8,7 @@ namespace VentusServer.DataAccess.Queries
                         world_id INT NOT NULL REFERENCES worlds(id),
                         map_id INT NOT NULL REFERENCES maps(id),
                         pos_x INT NOT NULL,
-                        pos_y INT NOT NULL,
-                        direction VARCHAR(10) NOT NULL
+                        pos_y INT NOT NULL
                     );
                 ";
         public const string SelectByPlayerId = @"

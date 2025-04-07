@@ -22,6 +22,7 @@ namespace VentusServer.DataAccess.Postgres
                 await InitializeWorldsAsync();
                 await InitializeMapsAsync();
                 await InitializePlayerLocationsAsync();
+                await InitializePlayerStatsAsync();
 
             }
             catch (Exception ex)
@@ -98,8 +99,7 @@ namespace VentusServer.DataAccess.Postgres
                         world_id INT NOT NULL REFERENCES worlds(id),
                         map_id INT NOT NULL REFERENCES maps(id),
                         pos_x INT NOT NULL,
-                        pos_y INT NOT NULL,
-                        direction VARCHAR(10) NOT NULL
+                        pos_y INT NOT NULL
                     );
                 ";
 
@@ -158,7 +158,42 @@ namespace VentusServer.DataAccess.Postgres
                 Console.WriteLine($"❌ Error al crear la tabla 'maps': {ex.Message}");
             }
         }
+        private async Task InitializePlayerStatsAsync()
+        {
+            try
+            {
+                string createTableQuery = @"
+            CREATE TABLE IF NOT EXISTS player_stats (
+                player_id INT PRIMARY KEY REFERENCES players(id) ON DELETE CASCADE,
+                level INT DEFAULT 1,
+                xp INT DEFAULT 0,
+                gold INT DEFAULT 0,
+                bank_gold INT DEFAULT 0,
+                free_skillpoints INT DEFAULT 0,
+                hp INT DEFAULT 100,
+                mp INT DEFAULT 100,
+                sp INT DEFAULT 100,
+                max_hp INT DEFAULT 100,
+                max_mp INT DEFAULT 100,
+                max_sp INT DEFAULT 100,
+                hunger INT DEFAULT 0,
+                thirst INT DEFAULT 0,
+                killed_npcs INT DEFAULT 0,
+                killed_users INT DEFAULT 0,
+                deaths INT DEFAULT 0
+            );
+        ";
+
+                await _postgresDbService.ExecuteQueryAsync(createTableQuery);
+                Console.WriteLine("✅ Tabla 'player_stats' creada correctamente (si no existía).");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Error al crear la tabla 'player_stats': {ex.Message}");
+            }
+        }
     }
+
 }
 
 // DROP TABLE IF EXISTS player_locations CASCADE;

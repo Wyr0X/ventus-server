@@ -5,7 +5,7 @@ using VentusServer.DataAccess.Entities;
 
 namespace VentusServer.DataAccess.Mappers
 {
-    public static class MapMapper
+    public class MapMapper  : BaseMapper
     {
         public static MapModel Map(dynamic row)
         {

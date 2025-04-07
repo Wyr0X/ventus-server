@@ -67,13 +67,53 @@ namespace VentusServer.DataAccess.Dapper
 
         public async Task<List<PlayerModel>> GetPlayersByAccountIdAsync(Guid accountId)
         {
-            if (accountId == Guid.Empty) return new();
+            if (accountId == Guid.Empty)
+            {
+                Log("PlayerDAO", "Se ha recibido un GUID vacío, retornando lista vacía.", ConsoleColor.Yellow);
+                return new List<PlayerModel>();
+            }
 
             try
             {
+                Log("PlayerDAO", $"Consultando jugadores para el AccountId: {accountId}", ConsoleColor.Cyan);
+
                 using var connection = _connectionFactory.CreateConnection();
+
+                // Log de la consulta antes de ejecutarla
+                Log("PlayerDAO", $"Ejecutando consulta con AccountId = {accountId}", ConsoleColor.Cyan);
+
                 var result = await connection.QueryAsync(PlayerQueries.SelectByAccountId, new { AccountId = accountId });
-                return PlayerMapper.FromRows(result);
+
+                // Log del resultado crudo (antes de mapear)
+                if (result != null && result.Any())
+                {
+                    Log("PlayerDAO", $"Se encontraron {result.Count()} jugadores para el AccountId {accountId}.", ConsoleColor.Green);
+                }
+                else
+                {
+                    Log("PlayerDAO", $"No se encontraron jugadores para el AccountId {accountId}.", ConsoleColor.Yellow);
+                }
+
+                // Log del contenido de los resultados para ver los datos crudos
+                foreach (var row in result)
+                {
+                    Log("PlayerDAO", $"Resultado obtenido: {row}", ConsoleColor.Magenta);
+                }
+
+                // Mapeo de los resultados
+                var players = PlayerMapper.FromRows(result);
+
+                // Log del mapeo
+                if (players != null && players.Any())
+                {
+                    Log("PlayerDAO", $"Se mapeó correctamente a {players.Count} jugadores.", ConsoleColor.Green);
+                }
+                else
+                {
+                    Log("PlayerDAO", "El mapeo no produjo jugadores.", ConsoleColor.Red);
+                }
+
+                return players ?? new List<PlayerModel>();
             }
             catch (Exception ex)
             {

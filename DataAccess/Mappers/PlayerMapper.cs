@@ -5,7 +5,7 @@ using VentusServer.DataAccess.Entities;
 
 namespace VentusServer.DataAccess.Mappers
 {
-    public static class PlayerMapper
+    public class PlayerMapper  : BaseMapper
     {
         // 🧭 Mapeo desde un resultado dinámico de Dapper a un modelo de jugador
         public static PlayerModel FromRow(dynamic row)

@@ -5,7 +5,7 @@ using VentusServer.DataAccess.Entities;
 
 namespace VentusServer.DataAccess.Mappers
 {
-    public static class WorldMapper
+    public class WorldMapper : BaseMapper
     {
         public static WorldModel Map(dynamic row)
         {
@@ -56,5 +56,19 @@ namespace VentusServer.DataAccess.Mappers
                 spawnedPlayers = new List<PlayerLocation>()
             };
         }
+        public static void PrintRow(dynamic row)
+        {
+            // Convertir el dynamic a un diccionario para acceder a las claves y valores
+            var dictionary = (IDictionary<string, object>)row;
+
+            // Imprimir todos los pares clave-valor
+            Console.WriteLine("Row Data:");
+            foreach (var kvp in dictionary)
+            {
+                Console.WriteLine($"{kvp.Key}: {kvp.Value}");
+            }
+        }
+
+
     }
 }

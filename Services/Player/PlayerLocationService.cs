@@ -26,17 +26,24 @@ namespace VentusServer.Services
         {
             try
             {
-                return await _playerLocationDAO.GetPlayerLocationAsync(playerId);
+                LoggerUtil.Log("PlayerLocationService", $"Cargando ubicación del jugador con ID: {playerId}...", ConsoleColor.Cyan);
+                var location = await _playerLocationDAO.GetPlayerLocationAsync(playerId);
+                if (location == null)
+                {
+                    LoggerUtil.Log("PlayerLocationService", $"No se encontró ubicación para el jugador con ID: {playerId}.", ConsoleColor.Yellow);
+                }
+                return location;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Error al cargar ubicación del jugador: {ex.Message}");
+                LoggerUtil.Log("PlayerLocationService", $"❌ Error al cargar ubicación del jugador: {ex.Message}", ConsoleColor.Red);
                 return null;
             }
         }
 
         public async Task<PlayerLocation?> GetPlayerLocationAsync(int playerId)
         {
+            LoggerUtil.Log("PlayerLocationService", $"Obteniendo ubicación del jugador con ID: {playerId}...", ConsoleColor.Cyan);
             return await GetOrLoadAsync(playerId);
         }
 
@@ -44,13 +51,14 @@ namespace VentusServer.Services
         {
             try
             {
+                LoggerUtil.Log("PlayerLocationService", $"Guardando ubicación del jugador con ID: {location.Player.Id}...", ConsoleColor.Cyan);
                 await _playerLocationDAO.SavePlayerLocationAsync(location);
                 Set(location.Player.Id, location); // Refrescar cache
-                Console.WriteLine("✅ Ubicación del jugador guardada correctamente.");
+                LoggerUtil.Log("PlayerLocationService", $"✅ Ubicación del jugador con ID: {location.Player.Id} guardada correctamente.", ConsoleColor.Green);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Error al guardar la ubicación del jugador: {ex.Message}");
+                LoggerUtil.Log("PlayerLocationService", $"❌ Error al guardar la ubicación del jugador: {ex.Message}", ConsoleColor.Red);
             }
         }
 
@@ -58,13 +66,14 @@ namespace VentusServer.Services
         {
             try
             {
+                LoggerUtil.Log("PlayerLocationService", $"Creando ubicación para el jugador con ID: {playerLocation.Player.Id}...", ConsoleColor.Cyan);
                 await _playerLocationDAO.CreatePlayerLocationAsync(playerLocation);
                 Set(playerLocation.Player.Id, playerLocation); // Agregar a la cache
-                Console.WriteLine("✅ Ubicación del jugador creada correctamente.");
+                LoggerUtil.Log("PlayerLocationService", $"✅ Ubicación del jugador con ID: {playerLocation.Player.Id} creada correctamente.", ConsoleColor.Green);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Error al crear la ubicación del jugador: {ex.Message}");
+                LoggerUtil.Log("PlayerLocationService", $"❌ Error al crear la ubicación del jugador: {ex.Message}", ConsoleColor.Red);
             }
         }
 
@@ -73,8 +82,11 @@ namespace VentusServer.Services
             int defaultWorldId = 1;
             int defaultMapId = 1;
 
+            LoggerUtil.Log("PlayerLocationService", $"Creando ubicación predeterminada para el jugador con ID: {player.Id}...", ConsoleColor.Cyan);
+
             MapModel? map = await _mapService.GetMapByIdAsync(defaultMapId);
             WorldModel? world = await _worldService.GetWorldByIdAsync(defaultWorldId);
+            LoggerUtil.Log("PlayerLocationService", $"Mapa encontrado: {map.Id} World Encontrado ${world.Id}", ConsoleColor.Cyan);
 
             if (world != null && map != null)
             {
@@ -86,15 +98,20 @@ namespace VentusServer.Services
                     PosY = 0,
                     Player = player
                 };
-                await CreatePlayerLocation(playerLocation);
 
+                LoggerUtil.Log("PlayerLocationService", $"Ubicación predeterminada para el jugador con ID: {player.Id} creada correctamente.", ConsoleColor.Green);
+                await CreatePlayerLocation(playerLocation);
                 return playerLocation;
             }
+
+            LoggerUtil.Log("PlayerLocationService", $"❌ No se pudo crear la ubicación predeterminada para el jugador con ID: {player.Id}.", ConsoleColor.Red);
             return null;
         }
 
         public async Task DeletePlayerLocationAsync(int playerId)
         {
+            LoggerUtil.Log("PlayerLocationService", $"Eliminando ubicación para el jugador con ID: {playerId}...", ConsoleColor.Cyan);
+            
             PlayerLocation? playerLocation = await GetPlayerLocationAsync(playerId);
             if (playerLocation != null)
             {
@@ -104,16 +121,22 @@ namespace VentusServer.Services
                 if (world != null)
                 {
                     await _worldService.RemovePlayerFromWorld(playerId, world.Id);
+                    LoggerUtil.Log("PlayerLocationService", $"Jugador con ID: {playerId} eliminado del mundo con ID: {world.Id}.", ConsoleColor.Green);
                 }
 
                 if (map != null)
                 {
                     await _mapService.RemovePlayerFromMap(playerId, map.Id);
+                    LoggerUtil.Log("PlayerLocationService", $"Jugador con ID: {playerId} eliminado del mapa con ID: {map.Id}.", ConsoleColor.Green);
                 }
 
                 await _playerLocationDAO.DeletePlayerLocationAsync(playerId);
                 Invalidate(playerId); // Eliminar de la cache
-                Console.WriteLine("🗑️ Ubicación del jugador eliminada correctamente.");
+                LoggerUtil.Log("PlayerLocationService", $"🗑️ Ubicación del jugador con ID: {playerId} eliminada correctamente.", ConsoleColor.Green);
+            }
+            else
+            {
+                LoggerUtil.Log("PlayerLocationService", $"❌ No se encontró ubicación para el jugador con ID: {playerId}.", ConsoleColor.Red);
             }
         }
     }

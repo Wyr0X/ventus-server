@@ -12,10 +12,9 @@ namespace VentusServer.DataAccess.Queries
                 level_requirements INT NOT NULL
             );";
 
-        public const string Insert = @"
-            INSERT INTO worlds (name, description, max_maps, max_players, level_requirements)
+        public const string Insert = @"INSERT INTO worlds (name, description, max_maps, max_players, level_requirements)
             VALUES (@Name, @Description, @MaxMaps, @MaxPlayers, @LevelRequirements)
-            RETURNING id;";
+            RETURNING id, name, description, max_maps, max_players, level_requirements";
 
         public const string SelectById = @"
             SELECT * FROM worlds

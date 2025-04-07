@@ -54,28 +54,31 @@ namespace VentusServer
 
             // Ahora usamos la fábrica en vez del connectionString
             services
-                .AddScoped<IPlayerDAO>(sp =>
+                .AddSingleton<IPlayerDAO>(sp =>
                     new DapperPlayerDAO(sp.GetRequiredService<IDbConnectionFactory>())
                 )
 
-                .AddScoped<IAccountDAO>(sp =>
+                .AddSingleton<IAccountDAO>(sp =>
                     new DapperAccountDAO(sp.GetRequiredService<IDbConnectionFactory>())
                 )
 
-                .AddScoped<IWorldDAO>(sp =>
+                .AddSingleton<IWorldDAO>(sp =>
                     new DapperWorldDAO(sp.GetRequiredService<IDbConnectionFactory>())
                 )
-                .AddScoped<IMapDAO>(sp =>
+                .AddSingleton<IMapDAO>(sp =>
                     new DapperMapDAO(sp.GetRequiredService<IDbConnectionFactory>(), sp.GetRequiredService<IWorldDAO>())
                 )
 
-                .AddScoped<IPlayerLocationDAO>(sp =>
+                .AddSingleton<IPlayerLocationDAO>(sp =>
                     new DapperPlayerLocationDAO(
                         sp.GetRequiredService<IDbConnectionFactory>(),
                         sp.GetRequiredService<IPlayerDAO>(),
                         sp.GetRequiredService<IWorldDAO>(),
                         sp.GetRequiredService<IMapDAO>()
                     )
+                )
+                .AddSingleton<IPlayerStatsDAO>(sp =>
+                    new DapperPlayerStatsDAO(sp.GetRequiredService<IDbConnectionFactory>())
                 );
         }
 
@@ -107,7 +110,8 @@ namespace VentusServer
                 .AddSingleton<GlobalChatService>()
                 .AddSingleton<ModerationService>()
                 .AddSingleton<AccountService>()
-                .AddSingleton<ResponseService>();
+                .AddSingleton<ResponseService>()
+                .AddSingleton<PlayerStatsService>();
 
         }
 

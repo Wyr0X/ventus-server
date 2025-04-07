@@ -68,7 +68,7 @@ namespace VentusServer.DataAccess.Dapper
             return maps;
         }
 
-        public async Task<MapModel> CreateMapAsync(MapModel map)
+        public async Task<MapModel?> CreateMapAsync(MapModel map)
         {
             Log("MapDAO", $"Creando mapa: {map.Name}", ConsoleColor.Cyan);
 

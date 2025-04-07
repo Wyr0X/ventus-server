@@ -1,6 +1,6 @@
 namespace Game.Models
 {
-    public class MapModel
+    public class MapModel  : BaseModel
     {
         public int Id { get; set; }
         public required string Name { get; set; }
@@ -38,6 +38,7 @@ namespace Game.Models
             }
             return false; // El jugador no puede entrar
         }
+
         public void RemovePlayer(int playerId)
         {
             var playerLocation = PlayersLocation.FirstOrDefault(p => p.Player.Id == playerId);
@@ -50,6 +51,18 @@ namespace Game.Models
                 throw new InvalidOperationException("El jugador con el ID proporcionado no existe en este mundo.");
             }
         }
-    
+
+        // Método para imprimir los detalles del mapa
+        public void PrintMapDetails()
+        {
+            LoggerUtil.Log("MapModel - Info", "### Map Details ###", ConsoleColor.Cyan);
+            LoggerUtil.Log("MapModel - Info", $"ID: {Id}", ConsoleColor.Cyan);
+            LoggerUtil.Log("MapModel - Info", $"Name: {Name}", ConsoleColor.Cyan);
+            LoggerUtil.Log("MapModel - Info", $"Min Level: {MinLevel}", ConsoleColor.Cyan);
+            LoggerUtil.Log("MapModel - Info", $"Max Players: {MaxPlayers}", ConsoleColor.Cyan);
+            LoggerUtil.Log("MapModel - Info", $"World ID: {WorldId}", ConsoleColor.Cyan);
+            LoggerUtil.Log("MapModel - Info", $"Players Count: {PlayersLocation.Count}", ConsoleColor.Cyan);
+            LoggerUtil.Log("MapModel - Info", "### End of Map Details ###", ConsoleColor.Cyan);
+        }
     }
 }

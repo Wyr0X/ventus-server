@@ -14,7 +14,6 @@ namespace VentusServer.DataAccess.Queries
                 last_ip VARCHAR(45),
                 last_login TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
                 session_id UUID,
-                token_issued_at TIMESTAMP WITHOUT TIME ZONE,
                 created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
                 UNIQUE (email, account_name)
             );";
@@ -25,7 +24,7 @@ namespace VentusServer.DataAccess.Queries
 
         public const string Insert = @"
             INSERT INTO accounts 
-                (account_id, email, account_name, password, is_deleted, is_banned, credits, last_ip, last_login, created_at, session_id, token_issued_at)
+                (account_id, email, account_name, password, is_deleted, is_banned, credits, last_ip, last_login, created_at, session_id)
             VALUES 
                 (@AccountId, @Email, @AccountName, @PasswordHash, @IsDeleted, @IsBanned, @Credits, @LastIpAddress, @LastLogin, @CreatedAt, @SessionId);";
 
