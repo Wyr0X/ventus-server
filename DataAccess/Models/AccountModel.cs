@@ -1,63 +1,60 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 
 public class AccountModel
 {
+    // Identificación
     public Guid AccountId { get; set; }
 
-    public required string AccountName { get; set; }
+    [Required, EmailAddress]
+    public string Email { get; set; } = default!;
 
-    public required string Email { get; set; }
+    [Required]
+    public string AccountName { get; set; } = default!;
 
-    public required string PasswordHash { get; set; }
+    [Required]
+    public string PasswordHash { get; set; } = default!;
 
+    // Estado
     public bool IsDeleted { get; set; }
-
     public bool IsBanned { get; set; }
 
+    public bool IsActive() => !IsDeleted && !IsBanned;
+
+    // Datos adicionales
     public int Credits { get; set; }
-
-    public required string LastIpAddress { get; set; }
-
+    public string LastIpAddress { get; set; } = default!;
     public int? ActivePlayerId { get; set; }
 
+    // Sesión
     public Guid SessionId { get; set; }
 
-    public DateTime TokenIssuedAt { get; set; }
-
-    public DateTime LastLogin { get; set; }
-
+    // Tiempos
+    public DateTime? LastLogin { get; set; }
     public DateTime CreatedAt { get; set; }
 
-    public bool IsActive()
-    {
-        return !IsDeleted && !IsBanned;
-    }
+    public override string ToString()
+        => $"[Account: {AccountName} | Email: {Email} | ID: {AccountId}]";
 
     public void PrintInfo()
     {
         Console.ForegroundColor = ConsoleColor.Blue;
-
-        Console.WriteLine("\n############################");
-        Console.WriteLine($"AccountId:       {AccountId}");
-        Console.WriteLine($"AccountName:     {AccountName}");
-        Console.WriteLine($"Email:           {Email}");
-        Console.WriteLine($"PasswordHash:    {PasswordHash}");
-        Console.WriteLine($"IsDeleted:       {IsDeleted}");
-        Console.WriteLine($"IsBanned:        {IsBanned}");
-        Console.WriteLine($"Credits:         {Credits}");
-        Console.WriteLine($"LastIpAddress:   {LastIpAddress}");
-        Console.WriteLine($"ActivePlayerId:  {ActivePlayerId}");
-        Console.WriteLine($"SessionId:       {SessionId}");
-        Console.WriteLine($"TokenIssuedAt:   {TokenIssuedAt}");
-        Console.WriteLine($"LastLogin:       {LastLogin}");
-        Console.WriteLine($"CreatedAt:       {CreatedAt}");
-        Console.WriteLine("############################\n");
-
+        Console.WriteLine($"""
+            \n############################
+            AccountId:       {AccountId}
+            AccountName:     {AccountName}
+            Email:           {Email}
+            PasswordHash:    {PasswordHash}
+            IsDeleted:       {IsDeleted}
+            IsBanned:        {IsBanned}
+            Credits:         {Credits}
+            LastIpAddress:   {LastIpAddress}
+            ActivePlayerId:  {ActivePlayerId}
+            SessionId:       {SessionId}
+            LastLogin:       {LastLogin}
+            CreatedAt:       {CreatedAt}
+            ############################\n
+        """);
         Console.ResetColor();
-    }
-
-    public override string ToString()
-    {
-        return $"[Account: {AccountName} | Email: {Email} | ID: {AccountId}]";
     }
 }
