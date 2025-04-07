@@ -1,38 +1,42 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using Game.Models;
 using VentusServer.DataAccess.Interfaces;
+using VentusServer.DataAccess.Mappers;
+using VentusServer.DataAccess.Queries;
 using static LoggerUtil;
 
 namespace VentusServer.DataAccess.Dapper
 {
-    public class DapperMapDAO : IMapDAO
+    public class DapperMapDAO : BaseDAO, IMapDAO
     {
-        private readonly IDbConnectionFactory _connectionFactory;
         private readonly IWorldDAO _worldDAO;
 
-        public DapperMapDAO(IDbConnectionFactory connectionFactory, IWorldDAO worldDAO)
+        public DapperMapDAO(IDbConnectionFactory connectionFactory, IWorldDAO worldDAO) 
+            : base(connectionFactory)
         {
-            _connectionFactory = connectionFactory;
             _worldDAO = worldDAO;
+        }
+
+        public async Task InitializeMapsAsync()
+        {
+            Log("MapDAO", "Inicializando tabla 'maps'...", ConsoleColor.Cyan);
+
+            using var connection = _connectionFactory.CreateConnection();
+            await connection.ExecuteAsync(MapQueries.CreateTableQuery);
+
+            Log("MapDAO", "Tabla 'maps' inicializada correctamente", ConsoleColor.Green);
         }
 
         public async Task<MapModel?> GetMapByIdAsync(int id)
         {
             Log("MapDAO", $"Buscando mapa con ID: {id}", ConsoleColor.Cyan);
 
-            const string query = @"
-                SELECT id, name, min_level, max_players, world_id
-                FROM maps
-                WHERE id = @Id
-                LIMIT 1;
-            ";
-
             using var connection = _connectionFactory.CreateConnection();
-            var mapData = await connection.QuerySingleOrDefaultAsync(query, new { Id = id });
+            var mapData = await connection.QuerySingleOrDefaultAsync(MapQueries.SelectById, new { Id = id });
 
             if (mapData == null)
             {
@@ -40,17 +44,8 @@ namespace VentusServer.DataAccess.Dapper
                 return null;
             }
 
-            var world = await _worldDAO.GetWorldByIdAsync((int)mapData.world_id);
-
-            var map = new MapModel
-            {
-                Id = mapData.id,
-                Name = mapData.name,
-                MinLevel = mapData.min_level,
-                MaxPlayers = mapData.max_players,
-                WorldId = mapData.world_id,
-                WorldModel = world
-            };
+            var map = MapMapper.Map(mapData);
+            map.WorldModel = await _worldDAO.GetWorldByIdAsync(map.WorldId);
 
             Log("MapDAO", $"Mapa encontrado: {map.Name}", ConsoleColor.Green);
             return map;
@@ -60,29 +55,16 @@ namespace VentusServer.DataAccess.Dapper
         {
             Log("MapDAO", "Obteniendo todos los mapas", ConsoleColor.Cyan);
 
-            const string query = @"
-                SELECT id, name, min_level, max_players, world_id
-                FROM maps;
-            ";
-
             using var connection = _connectionFactory.CreateConnection();
-            var results = await connection.QueryAsync(query);
+            var results = await connection.QueryAsync(MapQueries.SelectAll);
 
             var maps = new List<MapModel>();
 
             foreach (var row in results)
             {
-                var world = await _worldDAO.GetWorldByIdAsync((int)row.world_id);
-
-                maps.Add(new MapModel
-                {
-                    Id = row.id,
-                    Name = row.name,
-                    MinLevel = row.min_level,
-                    MaxPlayers = row.max_players,
-                    WorldId = row.world_id,
-                    WorldModel = world
-                });
+                var map = MapMapper.Map(row);
+                map.WorldModel = await _worldDAO.GetWorldByIdAsync(map.WorldId);
+                maps.Add(map);
             }
 
             Log("MapDAO", $"Total mapas encontrados: {maps.Count}", ConsoleColor.Green);
@@ -93,14 +75,8 @@ namespace VentusServer.DataAccess.Dapper
         {
             Log("MapDAO", $"Creando mapa: {map.Name}", ConsoleColor.Cyan);
 
-            const string query = @"
-                INSERT INTO maps (name, min_level, max_players, world_id)
-                VALUES (@Name, @MinLevel, @MaxPlayers, @WorldId)
-                RETURNING id;
-            ";
-
             using var connection = _connectionFactory.CreateConnection();
-            var id = await connection.ExecuteScalarAsync<int>(query, new
+            var id = await connection.ExecuteScalarAsync<int>(MapQueries.Insert, new
             {
                 map.Name,
                 map.MinLevel,
@@ -118,17 +94,8 @@ namespace VentusServer.DataAccess.Dapper
         {
             Log("MapDAO", $"Actualizando mapa: {map.Name} (ID: {map.Id})", ConsoleColor.Cyan);
 
-            const string query = @"
-                UPDATE maps
-                SET name = @Name,
-                    min_level = @MinLevel,
-                    max_players = @MaxPlayers,
-                    world_id = @WorldId
-                WHERE id = @Id;
-            ";
-
             using var connection = _connectionFactory.CreateConnection();
-            await connection.ExecuteAsync(query, new
+            await connection.ExecuteAsync(MapQueries.Update, new
             {
                 map.Id,
                 map.Name,
@@ -144,10 +111,8 @@ namespace VentusServer.DataAccess.Dapper
         {
             Log("MapDAO", $"Eliminando mapa con ID: {id}", ConsoleColor.Cyan);
 
-            const string query = "DELETE FROM maps WHERE id = @Id;";
-
             using var connection = _connectionFactory.CreateConnection();
-            var rowsAffected = await connection.ExecuteAsync(query, new { Id = id });
+            var rowsAffected = await connection.ExecuteAsync(MapQueries.Delete, new { Id = id });
 
             Log("MapDAO", rowsAffected > 0 ? "Mapa eliminado correctamente" : "No se encontró el mapa",
                 rowsAffected > 0 ? ConsoleColor.Green : ConsoleColor.Yellow);

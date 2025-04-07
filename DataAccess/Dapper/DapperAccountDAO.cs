@@ -50,7 +50,9 @@ namespace VentusServer.DataAccess.Postgres
         {
             if (account == null) throw new ArgumentNullException(nameof(account));
             using var conn = GetConnection();
-            await conn.ExecuteAsync(AccountQueries.Insert, account);
+
+            var dbEntity = AccountMapper.ToEntity(account);
+            await conn.ExecuteAsync(AccountQueries.Insert, dbEntity);
         }
 
         public async Task<bool> UpdateAccountPasswordAsync(Guid accountId, string newPassword)
@@ -76,13 +78,13 @@ namespace VentusServer.DataAccess.Postgres
             using var conn = GetConnection();
             return await conn.ExecuteAsync(AccountQueries.UpdateSessionId, new { SessionId = sessionId, AccountId = accountId }) > 0;
         }
-
         public async Task<bool> UpdateAccountAsync(AccountModel account)
         {
             if (account == null || account.AccountId == Guid.Empty) return false;
-
             using var conn = GetConnection();
-            return await conn.ExecuteAsync(AccountQueries.UpdateAccount, account) > 0;
+
+            var dbEntity = AccountMapper.ToEntity(account);
+            return await conn.ExecuteAsync(AccountQueries.UpdateAccount, dbEntity) > 0;
         }
 
         public async Task<bool> AccountExistsAsync(Guid accountId)

@@ -2,33 +2,32 @@ namespace VentusServer.DataAccess.Queries
 {
     public static class AccountQueries
     {
-
         public const string CreateTableQuery = @"
-                    CREATE TABLE IF NOT EXISTS accounts (
-                        account_id UUID PRIMARY KEY,
-                        email VARCHAR(255) NOT NULL,
-                        account_name VARCHAR(100) NOT NULL,
-                        password VARCHAR(255) NOT NULL,
-                        is_deleted BOOLEAN DEFAULT FALSE,
-                        is_banned BOOLEAN DEFAULT FALSE,
-                        credits INT DEFAULT 0,
-                        last_ip VARCHAR(45),
-                        last_login TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-                        session_id UUID,
-                        active_player_id INT,
-                        token_issued_at TIMESTAMP WITHOUT TIME ZONE,
-                        created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-                        UNIQUE (email, account_name)
-                    );";
+            CREATE TABLE IF NOT EXISTS accounts (
+                account_id UUID PRIMARY KEY,
+                email VARCHAR(255) NOT NULL,
+                account_name VARCHAR(100) NOT NULL,
+                password VARCHAR(255) NOT NULL,
+                is_deleted BOOLEAN DEFAULT FALSE,
+                is_banned BOOLEAN DEFAULT FALSE,
+                credits INT DEFAULT 0,
+                last_ip VARCHAR(45),
+                last_login TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                session_id UUID,
+                token_issued_at TIMESTAMP WITHOUT TIME ZONE,
+                created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE (email, account_name)
+            );";
+
         public const string SelectById = "SELECT * FROM accounts WHERE account_id = @AccountId LIMIT 1;";
         public const string SelectByEmail = "SELECT * FROM accounts WHERE email = @Email LIMIT 1;";
         public const string SelectByName = "SELECT * FROM accounts WHERE account_name = @AccountName LIMIT 1;";
 
         public const string Insert = @"
             INSERT INTO accounts 
-                (account_id, email, account_name, password, is_deleted, is_banned, credits, last_ip, last_login, created_at, session_id, active_player_id, token_issued_at)
+                (account_id, email, account_name, password, is_deleted, is_banned, credits, last_ip, last_login, created_at, session_id, token_issued_at)
             VALUES 
-                (@AccountId, @Email, @AccountName, @PasswordHash, @IsDeleted, @IsBanned, @Credits, @LastIpAddress, @LastLogin, @CreatedAt, @SessionId, @ActivePlayerId, @TokenIssuedAt);";
+                (@AccountId, @Email, @AccountName, @PasswordHash, @IsDeleted, @IsBanned, @Credits, @LastIpAddress, @LastLogin, @CreatedAt, @SessionId);";
 
         public const string UpdatePassword = "UPDATE accounts SET password = @Password WHERE account_id = @AccountId;";
         public const string UpdateAccountName = "UPDATE accounts SET account_name = @AccountName WHERE account_id = @AccountId;";
@@ -44,9 +43,7 @@ namespace VentusServer.DataAccess.Queries
                 credits = @Credits,
                 last_ip = @LastIpAddress,
                 last_login = @LastLogin,
-                session_id = @SessionId,
-                active_player_id = @ActivePlayerId,
-                token_issued_at = @TokenIssuedAt
+                session_id = @SessionId
             WHERE account_id = @AccountId;";
 
         public const string ExistsById = "SELECT 1 FROM accounts WHERE account_id = @AccountId LIMIT 1;";

@@ -13,7 +13,6 @@ namespace VentusServer.DataAccess.Dapper
 {
     public class DapperPlayerDAO(IDbConnectionFactory connectionFactory) : BaseDAO(connectionFactory), IPlayerDAO
     {
-        private readonly IDbConnectionFactory _connectionFactory;
 
         public async Task<PlayerModel?> GetPlayerByIdAsync(int playerId)
         {
