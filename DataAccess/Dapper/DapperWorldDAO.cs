@@ -39,7 +39,6 @@ namespace VentusServer.DataAccess.Dapper
 
                 // Log después de la consulta
                 LoggerUtil.Log(LoggerUtil.LogTag.DapperWorldDAO, "Consulta ejecutada con éxito, mapeando resultado...");
-                WorldMapper.PrintRow(row);
                 WorldModel worldModel = WorldMapper.Map(row);
 
                 if (worldModel == null)

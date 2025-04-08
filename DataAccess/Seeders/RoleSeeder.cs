@@ -1,15 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using VentusServer.DataAccess.Interfaces;
 using VentusServer.Domain.Enums;
-using VentusServer.Models;
 
 namespace VentusServer.DataAccess.Seeders
 {
     public static class RoleSeeder
     {
-        public static async Task SeedRolesAsync()
+        public static async Task SeedRolesAsync(IRoleDAO roleDAO)
         {
             var roles = new List<RoleModel>
             {
@@ -75,19 +71,33 @@ namespace VentusServer.DataAccess.Seeders
                         Permission.MonitorChats,
                         Permission.WarnPlayer
                     }
-                }
+                },
+                   new RoleModel
+                {
+                    RoleId = Guid.NewGuid(),
+                    Name = "user",
+                    DisplayName = "Usuario",
+                    IsEditable = false,
+                    Permissions = new List<Permission>
+                    {
+                      
+                    }
+                },
             };
 
             // TODO: Insertar roles si no existen en la base de datos
             // Ejemplo (requiere IRoleDAO o similar):
-            // foreach (var role in roles)
-            // {
-            //     var exists = await roleDAO.GetByNameAsync(role.Name);
-            //     if (exists is null)
-            //     {
-            //         await roleDAO.CreateAsync(role);
-            //     }
-            // }
+            foreach (var role in roles)
+            {
+
+                var exists = await roleDAO.GetRoleByNameAsync(role.Name);
+
+                if (exists is null)
+                {
+
+                    await roleDAO.CreateRoleAsync(role);
+                }
+            }
         }
     }
 }

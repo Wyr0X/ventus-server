@@ -15,7 +15,7 @@ namespace VentusServer.DataAccess.Queries
         last_login TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
         session_id UUID,
         created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  
+        role_id UUID REFERENCES roles(role_id),
         active_player_id INT,
         UNIQUE (email, account_name)
     );";
@@ -26,9 +26,9 @@ namespace VentusServer.DataAccess.Queries
 
         public const string Insert = @"
             INSERT INTO accounts 
-                (account_id, email, account_name, password, is_deleted, is_banned, credits, last_ip, last_login, created_at, session_id)
+                (account_id, email, account_name, password, is_deleted, is_banned, credits, last_ip, last_login, created_at, session_id, role_id)
             VALUES 
-                (@AccountId, @Email, @AccountName, @PasswordHash, @IsDeleted, @IsBanned, @Credits, @LastIpAddress, @LastLogin, @CreatedAt, @SessionId);";
+                (@AccountId, @Email, @AccountName, @PasswordHash, @IsDeleted, @IsBanned, @Credits, @LastIpAddress, @LastLogin, @CreatedAt, @SessionId, @RoleId);";
 
         public const string UpdatePassword = "UPDATE accounts SET password = @Password WHERE account_id = @AccountId;";
         public const string UpdateAccountName = "UPDATE accounts SET account_name = @AccountName WHERE account_id = @AccountId;";

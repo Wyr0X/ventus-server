@@ -39,11 +39,11 @@ namespace VentusServer.DataAccess.Dapper
 
             try
             {
-                LoggerUtil.Log(LogTag.DapperRoleDAO, $"Buscando rol por nombre: {name}");
+                LoggerUtil.Log(LogTag.DapperRoleDAO, $"Buscando rol por nombre 2: {name}");
                 using var connection = _connectionFactory.CreateConnection();
-                var result = await connection.QueryFirstOrDefaultAsync(RoleQueries.SelectRoleByName, new { Name = name });
-
-                return result == null ? null : RoleMapper.ToModel(result);
+                var row = await connection.QueryFirstOrDefaultAsync(RoleQueries.SelectRoleByName, new { Name = name });
+                var entity = RoleMapper.ToEntityFromRow(row);
+                return row == null ? null : RoleMapper.ToModel(entity);
             }
             catch (Exception ex)
             {
@@ -73,11 +73,17 @@ namespace VentusServer.DataAccess.Dapper
         {
             try
             {
-                LoggerUtil.Log(LogTag.DapperRoleDAO, $"Creando rol con ID: {role.RoleId}");
+
+                LoggerUtil.Log(LogTag.DapperRoleDAO, $"Creando rol con ID: {role.DisplayName}");
                 using var connection = _connectionFactory.CreateConnection();
+
                 var entity = RoleMapper.ToEntity(role);
+                RoleMapper.PrintDbRoleEntity(entity);
+
 
                 await connection.ExecuteAsync(RoleQueries.InsertRole, entity);
+                LoggerUtil.Log(LogTag.DapperRoleDAO, $"Rol creado:: {role.DisplayName}");
+
                 return true;
             }
             catch (Exception ex)

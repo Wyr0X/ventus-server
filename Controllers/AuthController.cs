@@ -5,6 +5,8 @@ using VentusServer.Models;
 using System;
 using VentusServer.DataAccess.Postgres;
 using VentusServer.Services;
+using VentusServer.DataAccess.Interfaces;
+using VentusServer.Domain.Enums;
 
 namespace VentusServer.Controllers
 {
@@ -16,17 +18,21 @@ namespace VentusServer.Controllers
         private readonly JwtService _jwtService;
         private readonly PasswordService _passwordService;
         private readonly WebSocketServerController _webSocketServerController;
+        private readonly RoleService _roleService;
 
         public AuthController(
             AccountService accountService,
             JwtService jwtService,
             PasswordService passwordService,
-            WebSocketServerController webSocketServerController)
+            WebSocketServerController webSocketServerController,
+            RoleService roleService)
         {
             _accountService = accountService;
             _jwtService = jwtService;
             _passwordService = passwordService;
             _webSocketServerController = webSocketServerController;
+            _roleService = roleService;
+
         }
 
         [HttpPost("login")]
@@ -94,6 +100,11 @@ namespace VentusServer.Controllers
             var accountId = Guid.NewGuid();
             var hashedPassword = _passwordService.HashPassword(request.Password);
 
+            RoleModel? userRole = await _roleService.GetRoleByNameAsync("user");
+            if (userRole == null){
+                LoggerUtil.Log(LoggerUtil.LogTag.AuthController, "Error: No se encontro el rol de usuario.");
+                return BadRequest("No se encontro el rol de usuario.");
+            }
             var newAccount = new AccountModel
             {
                 AccountId = accountId,
@@ -103,7 +114,8 @@ namespace VentusServer.Controllers
                 CreatedAt = DateTime.UtcNow,
                 IsBanned = false,
                 LastIpAddress = "test",
-                Credits = 0
+                Credits = 0,
+                RoleId = userRole.RoleId
             };
 
             await _accountService.CreateAccountAsync(newAccount);

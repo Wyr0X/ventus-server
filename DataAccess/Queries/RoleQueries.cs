@@ -2,7 +2,7 @@ namespace VentusServer.DataAccess.Queries
 {
     public static class RoleQueries
     {
-        public const string CreateRolesTable = @"
+        public const string CreateTableQuery = @"
             CREATE TABLE IF NOT EXISTS roles (
                 role_id UUID PRIMARY KEY,
                 name VARCHAR(50) NOT NULL UNIQUE,

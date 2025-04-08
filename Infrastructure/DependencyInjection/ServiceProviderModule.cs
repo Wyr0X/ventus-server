@@ -77,6 +77,9 @@ namespace VentusServer
                         sp.GetRequiredService<IMapDAO>()
                     )
                 )
+                .AddSingleton<IRoleDAO>(sp =>
+                    new DapperRoleDAO(sp.GetRequiredService<IDbConnectionFactory>())
+                )
                 .AddSingleton<IPlayerStatsDAO>(sp =>
                     new DapperPlayerStatsDAO(sp.GetRequiredService<IDbConnectionFactory>())
                 );
@@ -111,6 +114,7 @@ namespace VentusServer
                 .AddSingleton<ModerationService>()
                 .AddSingleton<AccountService>()
                 .AddSingleton<ResponseService>()
+                .AddSingleton<RoleService>()
                 .AddSingleton<PlayerStatsService>();
 
         }
@@ -121,7 +125,9 @@ namespace VentusServer
                 .AddSingleton<PlayerModel>()
                 .AddSingleton<PlayerLocation>()
                 .AddSingleton<MapModel>()
-                .AddSingleton<WorldModel>();
+                .AddSingleton<WorldModel>()
+                .AddSingleton<RoleModel>();
+
         }
 
         private static void RegisterControllers(IServiceCollection services)

@@ -5,6 +5,7 @@ using System;
 using System.Threading.Tasks;
 using VentusServer.Auth;
 using VentusServer.DataAccess.Postgres;
+using VentusServer.DataAccess.Interfaces;
 
 namespace VentusServer.Controllers
 {
@@ -13,10 +14,12 @@ namespace VentusServer.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAccountDAO _accountDAO;
+        private readonly IRoleDAO _roleDAO;
 
-        public AccountController(IAccountDAO accountDAO)
+        public AccountController(IAccountDAO accountDAO, IRoleDAO roleDAO)
         {
             _accountDAO = accountDAO;
+            _roleDAO = roleDAO;
         }
 
         [HttpGet]

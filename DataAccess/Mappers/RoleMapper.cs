@@ -4,6 +4,7 @@ using System.Linq;
 using VentusServer.Models;
 using VentusServer.DataAccess.Entities;
 using VentusServer.Domain.Enums;
+using System.Dynamic;
 
 namespace VentusServer.DataAccess.Mappers
 {
@@ -37,7 +38,7 @@ namespace VentusServer.DataAccess.Mappers
         {
             return new RoleModel
             {
-                RoleId = entity.Id,
+                RoleId = entity.RoleId,
                 Name = entity.Name,
                 DisplayName = entity.DisplayName,
                 IsEditable = entity.IsEditable,
@@ -53,13 +54,13 @@ namespace VentusServer.DataAccess.Mappers
         {
             return new DbRoleEntity
             {
-                Id = model.RoleId,
+                RoleId = model.RoleId,
                 Name = model.Name,
                 DisplayName = model.DisplayName,
                 IsEditable = model.IsEditable,
                 Permissions = model.Permissions?
                     .Select(p => p.ToString())
-                    .ToList() ?? new()
+                    .ToArray() ?? Array.Empty<string>()
             };
         }
 
@@ -73,16 +74,16 @@ namespace VentusServer.DataAccess.Mappers
         // 🧭 De fila (row) a entidad (DbRoleEntity)
         public static DbRoleEntity ToEntityFromRow(dynamic row)
         {
-            List<string> permissions = new();
+            string[] permissions = Array.Empty<string>();
 
             if (row.permissions is string[] perms)
             {
-                permissions = perms.ToList();
+                permissions = perms;
             }
 
             return new DbRoleEntity
             {
-                Id = row.role_id,
+                RoleId = row.role_id,
                 Name = row.name,
                 DisplayName = row.display_name,
                 IsEditable = row.is_editable,
@@ -90,10 +91,30 @@ namespace VentusServer.DataAccess.Mappers
             };
         }
         public static List<DbRoleEntity> ToEntitiesFromRows(IEnumerable<dynamic> rows)
-{
-    return rows.Select(ToEntityFromRow).ToList();
-}
+        {
+            return rows.Select(ToEntityFromRow).ToList();
+        }
+        public static void PrintDbRoleEntity(DbRoleEntity entity)
+        {
+            Console.WriteLine("🧾 DbRoleEntity:");
+            Console.WriteLine($"  Id          : {entity.RoleId}");
+            Console.WriteLine($"  Name        : {entity.Name}");
+            Console.WriteLine($"  DisplayName : {entity.DisplayName}");
+            Console.WriteLine($"  IsEditable  : {entity.IsEditable}");
+            Console.WriteLine($"  Permissions : [{string.Join(", ", entity.Permissions)}]");
+        }
 
+        public static dynamic ToRowFromEntity(DbRoleEntity entity)
+        {
+            dynamic row = new ExpandoObject();
 
+            row.role_id = entity.RoleId;
+            row.name = entity.Name;
+            row.display_name = entity.DisplayName;
+            row.is_editable = entity.IsEditable;
+            row.permissions = entity.Permissions;
+
+            return row;
+        }
     }
 }

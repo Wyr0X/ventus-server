@@ -23,7 +23,7 @@ namespace VentusServer.DataAccess.Mappers
                 SessionId = row.session_id,
                 CreatedAt = row.created_at,
                 ActivePlayerId = null ,
-              //  RoleId = row.role_id
+                RoleId = row.role_id
             };
         }
 
@@ -48,7 +48,7 @@ namespace VentusServer.DataAccess.Mappers
                 LastLogin = model.LastLogin,
                 SessionId = model.SessionId,
                 CreatedAt = model.CreatedAt,
-               // RoleId = model.RoleId
+                RoleId = model.RoleId
 
             };
         }
@@ -70,7 +70,7 @@ namespace VentusServer.DataAccess.Mappers
                 SessionId = entity.SessionId,
                 CreatedAt = entity.CreatedAt,
                 ActivePlayerId = null ,
-              //  RoleId =  entity.RoleId
+                RoleId =  entity.RoleId
             };
         }
     }

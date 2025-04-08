@@ -17,7 +17,7 @@ namespace VentusServer.DataAccess.Postgres
 
         private async Task<AccountModel?> GetAccountAsync(string query, object parameters, string identifier)
         {
-            LoggerUtil.Log(LoggerUtil.LogTag.DapperAccountDAO, $"🔍 Ejecutando búsqueda de cuenta con {identifier}...");
+            LoggerUtil.Log(LoggerUtil.LogTag.DapperAccountDAO, $"🔍 Ejecutando búsqueda de cuenta con {identifier} {query}...");
             using var conn = GetConnection();
 
             try
@@ -29,7 +29,6 @@ namespace VentusServer.DataAccess.Postgres
                     LoggerUtil.Log(LoggerUtil.LogTag.DapperAccountDAO, $"❌ No se encontró cuenta con {identifier}");
                     return null;
                 }
-                AccountMapper.PrintRow(rawResult);
                 var mapped = AccountMapper.Map(rawResult);
                 LoggerUtil.Log(LoggerUtil.LogTag.DapperAccountDAO, $"✅ Cuenta encontrada con {identifier}: ID = {mapped.AccountId}");
                 return mapped;
