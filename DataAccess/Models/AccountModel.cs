@@ -26,6 +26,9 @@ public class AccountModel  : BaseModel
     public string LastIpAddress { get; set; } = default!;
     public int? ActivePlayerId { get; set; }
 
+    // Rol
+    public Guid RoleId { get; set; }
+    
     // Sesión
     public Guid SessionId { get; set; }
 

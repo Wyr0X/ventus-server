@@ -128,16 +128,16 @@ namespace VentusServer.DataAccess.Dapper
             return await GetPlayersByAccountIdAsync(accountId);
         }
 
-        public async Task<PlayerModel> CreatePlayerAsync(Guid accountId, string name, string gender, string race, string playerClass)
+        public async Task<PlayerModel> CreatePlayerAsync(Guid accountId, CreatePlayerDTO createPlayerDTO)
         {
             var newPlayer = new PlayerModel(
                 id: 0,
                 accountId: accountId,
-                name: name,
-                gender: gender,
-                race: race,
+                name: createPlayerDTO.Name,
+                gender: createPlayerDTO.Gender,
+                race: createPlayerDTO.Race,
                 level: 0,
-                playerClass: playerClass
+                playerClass: createPlayerDTO.Class
             )
             {
                 CreatedAt = DateTime.UtcNow,

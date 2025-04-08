@@ -91,21 +91,21 @@ namespace VentusServer.Services
         // CREACIÓN DE JUGADOR
         // =============================
 
-        public async Task<PlayerModel?> CreatePlayer(Guid accountId, string name, string gender, string race, string playerClass)
+        public async Task<PlayerModel?> CreatePlayer(Guid accountId, CreatePlayerDTO createPlayerDTO)
         {
             try
             {
-                bool nameExists = await _playerDAO.PlayerNameExistsAsync(name);
+                bool nameExists = await _playerDAO.PlayerNameExistsAsync(createPlayerDTO.Name);
                 if (nameExists)
                 {
-                    Console.WriteLine($"⚠️ Ya existe un jugador con el nombre '{name}'.");
+                    Console.WriteLine($"⚠️ Ya existe un jugador con el nombre '{createPlayerDTO.Name}'.");
                     return null;
                 }
                     Console.WriteLine($"Aca {accountId}'.");
 
-                var player = await _playerDAO.CreatePlayerAsync(accountId, name, gender, race, playerClass);
+                var player = await _playerDAO.CreatePlayerAsync(accountId, createPlayerDTO);
                 await _playerLocationService.CreateDefaultPlayerLocation(player);
-           //     await _playerLocationService.CreateDefaultPlayerLocation(player);
+               // await _playerStatsService.CreateDefaultPlayerStatsAsync(player.Id, createPlayerDTO);
 
                 return player;
             }

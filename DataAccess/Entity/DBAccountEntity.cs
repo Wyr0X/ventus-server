@@ -15,5 +15,6 @@ namespace VentusServer.DataAccess.Entities
         public DateTime? LastLogin { get; set; }
         public Guid SessionId { get; set; }
         public DateTime CreatedAt { get; set; }
+        public Guid RoleId  { get; set; }
     }
 }

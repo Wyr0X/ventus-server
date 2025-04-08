@@ -14,7 +14,7 @@ public static class HttpServerBuilder
         {
             logging.ClearProviders();
             logging.AddConsole();
-            logging.SetMinimumLevel(LogLevel.Warning);
+            logging.SetMinimumLevel(LogLevel.Information);
         })
          .ConfigureServices(services =>
         {

@@ -2,6 +2,28 @@ namespace VentusServer.DataAccess.Queries
 {
     public static class PlayerStatsQueries
     {
+        public const string CreateTableQuery = @"
+            CREATE TABLE IF NOT EXISTS player_stats (
+                player_id INT PRIMARY KEY REFERENCES players(id) ON DELETE CASCADE,
+                level INT DEFAULT 1,
+                xp INT DEFAULT 0,
+                gold INT DEFAULT 0,
+                bank_gold INT DEFAULT 0,
+                free_skillpoints INT DEFAULT 0,
+                hp INT DEFAULT 100,
+                mp INT DEFAULT 100,
+                sp INT DEFAULT 100,
+                max_hp INT DEFAULT 100,
+                max_mp INT DEFAULT 100,
+                max_sp INT DEFAULT 100,
+                hunger INT DEFAULT 0,
+                thirst INT DEFAULT 0,
+                killed_npcs INT DEFAULT 0,
+                killed_users INT DEFAULT 0,
+                deaths INT DEFAULT 0
+            );
+        ";
+
         // Query para insertar las estadísticas de un jugador
         public const string Insert = @"
             INSERT INTO player_stats (

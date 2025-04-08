@@ -1,6 +1,6 @@
 public class PlayerStatsFactory
 {
-    public static PlayerStatsModel CrearPlayerStatsPorDefecto(Raza raza, Genero genero)
+    public static PlayerStatsModel CrearPlayerStatsPorDefecto(Race race, Gender gender)
     {
         // Crear un modelo base con valores predeterminados
         var stats = new PlayerStatsModel
@@ -25,10 +25,10 @@ public class PlayerStatsFactory
         };
 
         // Asignar valores predeterminados dependiendo de la raza
-        stats = AsignarStatsPorRaza(stats, raza);
+        stats = AsignarStatsPorRaza(stats, race);
 
         // Ajustes adicionales si es necesario por el género
-        stats = AjustarPorGenero(stats, genero);
+        stats = AjustarPorGenero(stats, gender);
 
         stats.Hp = stats.MaxHp;
         stats.Mp = stats.MaxMp;
@@ -37,37 +37,37 @@ public class PlayerStatsFactory
         return stats;
     }
 
-    private static PlayerStatsModel AsignarStatsPorRaza(PlayerStatsModel stats, Raza raza)
+    private static PlayerStatsModel AsignarStatsPorRaza(PlayerStatsModel stats, Race race)
     {
         // Asignar los valores específicos de cada raza
-        switch (raza)
+        switch (race)
         {
-            case Raza.Humano:
+            case Race.Humano:
                 stats.MaxHp = 100;
                 stats.MaxMp = 50;
                 stats.MaxSp = 30;
                 break;
-            case Raza.Elfo:
+            case Race.Elfo:
                 stats.MaxHp = 80;
                 stats.MaxMp = 70;
                 stats.MaxSp = 40;
                 break;
-            case Raza.ElfoOscuro:
+            case Race.ElfoOscuro:
                 stats.MaxHp = 90;
                 stats.MaxMp = 60;
                 stats.MaxSp = 50;
                 break;
-            case Raza.Enano:
+            case Race.Enano:
                 stats.MaxHp = 120;
                 stats.MaxMp = 40;
                 stats.MaxSp = 20;
                 break;
-            case Raza.Orcos:
+            case Race.Orcos:
                 stats.MaxHp = 110;
                 stats.MaxMp = 50;
                 stats.MaxSp = 30;
                 break;
-            case Raza.Gnomo:
+            case Race.Gnomo:
                 stats.MaxHp = 70;
                 stats.MaxMp = 80;
                 stats.MaxSp = 60;
@@ -79,13 +79,13 @@ public class PlayerStatsFactory
         return stats;
     }
 
-    private static PlayerStatsModel AjustarPorGenero(PlayerStatsModel stats, Genero genero)
+    private static PlayerStatsModel AjustarPorGenero(PlayerStatsModel stats, Gender gender)
     {
         // Si decides añadir alguna bonificación o penalización según el género, puedes hacerlo aquí
-        if (genero == Genero.Femenino)
+        if (gender == Gender.Femenino)
         {
             // Ejemplo de bonificación por género, por si alguna vez decides añadirla
-            // stats.MaxHp += 5;
+            stats.MaxHp += 5;
         }
 
         return stats;

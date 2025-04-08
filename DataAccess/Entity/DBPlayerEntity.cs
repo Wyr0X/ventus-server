@@ -7,8 +7,8 @@ namespace VentusServer.DataAccess.Entities
         public int Id { get; set; }
         public Guid AccountId { get; set; }
         public string Name { get; set; } = string.Empty;
-        public string Gender { get; set; } = string.Empty;
-        public string Race { get; set; } = string.Empty;
+        public int Gender { get; set; } = 0;
+        public int Race { get; set; } = 0;
         public int Level { get; set; } = 1;
         public string Class { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }

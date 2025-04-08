@@ -3,20 +3,22 @@ namespace VentusServer.DataAccess.Queries
     public static class AccountQueries
     {
         public const string CreateTableQuery = @"
-            CREATE TABLE IF NOT EXISTS accounts (
-                account_id UUID PRIMARY KEY,
-                email VARCHAR(255) NOT NULL,
-                account_name VARCHAR(100) NOT NULL,
-                password VARCHAR(255) NOT NULL,
-                is_deleted BOOLEAN DEFAULT FALSE,
-                is_banned BOOLEAN DEFAULT FALSE,
-                credits INT DEFAULT 0,
-                last_ip VARCHAR(45),
-                last_login TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-                session_id UUID,
-                created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-                UNIQUE (email, account_name)
-            );";
+    CREATE TABLE IF NOT EXISTS accounts (
+        account_id UUID PRIMARY KEY,
+        email VARCHAR(255) NOT NULL,
+        account_name VARCHAR(100) NOT NULL,
+        password VARCHAR(255) NOT NULL,
+        is_deleted BOOLEAN DEFAULT FALSE,
+        is_banned BOOLEAN DEFAULT FALSE,
+        credits INT DEFAULT 0,
+        last_ip VARCHAR(45),
+        last_login TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        session_id UUID,
+        created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  
+        active_player_id INT,
+        UNIQUE (email, account_name)
+    );";
 
         public const string SelectById = "SELECT * FROM accounts WHERE account_id = @AccountId LIMIT 1;";
         public const string SelectByEmail = "SELECT * FROM accounts WHERE email = @Email LIMIT 1;";

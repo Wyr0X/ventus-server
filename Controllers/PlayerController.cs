@@ -62,8 +62,15 @@ namespace VentusServer.Controllers
                 Console.ForegroundColor = ConsoleColor.Blue;
                 Console.WriteLine($"[PlayerController] Creando personaje para la cuenta {accountId} {account.AccountId}: {createPlayerRequest.Name}");
                 Console.ResetColor();
+                var createPlayerDTO = new CreatePlayerDTO
+                {
+                    Name = createPlayerRequest.Name,
+                    Gender = (Gender)createPlayerRequest.Gender, // Conversión de int a enum
+                    Race = (Race)createPlayerRequest.Race,         // Conversión de int a enum
+                    Class = createPlayerRequest.Class
+                };
 
-                var newPlayer = await _playerService.CreatePlayer(accountId, createPlayerRequest.Name, createPlayerRequest.Gender, createPlayerRequest.Race, createPlayerRequest.Class);
+                var newPlayer = await _playerService.CreatePlayer(accountId, createPlayerDTO);
                 if (newPlayer == null)
                 {
                     Console.ForegroundColor = ConsoleColor.Yellow;
@@ -133,7 +140,7 @@ namespace VentusServer.Controllers
                 {
                     var playerLocation = await _playerLocationService.GetPlayerLocationAsync(player.Id);
 
-                    if (playerLocation== null)
+                    if (playerLocation == null)
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine($"[PlayerController] La ubicación del jugador {player.Name} tiene datos nulos en Map o World.");
@@ -147,8 +154,8 @@ namespace VentusServer.Controllers
                         Id = player.Id,
                         AccountId = player.AccountId,
                         Name = player.Name,
-                        Gender = player.Gender,
-                        Race = player.Race,
+                        Gender =  (int)player.Gender,
+                        Race =  (int)player.Race,
                         Level = player.Level,
                         Class = player.Class,
                         CreatedAt = player.CreatedAt,
@@ -268,8 +275,8 @@ namespace VentusServer.Controllers
     public class CreatePlayerRequest
     {
         public required string Name { get; set; }
-        public required string Gender { get; set; }
-        public required string Race { get; set; }
+        public required int Gender { get; set; }
+        public required int Race { get; set; }
         public required string Class { get; set; }
     }
 }

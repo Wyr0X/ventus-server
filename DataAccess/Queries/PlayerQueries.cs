@@ -4,18 +4,19 @@ namespace VentusServer.DataAccess.Queries
     {
 
         public const string CreateTableQuery = @"
-            CREATE TABLE IF NOT EXISTS players (
-                id SERIAL PRIMARY KEY,
-                account_id UUID NOT NULL REFERENCES accounts(account_id) ON DELETE CASCADE,
-                name VARCHAR(100) NOT NULL UNIQUE,
-                gender VARCHAR(10) NOT NULL,
-                race VARCHAR(50) NOT NULL,
-                level INT DEFAULT 1,
-                class VARCHAR(50) NOT NULL,
-                created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-                last_login TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-                status VARCHAR(50) DEFAULT 'active'
-            );";
+    CREATE TABLE IF NOT EXISTS players (
+        id SERIAL PRIMARY KEY,
+        account_id UUID NOT NULL REFERENCES accounts(account_id) ON DELETE CASCADE,
+        name VARCHAR(100) NOT NULL UNIQUE,
+        gender INT NOT NULL,
+        race INT NOT NULL,
+        level INT DEFAULT 1,
+        class VARCHAR(50) NOT NULL,
+        created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        last_login TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        status VARCHAR(50) DEFAULT 'active'
+    );";
+
         public const string SelectById = "SELECT * FROM players WHERE id = @PlayerId LIMIT 1;";
         public const string SelectByName = "SELECT * FROM players WHERE name = @Name LIMIT 1;";
         public const string SelectAll = "SELECT * FROM players;";

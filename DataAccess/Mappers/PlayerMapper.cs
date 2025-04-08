@@ -5,17 +5,17 @@ using VentusServer.DataAccess.Entities;
 
 namespace VentusServer.DataAccess.Mappers
 {
-    public class PlayerMapper  : BaseMapper
+    public class PlayerMapper : BaseMapper
     {
-        // 🧭 Mapeo desde un resultado dinámico de Dapper a un modelo de jugador
+        // 🔄 De fila dinámica a modelo (int → enum)
         public static PlayerModel FromRow(dynamic row)
         {
             return new PlayerModel(
                 id: row.id,
                 accountId: row.account_id,
                 name: row.name,
-                gender: row.gender,
-                race: row.race,
+                gender: (Gender)row.gender,
+                race: (Race)row.race,
                 level: row.level,
                 playerClass: row.@class
             )
@@ -29,7 +29,7 @@ namespace VentusServer.DataAccess.Mappers
         public static List<PlayerModel> FromRows(IEnumerable<dynamic> rows) =>
             rows.Select(FromRow).ToList();
 
-        // 🧭 De modelo a entidad de base de datos
+        // 🔄 De modelo a entidad (enum → int)
         public static DbPlayerEntity ToEntity(PlayerModel model)
         {
             return new DbPlayerEntity
@@ -37,8 +37,8 @@ namespace VentusServer.DataAccess.Mappers
                 Id = model.Id,
                 AccountId = model.AccountId,
                 Name = model.Name,
-                Gender = model.Gender,
-                Race = model.Race,
+                Gender = (int)model.Gender,
+                Race = (int)model.Race,
                 Level = model.Level,
                 Class = model.Class,
                 CreatedAt = model.CreatedAt,
@@ -47,15 +47,15 @@ namespace VentusServer.DataAccess.Mappers
             };
         }
 
-        // 🧭 De entidad de base de datos a modelo
+        // 🔄 De entidad a modelo (int → enum)
         public static PlayerModel ToModel(DbPlayerEntity entity)
         {
             return new PlayerModel(
                 id: entity.Id,
                 accountId: entity.AccountId,
                 name: entity.Name,
-                gender: entity.Gender,
-                race: entity.Race,
+                gender: (Gender)entity.Gender,
+                race: (Race)entity.Race,
                 level: entity.Level,
                 playerClass: entity.Class
             )
@@ -63,8 +63,6 @@ namespace VentusServer.DataAccess.Mappers
                 CreatedAt = entity.CreatedAt,
                 LastLogin = entity.LastLogin,
                 Status = entity.Status,
-
-                // ⚠️ Vive solo en memoria (no se guarda en DB)
                 isSpawned = false
             };
         }

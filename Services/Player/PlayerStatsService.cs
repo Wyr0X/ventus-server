@@ -51,10 +51,10 @@ namespace VentusServer.Services
             }
         }
 
-        public async Task CreateDefaultPlayerStatsAsync(int playerId, Raza raza, Genero genero)
+        public async Task CreateDefaultPlayerStatsAsync(int playerId, CreatePlayerDTO createPlayerDTO)
         {
             // Crear las estadísticas por defecto usando el factory
-            var playerStats = PlayerStatsFactory.CrearPlayerStatsPorDefecto(raza, genero);
+            var playerStats = PlayerStatsFactory.CrearPlayerStatsPorDefecto(createPlayerDTO.Race, createPlayerDTO.Gender);
             playerStats.PlayerId = playerId; // Asignamos el ID del jugador
 
             // Guardar las estadísticas del jugador recién creado

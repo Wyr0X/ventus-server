@@ -12,7 +12,7 @@ namespace VentusServer.DataAccess.Interfaces
         Task<List<PlayerModel>> GetAllPlayersAsync();
         Task<List<PlayerModel>> GetPlayersByAccountIdAsync(Guid accountId);
         Task<List<PlayerModel>> GetAllPlayersByUserIdAsync(string userId);
-        Task<PlayerModel> CreatePlayerAsync(Guid accountId, string name, string gender, string race, string playerClass);
+        Task<PlayerModel> CreatePlayerAsync(Guid accountId, CreatePlayerDTO createPlayerDTO);
         Task SavePlayerAsync(PlayerModel player);
         Task<bool> DeletePlayerAsync(int playerId);
         Task<bool> PlayerExistsAsync(int playerId);

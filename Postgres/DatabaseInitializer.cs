@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Npgsql;
+using VentusServer.DataAccess.Queries;
 
 namespace VentusServer.DataAccess.Postgres
 {
@@ -35,24 +36,9 @@ namespace VentusServer.DataAccess.Postgres
         {
             try
             {
-                string createTableQuery = @"
-            CREATE TABLE IF NOT EXISTS accounts (
-                account_id UUID PRIMARY KEY,
-                email VARCHAR(255) NOT NULL,
-                account_name VARCHAR(100) NOT NULL,
-                password VARCHAR(255) NOT NULL,
-                is_deleted BOOLEAN DEFAULT FALSE,
-                is_banned BOOLEAN DEFAULT FALSE,
-                credits INT DEFAULT 0,
-                last_ip VARCHAR(45),
-                last_login TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-                session_id UUID, -- 🆕 Agregado campo para sesión
-                created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-                UNIQUE (email, account_name)
-            );
-        ";
+               
 
-                await _postgresDbService.ExecuteQueryAsync(createTableQuery);
+                await _postgresDbService.ExecuteQueryAsync(AccountQueries.CreateTableQuery);
                 Console.WriteLine("✅ Tabla 'accounts' creada correctamente (si no existía).");
             }
             catch (Exception ex)
@@ -65,22 +51,8 @@ namespace VentusServer.DataAccess.Postgres
         {
             try
             {
-                string createTableQuery = @"
-            CREATE TABLE IF NOT EXISTS players (
-                id SERIAL PRIMARY KEY,
-                account_id UUID NOT NULL REFERENCES accounts(account_id) ON DELETE CASCADE,
-                name VARCHAR(100) NOT NULL UNIQUE,
-                gender VARCHAR(10) NOT NULL,
-                race VARCHAR(50) NOT NULL,
-                level INT DEFAULT 1,
-                class VARCHAR(50) NOT NULL,
-                created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-                last_login TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-                status VARCHAR(50) DEFAULT 'active'
-            );
-        ";
 
-                await _postgresDbService.ExecuteQueryAsync(createTableQuery);
+                await _postgresDbService.ExecuteQueryAsync(PlayerQueries.CreateTableQuery);
                 Console.WriteLine("✅ Tabla 'players' creada correctamente (si no existía).");
             }
             catch (Exception ex)
@@ -93,17 +65,8 @@ namespace VentusServer.DataAccess.Postgres
         {
             try
             {
-                string createTableQuery = @"
-                    CREATE TABLE IF NOT EXISTS player_locations (
-                        player_id INT PRIMARY KEY REFERENCES players(id) ON DELETE CASCADE,
-                        world_id INT NOT NULL REFERENCES worlds(id),
-                        map_id INT NOT NULL REFERENCES maps(id),
-                        pos_x INT NOT NULL,
-                        pos_y INT NOT NULL
-                    );
-                ";
-
-                await _postgresDbService.ExecuteQueryAsync(createTableQuery);
+    
+                await _postgresDbService.ExecuteQueryAsync(PlayerLocationQueries.CreateTableQuery);
                 Console.WriteLine("✅ Tabla 'player_locations' creada correctamente (si no existía).");
             }
             catch (Exception ex)
@@ -116,18 +79,9 @@ namespace VentusServer.DataAccess.Postgres
         {
             try
             {
-                string createTableQuery = @"
-                    CREATE TABLE IF NOT EXISTS worlds (
-                        id SERIAL PRIMARY KEY,
-                        name VARCHAR(100) NOT NULL,
-                        description TEXT,
-                        max_maps INT NOT NULL,
-                        max_players INT NOT NULL,
-                        level_requirements INT NOT NULL
-                    );
-                ";
+     
 
-                await _postgresDbService.ExecuteQueryAsync(createTableQuery);
+                await _postgresDbService.ExecuteQueryAsync(WorldQueries.CreateTableQuery);
                 Console.WriteLine("✅ Tabla 'worlds' creada correctamente (si no existía).");
             }
             catch (Exception ex)
@@ -140,17 +94,8 @@ namespace VentusServer.DataAccess.Postgres
         {
             try
             {
-                string createTableQuery = @"
-                    CREATE TABLE IF NOT EXISTS maps (
-                        id SERIAL PRIMARY KEY,
-                        name VARCHAR(100) NOT NULL,
-                        min_level INT NOT NULL,
-                        max_players INT NOT NULL,
-                        world_id INT NOT NULL REFERENCES worlds(id) ON DELETE CASCADE
-                    );
-                ";
 
-                await _postgresDbService.ExecuteQueryAsync(createTableQuery);
+                await _postgresDbService.ExecuteQueryAsync(MapQueries.CreateTableQuery);
                 Console.WriteLine("✅ Tabla 'maps' creada correctamente (si no existía).");
             }
             catch (Exception ex)
@@ -162,29 +107,8 @@ namespace VentusServer.DataAccess.Postgres
         {
             try
             {
-                string createTableQuery = @"
-            CREATE TABLE IF NOT EXISTS player_stats (
-                player_id INT PRIMARY KEY REFERENCES players(id) ON DELETE CASCADE,
-                level INT DEFAULT 1,
-                xp INT DEFAULT 0,
-                gold INT DEFAULT 0,
-                bank_gold INT DEFAULT 0,
-                free_skillpoints INT DEFAULT 0,
-                hp INT DEFAULT 100,
-                mp INT DEFAULT 100,
-                sp INT DEFAULT 100,
-                max_hp INT DEFAULT 100,
-                max_mp INT DEFAULT 100,
-                max_sp INT DEFAULT 100,
-                hunger INT DEFAULT 0,
-                thirst INT DEFAULT 0,
-                killed_npcs INT DEFAULT 0,
-                killed_users INT DEFAULT 0,
-                deaths INT DEFAULT 0
-            );
-        ";
-
-                await _postgresDbService.ExecuteQueryAsync(createTableQuery);
+  
+                await _postgresDbService.ExecuteQueryAsync(PlayerStatsQueries.CreateTableQuery);
                 Console.WriteLine("✅ Tabla 'player_stats' creada correctamente (si no existía).");
             }
             catch (Exception ex)
@@ -197,6 +121,7 @@ namespace VentusServer.DataAccess.Postgres
 }
 
 // DROP TABLE IF EXISTS player_locations CASCADE;
+// DROP TABLE IF EXISTS player_stats CASCADE;
 // DROP TABLE IF EXISTS players CASCADE;
 // DROP TABLE IF EXISTS maps CASCADE;
 // DROP TABLE IF EXISTS worlds CASCADE;
