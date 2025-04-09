@@ -9,6 +9,7 @@ using VentusServer.DataAccess;
 using Game.Models;
 using VentusServer.DataAccess.Interfaces;
 using VentusServer.DataAccess.Dapper;
+using VentusServer.Controllers.Admin;
 
 namespace VentusServer
 {
@@ -41,6 +42,7 @@ namespace VentusServer
                 .AddSingleton<DatabaseInitializer>()
                 .AddSingleton<ConcurrentDictionary<string, WebSocket>>()
                 .AddSingleton<MessageSender>()
+                .AddSingleton<RequirePermissionAttribute>()
                 .AddSingleton(provider => new Lazy<MessageSender>(provider.GetRequiredService<MessageSender>))
                 .AddSingleton<IDbConnectionFactory>(sp =>
                     new NpgsqlConnectionFactory(
@@ -115,6 +117,7 @@ namespace VentusServer
                 .AddSingleton<AccountService>()
                 .AddSingleton<ResponseService>()
                 .AddSingleton<RoleService>()
+                .AddSingleton<PermissionService>()
                 .AddSingleton<PlayerStatsService>();
 
         }
@@ -136,6 +139,8 @@ namespace VentusServer
                 .AddSingleton<WebSocketServerController>()
                 .AddSingleton<AccountController>()
                 .AddSingleton<AuthController>()
+                .AddSingleton<AdminAccountController>()
+                .AddSingleton<AdminRolesController>()
                 .AddSingleton(sp =>
                     new Lazy<WebSocketServerController>(
                         () => sp.GetRequiredService<WebSocketServerController>()

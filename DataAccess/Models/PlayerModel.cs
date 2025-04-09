@@ -1,15 +1,15 @@
 using System;
 using System.Collections.Generic;
 
-public class PlayerModel  : BaseModel
+public class PlayerModel : BaseModel
 {
-    public int Id { get; set; }
-    public Guid AccountId { get; set; }  // Relación con la cuenta
+    public required int Id { get; set; }
+    public required Guid AccountId { get; set; }  // Relación con la cuenta
     public string Name { get; set; }
-    public Gender Gender { get; set; }
-    public Race Race { get; set; }
+    public required Gender Gender { get; set; }
+    public required Race Race { get; set; }
     public int Level { get; set; }
-    public string Class { get; set; }
+    public required CharacterClass Class { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime LastLogin { get; set; }
     public Boolean isSpawned { get; set; } = false;
@@ -17,19 +17,7 @@ public class PlayerModel  : BaseModel
     public string Status { get; set; } // Estado: "Online", "Offline", "Banned"
 
 
-    public PlayerModel(int id, Guid accountId, string name, Gender gender, Race race, int level, string playerClass)
-    {
-        Id = id;
-        AccountId = accountId;
-        Name = name;
-        Gender = gender;
-        Race = race;
-        Level = level;
-        Class = playerClass;
-        CreatedAt = DateTime.Now;
-        LastLogin = DateTime.Now;
-        Status = "Offline";
-    }
+
 
     public void UpdateStatus(string newStatus)
     {

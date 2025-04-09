@@ -10,19 +10,20 @@ namespace VentusServer.DataAccess.Mappers
         // 🔄 De fila dinámica a modelo (int → enum)
         public static PlayerModel FromRow(dynamic row)
         {
-            return new PlayerModel(
-                id: row.id,
-                accountId: row.account_id,
-                name: row.name,
-                gender: (Gender)row.gender,
-                race: (Race)row.race,
-                level: row.level,
-                playerClass: row.@class
-            )
+
+            return new PlayerModel
             {
+                Id = row.id,
+                AccountId = row.account_id,
+                Name = row.name,
+                Gender = (Gender)row.gender,
+                Race = (Race)row.race,
+                Level = row.level,
+                Class = (CharacterClass)row.@class,
+
                 CreatedAt = row.created_at,
                 LastLogin = row.last_login,
-                Status = row.status
+                Status = row.status                 // Asignación adicional
             };
         }
 
@@ -40,7 +41,7 @@ namespace VentusServer.DataAccess.Mappers
                 Gender = (int)model.Gender,
                 Race = (int)model.Race,
                 Level = model.Level,
-                Class = model.Class,
+                Class = (int)model.Class,
                 CreatedAt = model.CreatedAt,
                 LastLogin = model.LastLogin,
                 Status = model.Status
@@ -50,20 +51,21 @@ namespace VentusServer.DataAccess.Mappers
         // 🔄 De entidad a modelo (int → enum)
         public static PlayerModel ToModel(DbPlayerEntity entity)
         {
-            return new PlayerModel(
-                id: entity.Id,
-                accountId: entity.AccountId,
-                name: entity.Name,
-                gender: (Gender)entity.Gender,
-                race: (Race)entity.Race,
-                level: entity.Level,
-                playerClass: entity.Class
-            )
+
+            return new PlayerModel
             {
+                Id = entity.Id,
+                AccountId = entity.AccountId,
+                Name = entity.Name,
+                Gender = (Gender)entity.Gender,
+                Race = (Race)entity.Race,
+                Level = entity.Level,
+                Class = (CharacterClass)entity.Class,
                 CreatedAt = entity.CreatedAt,
                 LastLogin = entity.LastLogin,
                 Status = entity.Status,
                 isSpawned = false
+
             };
         }
     }

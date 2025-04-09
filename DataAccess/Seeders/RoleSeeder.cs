@@ -11,16 +11,14 @@ namespace VentusServer.DataAccess.Seeders
             {
                 new RoleModel
                 {
-                    RoleId = Guid.NewGuid(),
-                    Name = "owner",
+                    RoleId ="owner",
                     DisplayName = "Dueño",
                     IsEditable = false,
                     Permissions = Enum.GetValues<Permission>().ToList()
                 },
                 new RoleModel
                 {
-                    RoleId = Guid.NewGuid(),
-                    Name = "admin",
+                    RoleId = "admin",
                     DisplayName = "Administrador",
                     IsEditable = false,
                     Permissions = new List<Permission>
@@ -44,8 +42,7 @@ namespace VentusServer.DataAccess.Seeders
                 },
                 new RoleModel
                 {
-                    RoleId = Guid.NewGuid(),
-                    Name = "moderator",
+                    RoleId = "moderator",
                     DisplayName = "Moderador",
                     IsEditable = false,
                     Permissions = new List<Permission>
@@ -62,8 +59,7 @@ namespace VentusServer.DataAccess.Seeders
                 },
                 new RoleModel
                 {
-                    RoleId = Guid.NewGuid(),
-                    Name = "apprentice",
+                    RoleId = "apprentice",
                     DisplayName = "Aprendiz",
                     IsEditable = true,
                     Permissions = new List<Permission>
@@ -74,8 +70,7 @@ namespace VentusServer.DataAccess.Seeders
                 },
                    new RoleModel
                 {
-                    RoleId = Guid.NewGuid(),
-                    Name = "user",
+                    RoleId ="user",
                     DisplayName = "Usuario",
                     IsEditable = false,
                     Permissions = new List<Permission>
@@ -90,7 +85,7 @@ namespace VentusServer.DataAccess.Seeders
             foreach (var role in roles)
             {
 
-                var exists = await roleDAO.GetRoleByNameAsync(role.Name);
+                var exists = await roleDAO.GetRoleByIdAsync(role.RoleId);
 
                 if (exists is null)
                 {

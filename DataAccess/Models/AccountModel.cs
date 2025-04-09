@@ -1,10 +1,10 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-public class AccountModel  : BaseModel
+public class AccountModel : BaseModel
 {
     // Identificación
-    public Guid AccountId { get; set; }
+    public required Guid AccountId { get; set; }
 
     [Required, EmailAddress]
     public string Email { get; set; } = default!;
@@ -27,8 +27,8 @@ public class AccountModel  : BaseModel
     public int? ActivePlayerId { get; set; }
 
     // Rol
-    public Guid RoleId { get; set; }
-    
+    public required string RoleId { get; set; }
+
     // Sesión
     public Guid SessionId { get; set; }
 

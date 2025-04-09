@@ -14,9 +14,9 @@ namespace VentusServer.DataAccess.Dapper
 {
     public class DapperRoleDAO(IDbConnectionFactory connectionFactory) : BaseDAO(connectionFactory), IRoleDAO
     {
-        public async Task<RoleModel?> GetRoleByIdAsync(Guid roleId)
+        public async Task<RoleModel?> GetRoleByIdAsync(string roleId)
         {
-            if (roleId == Guid.Empty) return null;
+            if (roleId == "") return null;
 
             try
             {
@@ -24,7 +24,7 @@ namespace VentusServer.DataAccess.Dapper
                 using var connection = _connectionFactory.CreateConnection();
                 var result = await connection.QueryFirstOrDefaultAsync(RoleQueries.SelectRoleById, new { RoleId = roleId });
 
-                return result == null ? null : RoleMapper.ToModel(result);
+                return result == null ? null : RoleMapper.ToModel(RoleMapper.ToEntityFromRow(result));
             }
             catch (Exception ex)
             {
@@ -33,21 +33,21 @@ namespace VentusServer.DataAccess.Dapper
             }
         }
 
-        public async Task<RoleModel?> GetRoleByNameAsync(string name)
+        public async Task<RoleModel?> GetRoleByDisplayNameAsync(string displayName)
         {
-            if (string.IsNullOrWhiteSpace(name)) return null;
+            if (string.IsNullOrWhiteSpace(displayName)) return null;
 
             try
             {
-                LoggerUtil.Log(LogTag.DapperRoleDAO, $"Buscando rol por nombre 2: {name}");
+                LoggerUtil.Log(LogTag.DapperRoleDAO, $"Buscando rol por nombre 2: {displayName}");
                 using var connection = _connectionFactory.CreateConnection();
-                var row = await connection.QueryFirstOrDefaultAsync(RoleQueries.SelectRoleByName, new { Name = name });
+                var row = await connection.QueryFirstOrDefaultAsync(RoleQueries.SelectRoleByDisplayName, new { DisplayName = displayName });
                 var entity = RoleMapper.ToEntityFromRow(row);
                 return row == null ? null : RoleMapper.ToModel(entity);
             }
             catch (Exception ex)
             {
-                LoggerUtil.Log(LogTag.DapperRoleDAO, $"Error en GetRoleByNameAsync: {ex.Message}");
+                LoggerUtil.Log(LogTag.DapperRoleDAO, $"Error en GetRoleByDisplayNameAsync: {ex.Message}");
                 return null;
             }
         }
@@ -111,7 +111,7 @@ namespace VentusServer.DataAccess.Dapper
             }
         }
 
-        public async Task<bool> DeleteRoleAsync(Guid roleId)
+        public async Task<bool> DeleteRoleAsync(string roleId)
         {
             try
             {
@@ -127,5 +127,7 @@ namespace VentusServer.DataAccess.Dapper
                 return false;
             }
         }
+
+        
     }
 }

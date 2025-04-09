@@ -67,7 +67,7 @@ namespace VentusServer.Controllers
                     Name = createPlayerRequest.Name,
                     Gender = (Gender)createPlayerRequest.Gender, // Conversión de int a enum
                     Race = (Race)createPlayerRequest.Race,         // Conversión de int a enum
-                    Class = createPlayerRequest.Class
+                    Class = (CharacterClass)createPlayerRequest.Class
                 };
 
                 var newPlayer = await _playerService.CreatePlayer(accountId, createPlayerDTO);
@@ -154,10 +154,10 @@ namespace VentusServer.Controllers
                         Id = player.Id,
                         AccountId = player.AccountId,
                         Name = player.Name,
-                        Gender =  (int)player.Gender,
-                        Race =  (int)player.Race,
+                        Gender = (int)player.Gender,
+                        Race = (int)player.Race,
                         Level = player.Level,
-                        Class = player.Class,
+                        Class = (int)player.Class,
                         CreatedAt = player.CreatedAt,
                         LastLogin = player.LastLogin,
                         Status = player.Status,
@@ -277,6 +277,6 @@ namespace VentusServer.Controllers
         public required string Name { get; set; }
         public required int Gender { get; set; }
         public required int Race { get; set; }
-        public required string Class { get; set; }
+        public required int Class { get; set; }
     }
 }

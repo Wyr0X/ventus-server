@@ -28,7 +28,6 @@ namespace VentusServer.DataAccess.Mappers
             return new RoleModel
             {
                 RoleId = row.role_id,
-                Name = row.name,
                 DisplayName = row.display_name,
                 IsEditable = row.is_editable,
                 Permissions = permissions
@@ -39,7 +38,6 @@ namespace VentusServer.DataAccess.Mappers
             return new RoleModel
             {
                 RoleId = entity.RoleId,
-                Name = entity.Name,
                 DisplayName = entity.DisplayName,
                 IsEditable = entity.IsEditable,
                 Permissions = entity.Permissions?
@@ -55,7 +53,6 @@ namespace VentusServer.DataAccess.Mappers
             return new DbRoleEntity
             {
                 RoleId = model.RoleId,
-                Name = model.Name,
                 DisplayName = model.DisplayName,
                 IsEditable = model.IsEditable,
                 Permissions = model.Permissions?
@@ -84,7 +81,6 @@ namespace VentusServer.DataAccess.Mappers
             return new DbRoleEntity
             {
                 RoleId = row.role_id,
-                Name = row.name,
                 DisplayName = row.display_name,
                 IsEditable = row.is_editable,
                 Permissions = permissions
@@ -98,7 +94,6 @@ namespace VentusServer.DataAccess.Mappers
         {
             Console.WriteLine("🧾 DbRoleEntity:");
             Console.WriteLine($"  Id          : {entity.RoleId}");
-            Console.WriteLine($"  Name        : {entity.Name}");
             Console.WriteLine($"  DisplayName : {entity.DisplayName}");
             Console.WriteLine($"  IsEditable  : {entity.IsEditable}");
             Console.WriteLine($"  Permissions : [{string.Join(", ", entity.Permissions)}]");
@@ -109,7 +104,6 @@ namespace VentusServer.DataAccess.Mappers
             dynamic row = new ExpandoObject();
 
             row.role_id = entity.RoleId;
-            row.name = entity.Name;
             row.display_name = entity.DisplayName;
             row.is_editable = entity.IsEditable;
             row.permissions = entity.Permissions;

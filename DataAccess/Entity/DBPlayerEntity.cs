@@ -10,7 +10,7 @@ namespace VentusServer.DataAccess.Entities
         public int Gender { get; set; } = 0;
         public int Race { get; set; } = 0;
         public int Level { get; set; } = 1;
-        public string Class { get; set; } = string.Empty;
+        public int Class { get; set; } = 0;
         public DateTime CreatedAt { get; set; }
         public DateTime LastLogin { get; set; }
         public string Status { get; set; } = "active";

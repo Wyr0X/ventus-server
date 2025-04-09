@@ -15,7 +15,7 @@ namespace VentusServer.DataAccess.Queries
         last_login TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
         session_id UUID,
         created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-        role_id UUID REFERENCES roles(role_id),
+        role_id VARCHAR(255) REFERENCES roles(role_id),
         active_player_id INT,
         UNIQUE (email, account_name)
     );";
@@ -43,6 +43,7 @@ namespace VentusServer.DataAccess.Queries
                 is_banned = @IsBanned,
                 credits = @Credits,
                 last_ip = @LastIpAddress,
+                role_id = @RoleId,
                 last_login = @LastLogin,
                 session_id = @SessionId
             WHERE account_id = @AccountId;";
@@ -52,5 +53,7 @@ namespace VentusServer.DataAccess.Queries
         public const string IsEmailTaken = "SELECT 1 FROM accounts WHERE LOWER(email) = LOWER(@Email) LIMIT 1;";
         public const string IsNameTaken = "SELECT 1 FROM accounts WHERE LOWER(account_name) = LOWER(@AccountName) LIMIT 1;";
         public const string DeleteByEmail = "DELETE FROM accounts WHERE email = @Email;";
+        public const string SelectAllAccounts = "SELECT * FROM accounts;";
+
     }
 }

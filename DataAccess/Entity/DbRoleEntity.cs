@@ -5,7 +5,7 @@ namespace VentusServer.DataAccess.Entities
 {
     public class DbRoleEntity
     {
-        public Guid RoleId { get; set; } // role_id
+        public required string RoleId { get; set; } // role_id
         public string Name { get; set; } = default!; // "owner", "admin", etc.
         public string DisplayName { get; set; } = default!; // Nombre visible para UI
         public bool IsEditable { get; set; } = true;

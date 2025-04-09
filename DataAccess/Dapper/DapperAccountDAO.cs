@@ -236,5 +236,29 @@ namespace VentusServer.DataAccess.Postgres
                 LoggerUtil.Log(LoggerUtil.LogTag.DapperAccountDAO, $"❌ Error al crear la tabla 'accounts': {ex.Message}");
             }
         }
+        public async Task<List<AccountModel>> GetAllAccountsAsync()
+        {
+            LoggerUtil.Log(LoggerUtil.LogTag.DapperAccountDAO, "📋 Obteniendo todas las cuentas...");
+            using var conn = GetConnection();
+
+            try
+            {
+                var rawResults = await conn.QueryAsync(AccountQueries.SelectAllAccounts);
+                var mappedAccounts = rawResults
+                    .Select(AccountMapper.Map)
+                    .Where(acc => acc != null)
+                    .ToList()!; // Materializamos y convertimos en List
+
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperAccountDAO, $"✅ Se encontraron {mappedAccounts.Count} cuentas.");
+                return mappedAccounts;
+            }
+            catch (Exception ex)
+            {
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperAccountDAO, $"❌ Error al obtener todas las cuentas: {ex.Message}");
+                return new List<AccountModel>(); // Retorna lista vacía correctamente
+            }
+        }
+
+
     }
 }

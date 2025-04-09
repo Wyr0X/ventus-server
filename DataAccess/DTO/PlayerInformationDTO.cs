@@ -35,7 +35,7 @@ namespace Game.DTOs
         public required int Gender { get; set; }
         public required int Race { get; set; }
         public int Level { get; set; }
-        public required string Class { get; set; }
+        public required int Class { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime LastLogin { get; set; }
         public required string Status { get; set; }

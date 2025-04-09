@@ -25,6 +25,7 @@ namespace VentusServer.DataAccess
         Task<bool> UpdateSessionIdAsync(Guid accountId, Guid sessionId);
         Task<bool> UpdateAccountAsync(AccountModel account);
 
+        Task<List<AccountModel>> GetAllAccountsAsync();
 
         // DELETE
         Task DeleteAccountAsync(string email);

@@ -8,6 +8,8 @@ public static class LoggerUtil
     {
         Init,
         AuthController,
+        AdminAccountController,
+        AdminRolesController,
         WebSocketAuthentificationService,
         AuthService,
         WebSocketServerController,
@@ -27,34 +29,38 @@ public static class LoggerUtil
         MapService,
         WorldService,
         DB,
-        Game
+        Game,
+        RequirePermissionAttribute
     }
 
     // Configuración del tag: habilitado, color, guardar en archivo
     private static readonly Dictionary<LogTag, (bool Enabled, ConsoleColor Color, bool SaveToFile)> TagConfig = new()
     {
         { LogTag.AuthController, (true, ConsoleColor.Cyan, false) },
+        { LogTag.AdminAccountController, (true, ConsoleColor.Cyan, false) },
+        { LogTag.AdminRolesController, (true, ConsoleColor.Cyan, false) },
         { LogTag.WebSocketAuthentificationService, (false, ConsoleColor.DarkMagenta, false) },
         { LogTag.WebSocketServerController, (false, ConsoleColor.DarkMagenta, false) },
         { LogTag.WebSocketConnectionManager, (false, ConsoleColor.DarkMagenta, false) },
         { LogTag.MapModel, (false, ConsoleColor.DarkGreen, false) },
-        { LogTag.BaseCachedService, (false, ConsoleColor.DarkBlue, false) },
+        { LogTag.BaseCachedService, (true, ConsoleColor.DarkBlue, false) },
         { LogTag.SystemChatService, (false, ConsoleColor.DarkBlue, false) },
         { LogTag.PlayerLocationService, (false, ConsoleColor.DarkBlue, false) },
         { LogTag.AccountService, (true, ConsoleColor.DarkBlue, false) },
         { LogTag.MapService, (false, ConsoleColor.DarkBlue, false) },
-        { LogTag.WorldService, (true, ConsoleColor.DarkBlue, false) },
+        { LogTag.WorldService, (false, ConsoleColor.DarkBlue, false) },
         { LogTag.AuthService, (false, ConsoleColor.DarkBlue, false) },
-        { LogTag.RoleService, (false, ConsoleColor.DarkBlue, false) },
-        { LogTag.DB, (true, ConsoleColor.Yellow, false) },
+        { LogTag.RoleService, (true, ConsoleColor.DarkBlue, false) },
+        { LogTag.DB, (false, ConsoleColor.Yellow, false) },
         { LogTag.Init, (false, ConsoleColor.Yellow, false) },
         { LogTag.Game, (false, ConsoleColor.Yellow, false) },
         { LogTag.DapperMapDAO, (false, ConsoleColor.Green, false) },
-        { LogTag.DapperPlayerDAO, (false, ConsoleColor.Green, false) },
+        { LogTag.DapperPlayerDAO, (true, ConsoleColor.Green, false) },
         { LogTag.DapperPlayerStatsDAO, (false, ConsoleColor.Green, false) },
         { LogTag.DapperRoleDAO, (true, ConsoleColor.Green, false) },
         { LogTag.DapperAccountDAO, (true, ConsoleColor.Green, false) },
         { LogTag.DapperWorldDAO, (false, ConsoleColor.Green, false) },
+        { LogTag.RequirePermissionAttribute, (true, ConsoleColor.Blue, false) },
 
 
     };

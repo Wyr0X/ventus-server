@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using VentusServer.DataAccess;
+using VentusServer.DTOs;
 using VentusServer.Models;
 
 namespace VentusServer.Services
@@ -9,15 +10,40 @@ namespace VentusServer.Services
     public class AccountService : BaseCachedService<AccountModel, Guid>
     {
         private readonly IAccountDAO _accountDao;
+        private readonly RoleService _roleService;
+
         private readonly Dictionary<string, Guid> _emailToIdCache = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, Guid> _nameToIdCache = new(StringComparer.OrdinalIgnoreCase);
-
-        public AccountService(IAccountDAO accountDao)
+        public AccountService(IAccountDAO accountDao, RoleService roleService)
         {
             _accountDao = accountDao;
+            _roleService = roleService;
             LoggerUtil.Log(LoggerUtil.LogTag.AccountService, "AccountService inicializado.");
         }
 
+        public async Task<List<AccountDTO>> GetAllAccountsAsync()
+        {
+            LoggerUtil.Log(LoggerUtil.LogTag.AccountService, "Obteniendo todas las cuentas desde la base de datos...");
+            var accounts = await _accountDao.GetAllAccountsAsync();
+
+            var result = new List<AccountDTO>();
+            foreach (var account in accounts)
+            {
+                var role = await _roleService.GetRoleByIdAsync(account.RoleId);
+                result.Add(new AccountDTO
+                {
+                    AccountId = account.AccountId,
+                    Email = account.Email,
+                    AccountName = account.AccountName,
+                    IsBanned = account.IsBanned,
+                    CreatedAt = account.CreatedAt,
+                    ActivePlayerId = account.ActivePlayerId,
+                    RoleName = role?.DisplayName ?? "Desconocido"
+                });
+            }
+
+            return result;
+        }
         protected override async Task<AccountModel?> LoadModelAsync(Guid accountId)
         {
             LoggerUtil.Log(LoggerUtil.LogTag.AccountService, $"Cargando cuenta con ID {accountId} desde la base de datos...");
@@ -27,7 +53,7 @@ namespace VentusServer.Services
             if (account != null)
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.AccountService, $"Cuenta encontrada para ID {accountId}.");
-                
+
                 if (!string.IsNullOrEmpty(account.Email))
                     _emailToIdCache[account.Email] = account.AccountId;
 

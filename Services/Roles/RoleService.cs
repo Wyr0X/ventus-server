@@ -2,14 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using VentusServer.DataAccess.Interfaces;
+using VentusServer.Domain.Enums;
 using VentusServer.Models;
 
 namespace VentusServer.Services
 {
-    public class RoleService : BaseCachedService<RoleModel, Guid>
+    public class RoleService : BaseCachedService<RoleModel, string>
     {
         private readonly IRoleDAO _roleDao;
-        private readonly Dictionary<string, Guid> _nameToIdCache = new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, string> _nameToIdCache = new(StringComparer.OrdinalIgnoreCase);
 
         public RoleService(IRoleDAO roleDao)
         {
@@ -17,16 +18,16 @@ namespace VentusServer.Services
             LoggerUtil.Log(LoggerUtil.LogTag.RoleService, "RoleService inicializado.");
         }
 
-        protected override async Task<RoleModel?> LoadModelAsync(Guid roleId)
+        protected override async Task<RoleModel?> LoadModelAsync(string roleId)
         {
             LoggerUtil.Log(LoggerUtil.LogTag.RoleService, $"Cargando rol con ID {roleId} desde la base de datos...");
             var role = await _roleDao.GetRoleByIdAsync(roleId);
 
             if (role != null)
             {
-                LoggerUtil.Log(LoggerUtil.LogTag.RoleService, $"Rol encontrado: {role.Name}");
-                if (!string.IsNullOrWhiteSpace(role.Name))
-                    _nameToIdCache[role.Name] = role.RoleId;
+                LoggerUtil.Log(LoggerUtil.LogTag.RoleService, $"Rol encontrado: {role.DisplayName}");
+                if (!string.IsNullOrWhiteSpace(role.DisplayName))
+                    _nameToIdCache[role.DisplayName] = role.RoleId;
             }
             else
             {
@@ -36,27 +37,27 @@ namespace VentusServer.Services
             return role;
         }
 
-        public Task<RoleModel?> GetOrCreateRoleInCacheAsync(Guid roleId)
+        public Task<RoleModel?> GetOrCreateRoleInCacheAsync(string roleId)
         {
             LoggerUtil.Log(LoggerUtil.LogTag.RoleService, $"Obteniendo o creando en caché el rol con ID {roleId}");
             return GetOrLoadAsync(roleId);
         }
 
-        public async Task<RoleModel?> GetRoleByNameAsync(string name)
+        public async Task<RoleModel?> GetRoleByDisplayNameAsync(string name)
         {
             LoggerUtil.Log(LoggerUtil.LogTag.RoleService, $"Buscando rol por nombre: {name}");
 
             if (_nameToIdCache.TryGetValue(name, out var cachedId))
             {
-                LoggerUtil.Log(LoggerUtil.LogTag.RoleService, $"Nombre encontrado en caché con ID: {cachedId}");
+                LoggerUtil.Log(LoggerUtil.LogTag.RoleService, $"Nombre encontrado en caché : {cachedId}");
                 return await GetOrLoadAsync(cachedId);
             }
 
-            var role = await _roleDao.GetRoleByNameAsync(name);
+            var role = await _roleDao.GetRoleByDisplayNameAsync(name);
             if (role != null)
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.RoleService, $"Rol encontrado en DB para nombre: {name}, ID: {role.RoleId}");
-                _nameToIdCache[name] = role.RoleId;
+                _nameToIdCache[name] = role.DisplayName;
                 Set(role.RoleId, role);
             }
             else
@@ -67,11 +68,11 @@ namespace VentusServer.Services
             return role;
         }
 
-        public async Task<RoleModel?> GetRoleByIdAsync(Guid roleId)
+        public async Task<RoleModel?> GetRoleByIdAsync(string roleId)
         {
             LoggerUtil.Log(LoggerUtil.LogTag.RoleService, $"Buscando rol por Id: {roleId}");
 
-         
+
             return await GetOrLoadAsync(roleId);
         }
         public async Task<List<RoleModel>> GetAllRolesAsync()
@@ -82,8 +83,8 @@ namespace VentusServer.Services
             foreach (var role in roles)
             {
                 Set(role.RoleId, role);
-                if (!string.IsNullOrWhiteSpace(role.Name))
-                    _nameToIdCache[role.Name] = role.RoleId;
+                if (!string.IsNullOrWhiteSpace(role.DisplayName))
+                    _nameToIdCache[role.DisplayName] = role.RoleId;
             }
 
             return roles;
@@ -91,43 +92,54 @@ namespace VentusServer.Services
 
         public async Task CreateRoleAsync(RoleModel role)
         {
-            LoggerUtil.Log(LoggerUtil.LogTag.RoleService, $"Creando nuevo rol: {role.Name} (ID: {role.RoleId})");
+            LoggerUtil.Log(LoggerUtil.LogTag.RoleService, $"Creando nuevo rol: {role.DisplayName} (ID: {role.RoleId})");
 
-            var existing = await GetRoleByNameAsync(role.Name);
+            var existing = await GetRoleByDisplayNameAsync(role.DisplayName);
             if (existing != null)
             {
-                LoggerUtil.Log(LoggerUtil.LogTag.RoleService, $"Ya existe un rol con el nombre: {role.Name}", isError: true);
-                throw new Exception($"El rol '{role.Name}' ya existe.");
+                LoggerUtil.Log(LoggerUtil.LogTag.RoleService, $"Ya existe un rol con el nombre: {role.DisplayName}", isError: true);
+                throw new Exception($"El rol '{role.DisplayName}' ya existe.");
             }
 
             var created = await _roleDao.CreateRoleAsync(role);
             if (!created)
             {
-                LoggerUtil.Log(LoggerUtil.LogTag.RoleService, $"Error al crear el rol {role.Name}", isError: true);
+                LoggerUtil.Log(LoggerUtil.LogTag.RoleService, $"Error al crear el rol {role.DisplayName}", isError: true);
                 throw new Exception("Error al crear el rol.");
             }
 
             Set(role.RoleId, role);
-            _nameToIdCache[role.Name] = role.RoleId;
+            _nameToIdCache[role.DisplayName] = role.RoleId;
         }
 
-        public async Task UpdateRoleAsync(RoleModel role)
+        public async Task<bool> UpdateRoleAsync(UpdateRoleDTO updateRoleDTO)
         {
-            LoggerUtil.Log(LoggerUtil.LogTag.RoleService, $"Actualizando rol: {role.RoleId}");
+            LoggerUtil.Log(LoggerUtil.LogTag.RoleService, $"Actualizando rol: {updateRoleDTO.RoleId}");
 
-            var updated = await _roleDao.UpdateRoleAsync(role);
+            RoleModel roleModel = new RoleModel
+            {
+                RoleId = updateRoleDTO.RoleId,
+                DisplayName = updateRoleDTO.DisplayName,
+                Permissions = updateRoleDTO.Permissions?
+                    .Select(p => Enum.TryParse<Permission>(p, out var perm) ? perm : default)
+                    .Where(p => p != default) // Filtra valores inválidos
+                    .ToList() ?? new()
+
+            };
+            var updated = await _roleDao.UpdateRoleAsync(roleModel);
             if (!updated)
             {
-                LoggerUtil.Log(LoggerUtil.LogTag.RoleService, $"No se pudo actualizar el rol con ID: {role.RoleId}", isError: true);
+                LoggerUtil.Log(LoggerUtil.LogTag.RoleService, $"No se pudo actualizar el rol con ID: {roleModel.RoleId}", isError: true);
                 throw new Exception("Error al actualizar el rol.");
             }
 
-            Set(role.RoleId, role);
-            if (!string.IsNullOrWhiteSpace(role.Name))
-                _nameToIdCache[role.Name] = role.RoleId;
+            Set(roleModel.RoleId, roleModel);
+            if (!string.IsNullOrWhiteSpace(roleModel.DisplayName))
+                _nameToIdCache[roleModel.DisplayName] = roleModel.RoleId;
+            return updated;
         }
 
-        public async Task<bool> DeleteRoleAsync(Guid roleId)
+        public async Task<bool> DeleteRoleAsync(string roleId)
         {
             LoggerUtil.Log(LoggerUtil.LogTag.RoleService, $"Eliminando rol con ID: {roleId}");
 

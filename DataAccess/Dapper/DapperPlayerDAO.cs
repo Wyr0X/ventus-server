@@ -20,7 +20,7 @@ namespace VentusServer.DataAccess.Dapper
 
             try
             {
-                LoggerUtil.Log(LoggerUtil.LogTag.DapperPlayerDAO,  $"Buscando jugador por ID: {playerId}");
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperPlayerDAO, $"Buscando jugador por ID: {playerId}");
                 using var connection = _connectionFactory.CreateConnection();
                 var row = await connection.QueryFirstOrDefaultAsync(PlayerQueries.SelectById, new { PlayerId = playerId });
                 return row == null ? null : PlayerMapper.FromRow(row);
@@ -130,28 +130,33 @@ namespace VentusServer.DataAccess.Dapper
 
         public async Task<PlayerModel> CreatePlayerAsync(Guid accountId, CreatePlayerDTO createPlayerDTO)
         {
-            var newPlayer = new PlayerModel(
-                id: 0,
-                accountId: accountId,
-                name: createPlayerDTO.Name,
-                gender: createPlayerDTO.Gender,
-                race: createPlayerDTO.Race,
-                level: 0,
-                playerClass: createPlayerDTO.Class
-            )
+            // Creamos el jugador usando el constructor que pasa todas las propiedades requeridas
+            Gender genderEnum = (Gender)createPlayerDTO.Gender;
+            Race raceEnum = (Race)createPlayerDTO.Race;
+            CharacterClass classEnum = (CharacterClass)createPlayerDTO.Class;
+
+            var newPlayer = new PlayerModel
             {
-                CreatedAt = DateTime.UtcNow,
-                LastLogin = DateTime.UtcNow,
-                Status = "active"
+                Id = 0,
+                Gender = genderEnum,
+                Race = raceEnum,
+                Name = createPlayerDTO.Name,
+                Level = 0,
+                Class = classEnum,
+                AccountId = accountId,
+                // Aquí solo inicializas las propiedades no requeridas
+                CreatedAt = DateTime.UtcNow,          // Asignación adicional
+                LastLogin = DateTime.UtcNow,          // Asignación adicional
+                Status = "active"                     // Asignación adicional
             };
 
             try
             {
-                var entity = PlayerMapper.ToEntity(newPlayer); // <-- conversión a entidad
+                var entity = PlayerMapper.ToEntity(newPlayer); // Conversión a entidad
 
                 using var connection = _connectionFactory.CreateConnection();
                 var newId = await connection.ExecuteScalarAsync<int>(PlayerQueries.Insert, entity);
-                newPlayer.Id = newId;
+                newPlayer.Id = newId;  // Asigna el Id generado
                 return newPlayer;
             }
             catch (Exception ex)

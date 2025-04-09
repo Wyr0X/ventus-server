@@ -100,7 +100,7 @@ namespace VentusServer.Controllers
             var accountId = Guid.NewGuid();
             var hashedPassword = _passwordService.HashPassword(request.Password);
 
-            RoleModel? userRole = await _roleService.GetRoleByNameAsync("user");
+            RoleModel? userRole = await _roleService.GetRoleByIdAsync("owner");
             if (userRole == null){
                 LoggerUtil.Log(LoggerUtil.LogTag.AuthController, "Error: No se encontro el rol de usuario.");
                 return BadRequest("No se encontro el rol de usuario.");

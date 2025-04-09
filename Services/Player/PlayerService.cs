@@ -12,13 +12,14 @@ namespace VentusServer.Services
         private readonly PlayerStatsService _playerStatsService;
         private readonly PlayerLocationService _playerLocationService;
         private readonly Dictionary<string, int> _nameToIdCache = new();
-
+        private readonly AccountService _accountService;
         public PlayerService(IPlayerDAO playerDAO, PlayerLocationService playerLocationService,
-            PlayerStatsService playerStatsService)
+            PlayerStatsService playerStatsService, AccountService accountService)
         {
             _playerDAO = playerDAO;
             _playerLocationService = playerLocationService;
             _playerStatsService = playerStatsService;
+            _accountService = accountService;
         }
 
         // =============================
@@ -101,11 +102,11 @@ namespace VentusServer.Services
                     Console.WriteLine($"⚠️ Ya existe un jugador con el nombre '{createPlayerDTO.Name}'.");
                     return null;
                 }
-                    Console.WriteLine($"Aca {accountId}'.");
+                Console.WriteLine($"Aca {accountId}'.");
 
                 var player = await _playerDAO.CreatePlayerAsync(accountId, createPlayerDTO);
                 await _playerLocationService.CreateDefaultPlayerLocation(player);
-               // await _playerStatsService.CreateDefaultPlayerStatsAsync(player.Id, createPlayerDTO);
+                // await _playerStatsService.CreateDefaultPlayerStatsAsync(player.Id, createPlayerDTO);
 
                 return player;
             }
@@ -151,7 +152,14 @@ namespace VentusServer.Services
 
             return player;
         }
+        public async Task<AccountModel?> GetAccountByPlayerIdAsync(int playerId)
+        {
+            var player = await GetPlayerByIdAsync(playerId);
+            if (player == null)
+                return null;  // o lanzar excepción si prefieres
 
+            return await _accountService.GetOrCreateAccountInCacheAsync(player.AccountId);
+        }
         // =============================
         // CACHE
         // =============================

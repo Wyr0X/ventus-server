@@ -11,7 +11,7 @@ namespace VentusServer.DataAccess.Queries
         gender INT NOT NULL,
         race INT NOT NULL,
         level INT DEFAULT 1,
-        class VARCHAR(50) NOT NULL,
+        class INT NOT NULL,
         created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
         last_login TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
         status VARCHAR(50) DEFAULT 'active'
