@@ -82,7 +82,7 @@ public class PlayerStatsFactory
     private static PlayerStatsModel AjustarPorGenero(PlayerStatsModel stats, Gender gender)
     {
         // Si decides añadir alguna bonificación o penalización según el género, puedes hacerlo aquí
-        if (gender == Gender.Femenino)
+        if (gender == Gender.Female)
         {
             // Ejemplo de bonificación por género, por si alguna vez decides añadirla
             stats.MaxHp += 5;

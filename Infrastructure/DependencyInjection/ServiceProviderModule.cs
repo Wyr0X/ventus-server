@@ -141,6 +141,7 @@ namespace VentusServer
                 .AddSingleton<AuthController>()
                 .AddSingleton<AdminAccountController>()
                 .AddSingleton<AdminRolesController>()
+                .AddSingleton<AdminLogController>()
                 .AddSingleton(sp =>
                     new Lazy<WebSocketServerController>(
                         () => sp.GetRequiredService<WebSocketServerController>()

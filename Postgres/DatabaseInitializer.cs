@@ -4,6 +4,8 @@ using Npgsql;
 using VentusServer.DataAccess.Interfaces;
 using VentusServer.DataAccess.Queries;
 using VentusServer.DataAccess.Seeders;
+using VentusServer.Seeders;
+using VentusServer.Services;
 
 namespace VentusServer.DataAccess.Postgres
 {
@@ -12,10 +14,17 @@ namespace VentusServer.DataAccess.Postgres
         private readonly PostgresDbService _postgresDbService;
 
         private IRoleDAO _roleDAO;
-        public DatabaseInitializer(PostgresDbService postgresDbService, IRoleDAO roleDAO)
+        IAccountDAO _accountDAO;
+        IPlayerDAO _playerDAO;
+        PasswordService _passwordService;
+        public DatabaseInitializer(PostgresDbService postgresDbService, IRoleDAO roleDAO,
+        IAccountDAO accountDAO, IPlayerDAO playerDAO, PasswordService passwordService)
         {
             _postgresDbService = postgresDbService;
             _roleDAO = roleDAO;
+            _accountDAO = accountDAO;
+            _playerDAO = playerDAO;
+            _passwordService = passwordService;
         }
 
         public async Task InitializeDatabaseAsync()
@@ -29,6 +38,10 @@ namespace VentusServer.DataAccess.Postgres
                 await InitializeMapsAsync();
                 await InitializePlayerLocationsAsync();
                 await InitializePlayerStatsAsync();
+                await RoleSeeder.SeedRolesAsync(_roleDAO);
+                await new AccountSeeder(_accountDAO, _passwordService).SeedAsync();
+                await new AccountSeeder(_accountDAO, _passwordService).SeedAsync();
+                await new PlayerSeeder(_playerDAO, _accountDAO).SeedAsync();
 
             }
             catch (Exception ex)
@@ -128,7 +141,6 @@ namespace VentusServer.DataAccess.Postgres
 
                 await _postgresDbService.ExecuteQueryAsync(RoleQueries.CreateTableQuery);
                 Console.WriteLine("✅ Tabla 'player_roles' creada correctamente (si no existía).");
-                await RoleSeeder.SeedRolesAsync(_roleDAO);
             }
             catch (Exception ex)
             {
