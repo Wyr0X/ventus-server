@@ -5,6 +5,7 @@ using VentusServer.DataAccess.Interfaces;
 using VentusServer.DataAccess.Queries;
 using VentusServer.DataAccess.Seeders;
 using VentusServer.Seeders;
+using VentusServer.Seeding;
 using VentusServer.Services;
 
 namespace VentusServer.DataAccess.Postgres
@@ -17,14 +18,18 @@ namespace VentusServer.DataAccess.Postgres
         IAccountDAO _accountDAO;
         IPlayerDAO _playerDAO;
         PasswordService _passwordService;
+        ItemService _itemService;
         public DatabaseInitializer(PostgresDbService postgresDbService, IRoleDAO roleDAO,
-        IAccountDAO accountDAO, IPlayerDAO playerDAO, PasswordService passwordService)
+        IAccountDAO accountDAO, IPlayerDAO playerDAO, PasswordService passwordService,
+        ItemService itemService)
         {
+            _itemService = itemService;
             _postgresDbService = postgresDbService;
             _roleDAO = roleDAO;
             _accountDAO = accountDAO;
             _playerDAO = playerDAO;
             _passwordService = passwordService;
+            _itemService = itemService;
         }
 
         public async Task InitializeDatabaseAsync()
@@ -38,8 +43,10 @@ namespace VentusServer.DataAccess.Postgres
                 await InitializeMapsAsync();
                 await InitializePlayerLocationsAsync();
                 await InitializePlayerStatsAsync();
+                await InitializeItemsAsync();
                 await RoleSeeder.SeedRolesAsync(_roleDAO);
-                //  await new AccountSeeder(_accountDAO, _passwordService).SeedAsync();
+                await new AccountSeeder(_accountDAO, _passwordService).SeedAsync();
+                await new ItemSeeder(_itemService).SeedFromFileAsync("Data/items.json");
                 // await new AccountSeeder(_accountDAO, _passwordService).SeedAsync();
                 //  await new PlayerSeeder(_playerDAO, _accountDAO).SeedAsync();
 
@@ -145,6 +152,19 @@ namespace VentusServer.DataAccess.Postgres
             catch (Exception ex)
             {
                 Console.WriteLine($"❌ Error al crear la tabla 'player_roles': {ex.Message}");
+            }
+        }
+        private async Task InitializeItemsAsync()
+        {
+            try
+            {
+
+                await _postgresDbService.ExecuteQueryAsync(ItemQueries.CreateTableQuery);
+                Console.WriteLine("✅ Tabla 'items' creada correctamente (si no existía).");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Error al crear la tabla 'items': {ex.Message}");
             }
         }
     }

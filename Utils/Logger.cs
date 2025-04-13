@@ -17,6 +17,7 @@ public static class LoggerUtil
         DapperAccountDAO,
         DapperWorldDAO,
         DapperMapDAO,
+        DapperItemDAO,
         DapperPlayerDAO,
         DapperPlayerStatsDAO,
         DapperRoleDAO,
@@ -60,6 +61,7 @@ public static class LoggerUtil
         { LogTag.DapperRoleDAO, (false, ConsoleColor.Green, false) },
         { LogTag.DapperAccountDAO, (false, ConsoleColor.Green, false) },
         { LogTag.DapperWorldDAO, (false, ConsoleColor.Green, false) },
+        { LogTag.DapperItemDAO, (false, ConsoleColor.Green, false) },
         { LogTag.RequirePermissionAttribute, (false, ConsoleColor.Blue, false) },
 
 

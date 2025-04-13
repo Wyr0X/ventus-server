@@ -85,6 +85,9 @@ namespace VentusServer
                 .AddSingleton<IRoleDAO>(sp =>
                     new DapperRoleDAO(sp.GetRequiredService<IDbConnectionFactory>())
                 )
+                .AddSingleton<IItemDAO>(sp =>
+                    new DapperItemDAO(sp.GetRequiredService<IDbConnectionFactory>())
+                )
                 .AddSingleton<IPlayerStatsDAO>(sp =>
                     new DapperPlayerStatsDAO(sp.GetRequiredService<IDbConnectionFactory>())
                 );
@@ -119,6 +122,7 @@ namespace VentusServer
                 .AddSingleton<ResponseService>()
                 .AddSingleton<RoleService>()
                 .AddSingleton<PermissionService>()
+                .AddSingleton<ItemService>()
                 .AddSingleton<PlayerStatsService>();
 
         }
@@ -143,6 +147,8 @@ namespace VentusServer
                 .AddSingleton<AdminAccountController>()
                 .AddSingleton<AdminRolesController>()
                 .AddSingleton<AdminLogController>()
+                .AddSingleton<AdminItemController>()
+
                 .AddSingleton(sp =>
                     new Lazy<WebSocketServerController>(
                         () => sp.GetRequiredService<WebSocketServerController>()
