@@ -1,7 +1,5 @@
 using Game.Models;
 using Google.Protobuf.Collections;
-using Protos.Game.Session;
-using Protos.Game.World;
 
 public class WorldManager
 {
@@ -83,37 +81,37 @@ public class WorldManager
 
     public void UpdateWorld()
     {
-        foreach (var entity in _worlds.Values)
-        {
-            WorldEntity world = entity;
+        // foreach (var entity in _worlds.Values)
+        // {
+        //     WorldEntity world = entity;
 
-            List<Entity> charactersInWorld = GetCharactersInWorld(world.GetWorldId());
-            RepeatedField<PlayerState> playersState = [];
-            List<Guid> accountsId = [];
+        //     List<Entity> charactersInWorld = GetCharactersInWorld(world.GetWorldId());
+        //     RepeatedField<PlayerState> playersState = [];
+        //     List<Guid> accountsId = [];
 
-            foreach (var entityC in charactersInWorld)
-            {
-                PlayerEntity playerEntity = (PlayerEntity)entityC;
-                Position? position = (Position?)entityC.Get(typeof(Position));
-                Character? character = (Character?)entityC.Get(typeof(Character));
-                if (character == null || position == null) continue;
-                PlayerState playerState = new PlayerState
-                {
-                    Hp = 100,
-                    Id = playerEntity.PlayerId,
-                    Name = character.PlayerName,
-                    X = position.X,
-                    Y = position.Y
+        //     foreach (var entityC in charactersInWorld)
+        //     {
+        //         PlayerEntity playerEntity = (PlayerEntity)entityC;
+        //         Position? position = (Position?)entityC.Get(typeof(Position));
+        //         Character? character = (Character?)entityC.Get(typeof(Character));
+        //         if (character == null || position == null) continue;
+        //         PlayerState playerState = new PlayerState
+        //         {
+        //             Hp = 100,
+        //             Id = playerEntity.PlayerId,
+        //             Name = character.PlayerName,
+        //             X = position.X,
+        //             Y = position.Y
 
-                };
-                accountsId.Add(character.AccountId);
-                playersState.Add(playerState);
+        //         };
+        //         accountsId.Add(character.AccountId);
+        //         playersState.Add(playerState);
 
-                // _syncSystem.UpdatePosition(character.AccountId, character.PlayerId, position.X, position.Y);
-            }
-            WorldStateUpdate worldStateUpdate = CreateWorldStateUpdate(playersState);
-            // _syncSystem.SendWorlState(accountsId, worldStateUpdate);
-        }
+        //         // _syncSystem.UpdatePosition(character.AccountId, character.PlayerId, position.X, position.Y);
+        //     }
+        //     // WorldStateUpdate worldStateUpdate = CreateWorldStateUpdate(playersState);
+        //     // _syncSystem.SendWorlState(accountsId, worldStateUpdate);
+        // }
     }
     public void SpawnPlayer(int worldId, Entity playerSpawnEntity, Character characterSpawn, Position positionOfPlayerSpawn)
     {
@@ -164,14 +162,14 @@ public class WorldManager
         }
         return characteresEntity;
     }
-    public static WorldStateUpdate CreateWorldStateUpdate(
-       RepeatedField<PlayerState> playerStates
+    // public static WorldStateUpdate CreateWorldStateUpdate(
+    //    RepeatedField<PlayerState> playerStates
 
-    )
-    {
+    // )
+    // {
 
-        var update = new WorldStateUpdate();
-        update.Players.AddRange(playerStates); // Agregar elementos en lugar de asignar directamente
-        return update;
-    }
+    //     var update = new WorldStateUpdate();
+    //     update.Players.AddRange(playerStates); // Agregar elementos en lugar de asignar directamente
+    //     return update;
+    // }
 }

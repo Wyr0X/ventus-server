@@ -2,8 +2,7 @@ using System;
 using System.Collections.Generic;
 using Game.Models;
 using Google.Protobuf.Collections;
-using Protos.Game.Movement;
-using Protos.Game.Session;
+using Protos.Game.Client.Movement;
 using VentusServer.Services;
 using static GameUtils;
 
@@ -16,7 +15,7 @@ public class MovementManager
     public MovementManager(GameEngine game
 )
     {
-     
+
         _game = game;
     }
 
@@ -25,10 +24,10 @@ public class MovementManager
         RepeatedField<uint> protoKeys = playerInput.Keys; // Ejemplo de entrada
 
         List<KeyEnum> keys = GameUtils.ParseKeys(protoKeys);
-       
-       int playerId = 0;
-       InputsKeyEvent InputsKeyEvent = new InputsKeyEvent(accountId, playerId, keys);
-       _game.EnqueuEvent(InputsKeyEvent);
+
+        int playerId = 0;
+        InputsKeyEvent InputsKeyEvent = new InputsKeyEvent(accountId, playerId, keys);
+        _game.EnqueuEvent(InputsKeyEvent);
     }
 
 }

@@ -39,9 +39,9 @@ namespace VentusServer.DataAccess.Postgres
                 await InitializePlayerLocationsAsync();
                 await InitializePlayerStatsAsync();
                 await RoleSeeder.SeedRolesAsync(_roleDAO);
-                await new AccountSeeder(_accountDAO, _passwordService).SeedAsync();
-                await new AccountSeeder(_accountDAO, _passwordService).SeedAsync();
-                await new PlayerSeeder(_playerDAO, _accountDAO).SeedAsync();
+                //  await new AccountSeeder(_accountDAO, _passwordService).SeedAsync();
+                // await new AccountSeeder(_accountDAO, _passwordService).SeedAsync();
+                //  await new PlayerSeeder(_playerDAO, _accountDAO).SeedAsync();
 
             }
             catch (Exception ex)

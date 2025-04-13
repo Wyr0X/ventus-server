@@ -1,6 +1,4 @@
 
-using Protos.Game.World;
-
 public class SyncSystem
 {
     private EntityManager entityManager;
@@ -11,21 +9,21 @@ public class SyncSystem
         this.messageSender = messageSender;
     }
 
-    public void UpdatePosition(Guid accountId, int playerId, float x, float y)
+    public void UpdatePosition(Guid accountId, int playerId, int x, int y)
     {
 
-       messageSender.Value.SendPlayerPosition(accountId, playerId, x, y);
+        messageSender.Value.SendPlayerPosition(accountId, playerId, x, y);
 
     }
     public void SpawnPlayer(Guid accountId, int playerId, float x, float y)
     {
 
 
-       messageSender.Value.SpawnPlayer(accountId, playerId, x, y);
+        messageSender.Value.SpawnPlayer(accountId, playerId, x, y);
 
     }
-    public void SendWorlState(List<Guid> accountsIds, WorldStateUpdate worldStateUpdate){
-        messageSender.Value.SendWorlState(accountsIds, worldStateUpdate ); 
+    // public void SendWorlState(List<Guid> accountsIds, WorldStateUpdate worldStateUpdate){
+    //     messageSender.Value.SendWorlState(accountsIds, worldStateUpdate ); 
 
-    }
+    // }
 }

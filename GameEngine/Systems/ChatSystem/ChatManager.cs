@@ -1,5 +1,4 @@
-using Protos.Common;
-using Protos.Game.Chat;
+using Protos.Game.Client.Chat;
 using VentusServer.Services;
 
 
@@ -24,8 +23,10 @@ public class ChatManager
         _privateChatService = new PrivateChatService();
         _moderationService = moderationService;
     }
-    public void HandleChatSend(Guid senderId, ChatSend chatSend)
+    public void HandleChatSend(UserMessagePair messagePair)
     {
+        ChatSend chatSend = messagePair.ClientMessage.ChatSend;
+        Guid senderId = messagePair.AccountId;
         if (_moderationService.IsMessageBlocked(chatSend.Message))
         {
             Console.WriteLine("❌ Mensaje bloqueado por moderación.");
@@ -67,7 +68,8 @@ public class ChatManager
             if (playerLocation != null && playerModel != null && playerToSend != null && playerToSend.isSpawned)
             {
 
-                _privateChatService.SendPrivateMessage(playerToSend.AccountId, chatSend, playerModel.Name, _websocketServerController.Value.SendServerPacketByAccountId);
+                _privateChatService.SendPrivateMessage(playerToSend.AccountId, playerModel.Name,
+                chatSend.PlayerId, chatSend.Message, chatSend.TimestampMs, _websocketServerController.Value.SendServerPacketByAccountId);
 
             }
 
@@ -96,7 +98,8 @@ public class ChatManager
 
             }
             Console.WriteLine($"accountsIdToBroadcast {accountsIdToBroadcast} {accountsIdToBroadcast.Count()}");
-            _globalChatService.SendGlobalMessage(accountsIdToBroadcast, chatSend, playerModel.Name, _websocketServerController.Value.SendServerPacketByAccountId);
+            // _globalChatService.SendGlobalMessage(accountsIdToBroadcast, chatSend.PlayerId, chatSend.Message, chatSend.TimestampMs
+            // , playerModel.Name, _websocketServerController.Value.SendServerPacketByAccountId);
 
         }
 

@@ -3,7 +3,10 @@ using System.Net;
 using System.Net.WebSockets;
 using Google.Protobuf;
 using Grpc.Core;
-using Protos.Common;
+using Protos.Auth;
+using Ventus.Client;
+using Ventus.Server;
+using Ventus.Server.Common;
 using VentusServer.Services;
 
 public class WebSocketServerController
@@ -11,11 +14,11 @@ public class WebSocketServerController
     private readonly WebSocketAuthenticationService _authService;
     private readonly WebSocketConnectionManager _connectionManager;
     private readonly ConcurrentQueue<UserMessagePair> _messageQueue;
-    private readonly MessageHandler _messageHandler;
+    private readonly MessageDispatcher _messageDispatcher;
 
-    public WebSocketServerController(MessageHandler messageHandler, AccountService accountService)
+    public WebSocketServerController(MessageDispatcher messageDispatcher, AccountService accountService)
     {
-        _messageHandler = messageHandler;
+        _messageDispatcher = messageDispatcher;
         _messageQueue = new ConcurrentQueue<UserMessagePair>();
         _authService = new WebSocketAuthenticationService(accountService);
         _connectionManager = new WebSocketConnectionManager();
@@ -56,22 +59,21 @@ public class WebSocketServerController
         while (true)
         {
             if (_messageQueue.TryDequeue(out var pair))
-                _messageHandler.HandleIncomingMessage(pair);
+                _messageDispatcher.Dispatch(pair);
             await Task.Delay(100);
         }
     }
 
-    public async void SendServerPacketByAccountId(Guid accountId, IMessage message)
+    public async void SendServerPacketByAccountId(Guid accountId, ServerMessage message)
     {
 
 
         if (_connectionManager.TryGetSocket(accountId, out var socket))
         {
-            Console.WriteLine($"Entra");
 
             byte[] data = message.ToByteArray();
             await socket.SendAsync(new(data), WebSocketMessageType.Binary, true, CancellationToken.None);
-         //   LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"📤 Enviado mensaje a {accountId}: {message.GetType().Name}");
+            LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"📤 Enviado mensaje a {accountId}: {message.PayloadCase}");
         }
         else
         {
@@ -80,7 +82,7 @@ public class WebSocketServerController
 
     }
 
-    public void SendBroadcast(List<Guid> accountIds, IMessage message)
+    public void SendBroadcast(List<Guid> accountIds, ServerMessage message)
     {
         foreach (var id in accountIds)
         {
@@ -107,10 +109,10 @@ public class WebSocketServerController
             var clientMessage = ClientMessage.Parser.ParseFrom(ms.ToArray());
             LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"Bytes :{ms.ToArray()}");
 
-            LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"Paquete recibido - Tipo :{clientMessage.MessageCase}");
-            if (clientMessage.MessageCase == ClientMessage.MessageOneofCase.AuthRequest)
+            LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"Paquete recibido - Tipo :{clientMessage.PayloadCase}");
+            if (clientMessage.PayloadCase == ClientMessage.PayloadOneofCase.LoginRequest)
             {
-                if (!_authService.TryAuthenticate(clientMessage.AuthRequest.Token, out accountId))
+                if (!_authService.TryAuthenticate(clientMessage.LoginRequest.Token, out accountId))
                 {
                     LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"❌ Token inválido recibido de {connectionId}");
                     await socket.CloseAsync(WebSocketCloseStatus.PolicyViolation, "Token inválido", CancellationToken.None);
@@ -118,7 +120,7 @@ public class WebSocketServerController
                 }
                 await _connectionManager.RemoveConnectionByAccountId(accountId);
 
-                if (!_connectionManager.TryAuthenticateConnection(connectionId, accountId, clientMessage.AuthRequest.Token, out socket))
+                if (!_connectionManager.TryAuthenticateConnection(connectionId, accountId, clientMessage.LoginRequest.Token, out socket))
                 {
                     LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"❌ Fallo al autenticar conexión {connectionId}");
                     await socket.CloseAsync(WebSocketCloseStatus.InternalServerError, "No se pudo autenticar", CancellationToken.None);
@@ -141,16 +143,18 @@ public class WebSocketServerController
                     await socket.CloseAsync(WebSocketCloseStatus.PolicyViolation, "Usuario no autenticado", CancellationToken.None);
                     return;
                 }
-                LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"Paquete recibido - Tipo :{clientMessage.MessageCase}");
+                LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"Paquete recibido - Tipo :{clientMessage.PayloadCase}");
 
-                if (clientMessage.MessageCase == ClientMessage.MessageOneofCase.ClientMessagePing)
+                if (clientMessage.PayloadCase == ClientMessage.PayloadOneofCase.MessagePing)
                 {
-                    var pong = new ServerMessage { ServerMessagePong = new ServerMessagePong { Message = "Pong" } };
-                    SendServerPacketByAccountId(accountId, pong);
+                    LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"📥 Ping recibido de {accountId}");
+                    var pong = new ServerMessage { MessagePong = new MessagePong { Message = "Pong" } };
+                    await socket.SendAsync(new(pong.ToByteArray()), WebSocketMessageType.Binary, true, CancellationToken.None);
                 }
+
                 else
                 {
-                    LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"📥 Mensaje recibido de {accountId}: {clientMessage.MessageCase}");
+                    LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"📥 Mensaje recibido de {accountId}: {clientMessage.PayloadCase}");
                     _messageQueue.Enqueue(new UserMessagePair(accountId, clientMessage));
                 }
             }
@@ -172,24 +176,22 @@ public class WebSocketServerController
     }
     public void SendWebSocketStatusOpen(Guid accountId)
     {
-        ServerStatusMessage serverStatusMessage = new ServerStatusMessage
+        LoginResponse loginResponse = new LoginResponse
         {
-            Level = NotificationLevel.Info.GetDescription(),
-            Message = "Conexión con el Servidor establecida correctamente.",
-            Timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+            Success = true
         };
-        ServerMessage serverMessage = new ServerMessage { ServerStatusMessage = serverStatusMessage };
+        ServerMessage serverMessage = new ServerMessage { LoginResponse = loginResponse };
         SendServerPacketByAccountId(accountId, serverMessage);
     }
     public void SendSessionInvalidate(Guid accountId)
     {
-        ServerStatusMessage serverStatusMessage = new ServerStatusMessage
+        StatusMessage serverStatusMessage = new StatusMessage
         {
             Level = NotificationLevel.Info.GetDescription(),
             Message = "Tu cuenta ha iniciado sesión desde otro lugar. Has sido desconectado.",
             Timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
         };
-        ServerMessage serverMessage = new ServerMessage { ServerStatusMessage = serverStatusMessage };
+        ServerMessage serverMessage = new ServerMessage { StatusMessage = serverStatusMessage };
         SendServerPacketByAccountId(accountId, serverMessage);
 
     }

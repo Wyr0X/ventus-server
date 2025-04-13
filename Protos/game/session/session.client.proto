@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package protos.game.client.session;
+
+
+message PlayerJoin {
+  int32 player_id = 1;
+}
+
+message PlayerExit {
+    string player_id = 1;
+  }

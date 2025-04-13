@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package protos.game.server.movement;
+
+
+
+message PlayerPosition {
+  int32 player_id = 1;      // ID del jugador que se movió
+  int32 x = 2;              // Nueva posición X
+  int32 y = 3;              // Nueva posición Y
+  int64 timestamp = 4;      // Timestamp del servidor para el movimiento
+}
+

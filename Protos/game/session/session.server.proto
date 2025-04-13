@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package protos.game.server.session;
+
+
+
+message PlayerSpawn {
+  int32 player_id = 1;
+  //Informacion extra del MAP - COMPLETAR
+  float x = 2;  // Posición X del jugador en el mapa
+  float y = 3;  // Posición Y del jugador en el mapa
+}
+

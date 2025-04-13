@@ -1,14 +1,14 @@
 using Google.Protobuf;
-using Protos.Game.Chat;
+using Ventus.Server;
 
-public class GlobalChatService: ChatMessageChannel
+public class GlobalChatService : ChatMessageChannel
 {
 
-    
 
-    public void SendGlobalMessage(   List<Guid> accountIdToBroadcast, ChatSend message, string playerName,   Action<Guid, IMessage> sendServerPacketByAccountI)
+
+    public void SendGlobalMessage(List<Guid> accountIdToBroadcast, int playerId, string message, long timestamp, string playerName, Action<Guid, ServerMessage> sendServerPacketByAccountI)
     {
-        this.SendMessageToAccountIds(accountIdToBroadcast, sendServerPacketByAccountI, playerName, message, ChatChannel.GLOBAL.ToString() );
+        this.SendMessageToAccountIds(accountIdToBroadcast, sendServerPacketByAccountI, playerName, playerId, message, timestamp, ChatChannel.GLOBAL.ToString());
     }
 
 }

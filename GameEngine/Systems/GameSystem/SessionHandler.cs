@@ -1,35 +1,23 @@
 using System.Net.WebSockets;
-using Protos.Common;
-using Protos.Game.Movement;
-using Protos.Game.Session;
+using Ventus.Client;
 
 public class SessionHandler
 {
 
     private readonly SessionManager _sessionManager;
-
-    public SessionHandler(SessionManager sessionManager)
+    private readonly MessageDispatcher _messageDispatcher;
+    public SessionHandler(MessageDispatcher messageDispatcher, SessionManager sessionManager)
     {
+        Console.WriteLine("Entra acaaaaaaaaaaaa 7");
+
         _sessionManager = sessionManager;
 
+        _messageDispatcher = messageDispatcher;
+        Console.WriteLine($"Entra acaaaaaaaaaaaa 5 ${_messageDispatcher}");
+
+        _messageDispatcher.Subscribe(ClientMessage.PayloadOneofCase.PlayerJoin, _sessionManager.HandlePlayerJoin);
+
 
     }
-    // Función que maneja los mensajes de movimiento recibidos desde el cliente
 
-    public void HandleSessionMessage(UserMessagePair messagePair)
-    {
-        ClientMessage clientMessage = (ClientMessage)messagePair.ClientMessage;
-
-        ClientMessageGameSession sessionMessage = clientMessage.ClientMessageSession;
-        switch (sessionMessage.MessageTypeCase)
-        {
-            case ClientMessageGameSession.MessageTypeOneofCase.PlayerJoin:
-                _sessionManager.HandlePlayerJoin(messagePair);
-                break;
-
-            default:
-                Console.WriteLine("❌ Tipo de mensaje de movimiento no reconocido.");
-                break;
-        }
-    }
 }

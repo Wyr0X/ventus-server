@@ -1,10 +1,8 @@
-using System.Net.WebSockets;
-using Google.Protobuf;
-using Protos.Auth;
-using Protos.Common;
-using Protos.Game.Session;
-using Protos.Game.World;
-using Microsoft.Extensions.Logging; // Necesario para ILogger
+using Ventus.Server;
+using Protos.Game.Server.Session;
+using Grpc.Core;
+using Protos.Game.Server.Movement;
+using Protos.Auth; // Necesario para ILogger
 
 public class MessageSender
 {
@@ -18,20 +16,20 @@ public class MessageSender
     public void SendAuthResponse(Guid accountId, bool success)
     {
 
-        var authResponse = new AuthResponse
+        var loginResponse = new LoginResponse
         {
             Success = success
         };
 
         var serverMessage = new ServerMessage
         {
-            AuthResponse = authResponse
+            LoginResponse = loginResponse
         };
 
         _websocket.SendServerPacketByAccountId(accountId, serverMessage);
     }
 
-    public void SendPlayerPosition(Guid accountId, int playerId, float x, float y)
+    public void SendPlayerPosition(Guid accountId, int playerId, int x, int y)
     {
 
         var playerPosition = new PlayerPosition
@@ -41,12 +39,12 @@ public class MessageSender
             Y = y
         };
 
-        var serverMessageGameSession = new ServerMessageGameSession
+        var serverMessage = new ServerMessage
         {
             PlayerPosition = playerPosition
         };
 
-        _websocket.SendServerPacketByAccountId(accountId, serverMessageGameSession);
+        _websocket.SendServerPacketByAccountId(accountId, serverMessage);
     }
 
     public void SpawnPlayer(Guid accountId, int playerId, float x, float y)
@@ -59,33 +57,33 @@ public class MessageSender
             Y = y
         };
 
-        var serverMessageGameSession = new ServerMessageGameSession
+
+        var serverMessage = new ServerMessage
         {
             PlayerSpawn = playerSpawn
         };
 
-        var serverMessage = new ServerMessage
-        {
-            ServerMessageSession = serverMessageGameSession
-        };
-            Console.WriteLine($"Entra 3");
-
         _websocket.SendServerPacketByAccountId(accountId, serverMessage);
     }
 
-    public void SendWorlState(List<Guid> accountsIds, WorldStateUpdate worldStateUpdate)
-    {
+    // public void SendWorlState(List<Guid> accountsIds, WorldStateUpdate worldStateUpdate)
+    // {
 
-        var serverWorldMessage = new ServerWorldMessage
-        {
-            WorldStateUpdate = worldStateUpdate
-        };
+    //     var serverWorldMessage = new ServerWorldMessage
+    //     {
+    //         WorldStateUpdate = worldStateUpdate
+    //     };
 
-        var serverMessage = new ServerMessage
-        {
-            ServerWorldMessage = serverWorldMessage
-        };
+    //     var serverMessage = new ServerMessage
+    //     {
+    //         ServerWorldMessage = serverWorldMessage
+    //     };
 
-        _websocket.SendBroadcast(accountsIds, serverMessage);
-    }
+    //     _websocket.SendBroadcast(accountsIds, serverMessage);
+    // }
+}
+
+internal class AuthResponse
+{
+    public bool Success { get; set; }
 }

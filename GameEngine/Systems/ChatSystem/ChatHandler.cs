@@ -1,5 +1,4 @@
-using Protos.Common;
-using Protos.Game.Chat;
+using Ventus.Client;
 
 
 
@@ -8,26 +7,13 @@ public class ChatHandler
     private readonly ResponseService _responseService;
 
     private readonly ChatManager _chatManager;
-    public ChatHandler( ResponseService responseService, ChatManager chatManager)
+    private readonly MessageDispatcher _messageDispatcher;
+    public ChatHandler(MessageDispatcher messageDispatcher, ResponseService responseService, ChatManager chatManager)
     {
         _responseService = responseService;
         _chatManager = chatManager;
+        _messageDispatcher = messageDispatcher;
+        _messageDispatcher.Subscribe(ClientMessage.PayloadOneofCase.ChatSend, _chatManager.HandleChatSend);
     }
 
-  public void HandleChatMessage(UserMessagePair messagePair)
-    {
-        ClientMessage clientMessage = (ClientMessage)messagePair.ClientMessage;
-        ClientMessageChat? messageChat = clientMessage.ClientMessageChat;
-        if (messageChat == null) return;
-        switch (messageChat.MessageCase)
-        {
-            case ClientMessageChat.MessageOneofCase.ChatSend:
-                _chatManager.HandleChatSend(messagePair.AccountId, messageChat.ChatSend);
-                break;
-
-            default:
-                Console.WriteLine("❌ Tipo de mensaje de movimiento no reconocido.");
-                break;
-        }
-    }
 }

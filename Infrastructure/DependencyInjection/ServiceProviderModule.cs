@@ -26,8 +26,10 @@ namespace VentusServer
             RegisterServices(services);
             RegisterModels(services);
             RegisterControllers(services);
-
             var provider = services.BuildServiceProvider();
+            provider.GetRequiredService<SessionHandler>();
+            provider.GetRequiredService<ChatHandler>();
+
             return new ServiceProviderContainer(services, provider);
         }
 
@@ -36,6 +38,7 @@ namespace VentusServer
         {
             services
                 .AddSingleton<PostgresDbService>()
+                .AddSingleton<MessageDispatcher>()
                 .AddSingleton<FirebaseService>(sp => new FirebaseService(firebaseCredentialsPath))
                 .AddSingleton<JwtService>()
                 .AddSingleton<GameEngine>()
@@ -91,9 +94,7 @@ namespace VentusServer
         {
             services
                 .AddSingleton<SessionHandler>()
-                .AddSingleton<ChatHandler>()
-                .AddSingleton<AuthHandler>()
-                .AddSingleton<MessageHandler>();
+                .AddSingleton<ChatHandler>();
         }
 
         private static void RegisterManagers(IServiceCollection services)
