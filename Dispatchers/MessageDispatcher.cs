@@ -6,7 +6,6 @@ public class MessageDispatcher
 
     public void Subscribe(ClientMessage.PayloadOneofCase type, Action<UserMessagePair> handler)
     {
-        Console.WriteLine($"Entra acaaaaaaaaaaaa 4 {type}");
 
         if (!_handlers.ContainsKey(type))
             _handlers[type] = new List<Action<UserMessagePair>>();
@@ -17,13 +16,11 @@ public class MessageDispatcher
     public void Dispatch(UserMessagePair message)
     {
         var type = message.ClientMessage.PayloadCase;
-        Console.WriteLine($"Entra acaaaaaaaaaaaa 2 {type}");
 
         if (_handlers.TryGetValue(type, out var handlerList))
         {
             foreach (var handler in handlerList)
             {
-                Console.WriteLine($"Entra acaaaaaaaaaaaa 3 {handler}");
 
                 handler(message);
             }
