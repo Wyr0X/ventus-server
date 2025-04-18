@@ -46,7 +46,7 @@ namespace VentusServer.DataAccess.Postgres
                 await InitializeItemsAsync();
                 await RoleSeeder.SeedRolesAsync(_roleDAO);
                 await new AccountSeeder(_accountDAO, _passwordService).SeedAsync();
-                await new ItemSeeder(_itemService).SeedFromFileAsync("Data/items.json");
+                // await new ItemSeeder(_itemService).SeedFromFileAsync("Data/items.json");
                 // await new AccountSeeder(_accountDAO, _passwordService).SeedAsync();
                 //  await new PlayerSeeder(_playerDAO, _accountDAO).SeedAsync();
 

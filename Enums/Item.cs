@@ -8,7 +8,8 @@ public enum ItemType
     Accessory,
     Tool,
     Quest,
-    Misc
+    Misc,
+    Default
 }
 
 public enum ItemRarity
