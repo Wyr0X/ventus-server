@@ -1,9 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using VentusServer.Domain.Models;
 
 namespace VentusServer.Services
 {
@@ -19,8 +15,17 @@ namespace VentusServer.Services
                 var key = itemProp.Name;
                 var itemData = itemProp.Value;
 
-                var Name = itemData["name"]?["en"]?.ToString() ?? "Unnamed";
-                var Description = itemData["desc"]?["en"]?.ToString() ?? "";
+                var name = new TranslatedTextModel
+                {
+                    En = itemData["name"]?["en"]?.ToString() ?? "Unnamed",
+                    Es = itemData["name"]?["es"]?.ToString() ?? ""
+                };
+
+                var desc = new TranslatedTextModel
+                {
+                    En = itemData["desc"]?["en"]?.ToString() ?? "",
+                    Es = itemData["desc"]?["es"]?.ToString() ?? ""
+                };
 
                 int? hpMin = null, hpMax = null;
                 if (itemData["hp"] is JArray hpArray && hpArray.Count == 2)
@@ -30,30 +35,51 @@ namespace VentusServer.Services
                 }
 
                 int? mp = null;
-                if (itemData["mp"] != null)
-                {
-                    // Si es número (ej. 5) -> parse directo
-                    // Si es string tipo "5%" -> ignoramos o parseamos como -1 o similar
-                    if (int.TryParse(itemData["mp"]?.ToString(), out var mpVal))
-                        mp = mpVal;
-                }
+                if (itemData["mp"] != null && int.TryParse(itemData["mp"]?.ToString(), out var mpVal))
+                    mp = mpVal;
 
                 var sprite = itemData["sprite"]?.Select(t => (int)t).ToArray() ?? Array.Empty<int>();
                 var sound = itemData["sound"]?.ToString();
 
+                // Aquí mapeamos los campos faltantes
+                var itemType = Enum.TryParse<ItemType>(itemData["type"]?.ToString(), out var type) ? type : ItemType.Consumable;
+                var itemRarity = Enum.TryParse<ItemRarity>(itemData["rarity"]?.ToString(), out var rarity) ? rarity : ItemRarity.Common;
+
+                int? damage = itemData["damage"] != null ? (int?)itemData["damage"] : null;
+                int? defense = itemData["defense"] != null ? (int?)itemData["defense"] : null;
+                int? manaBonus = itemData["manaBonus"] != null ? (int?)itemData["manaBonus"] : null;
+                int? strengthBonus = itemData["strengthBonus"] != null ? (int?)itemData["strengthBonus"] : null;
+                int? speedBonus = itemData["speedBonus"] != null ? (int?)itemData["speedBonus"] : null;
+
+                int maxStack = itemData["maxStack"] != null ? (int)itemData["maxStack"] : 1;
+                var iconPath = itemData["iconPath"]?.ToString();
+                bool isTradable = itemData["isTradable"]?.ToObject<bool>() ?? false;
+                bool isDroppable = itemData["isDroppable"]?.ToObject<bool>() ?? false;
+                bool isUsable = itemData["isUsable"]?.ToObject<bool>() ?? false;
+
                 var model = new ItemModel
                 {
-                    Key = key,
-                    Name = Name,
-                    Description = Description,
-                    HpMin = hpMin,
-                    HpMax = hpMax,
-                    MP = mp,
+                    Key = key, // Se espera un arreglo de keys
+                    Name = name,
+                    Description = desc,
+                    Type = itemType,
+                    Rarity = itemRarity,
+                    Damage = damage,
+                    Defense = defense,
+                    ManaBonus = manaBonus,
+                    StrengthBonus = strengthBonus,
+                    SpeedBonus = speedBonus,
+                    MaxStack = maxStack,
+                    IconPath = iconPath,
                     Sprite = sprite,
                     Sound = sound,
-                    CreatedAt = DateTime.UtcNow, // Asignar la fecha actual al crear el modelo
-
+                    IsTradable = isTradable,
+                    IsDroppable = isDroppable,
+                    IsUsable = isUsable,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow // Lo establecemos como ahora, aunque en la práctica se actualizaría después
                 };
+
                 result.Add(model);
             }
 

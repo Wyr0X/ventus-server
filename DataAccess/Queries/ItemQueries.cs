@@ -6,11 +6,11 @@ namespace VentusServer.DataAccess.Queries
         CREATE TABLE IF NOT EXISTS items (
             id SERIAL PRIMARY KEY,
             key VARCHAR(50) NOT NULL UNIQUE,
-            name VARCHAR(100) NOT NULL,
-            description TEXT NOT NULL,
+            name JSONB NOT NULL,
+            description JSONB NOT NULL,
             hp_min INT,
             hp_max INT,
-            mp INT,
+            mp VARCHAR(10),
             sprite INT[] NOT NULL,
             sound VARCHAR(50),
             created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -22,12 +22,12 @@ namespace VentusServer.DataAccess.Queries
 
         public const string Insert = @"
             INSERT INTO items (key, name, description, hp_min, hp_max, mp, sprite, sound)
-            VALUES (@Key, @Name, @Description, @HpMin, @HpMax, @Mp, @Sprite, @Sound);";
+            VALUES (@Key, @Name::jsonb, @Description::jsonb, @HpMin, @HpMax, @Mp, @Sprite, @Sound);";
 
         public const string Update = @"
             UPDATE items SET
-                name = @Name,
-                description = @Description,
+                name = @Name::jsonb,
+                description = @Description::jsonb,
                 hp_min = @HpMin,
                 hp_max = @HpMax,
                 mp = @Mp,
@@ -37,7 +37,7 @@ namespace VentusServer.DataAccess.Queries
 
         public const string Upsert = @"
             INSERT INTO items (key, name, description, hp_min, hp_max, mp, sprite, sound)
-            VALUES (@Key, @Name, @Description, @HpMin, @HpMax, @Mp, @Sprite, @Sound)
+            VALUES (@Key, @Name::jsonb, @Description::jsonb, @HpMin, @HpMax, @Mp, @Sprite, @Sound)
             ON CONFLICT (key) DO UPDATE SET
                 name = EXCLUDED.name,
                 description = EXCLUDED.description,

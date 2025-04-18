@@ -1,16 +1,23 @@
-namespace VentusServer.Models
+public class ItemDTO
 {
-    public class ItemDTO
-    {
-        public int Id { get; set; }
-        public string Key { get; set; } = string.Empty;
-        public string Name { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-        public int? HpMin { get; set; }
-        public int? HpMax { get; set; }
-        public int? MP { get; set; }
-        public int[] Sprite { get; set; } = Array.Empty<int>();
-        public string? Sound { get; set; }
-        public DateTime CreatedAt { get; set; }
-    }
+    public int Id { get; set; }
+    public TranslatedTextDTO Name { get; set; } = new();
+    public TranslatedTextDTO Description { get; set; } = new();
+    public string Key { get; set; } = string.Empty;
+    public ItemType Type { get; set; }
+    public ItemRarity Rarity { get; set; }
+    public string? Sound { get; set; }
+    public int? Damage { get; set; }
+    public int? Defense { get; set; }
+    public int? ManaBonus { get; set; }
+    public int? StrengthBonus { get; set; }
+    public int? SpeedBonus { get; set; }
+    public int MaxStack { get; set; }
+    public string? IconPath { get; set; }
+    public int[] Sprite { get; set; } = Array.Empty<int>();
+    public bool IsTradable { get; set; }
+    public bool IsDroppable { get; set; }
+    public bool IsUsable { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
 }

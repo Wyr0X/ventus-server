@@ -9,7 +9,7 @@ namespace VentusServer.DataAccess.Queries
                 xp INT DEFAULT 0,
                 gold INT DEFAULT 0,
                 bank_gold INT DEFAULT 0,
-                free_skillpoints INT DEFAULT 0,
+                free_skill_points  INT DEFAULT 0,
                 hp INT DEFAULT 100,
                 mp INT DEFAULT 100,
                 sp INT DEFAULT 100,
