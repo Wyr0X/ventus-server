@@ -10,6 +10,8 @@ using Game.Models;
 using VentusServer.DataAccess.Interfaces;
 using VentusServer.DataAccess.Dapper;
 using VentusServer.Controllers.Admin;
+using VentusServer.Domain.Models;
+using VentusServer.DataAccess.DAO;
 
 namespace VentusServer
 {
@@ -88,6 +90,12 @@ namespace VentusServer
                 .AddSingleton<IItemDAO>(sp =>
                     new DapperItemDAO(sp.GetRequiredService<IDbConnectionFactory>())
                 )
+                .AddSingleton<IPlayerInventoryDAO>(sp =>
+                    new DapperPlayerInventoryDAO(sp.GetRequiredService<IDbConnectionFactory>())
+                )
+                .AddSingleton<IPlayerInventoryItemDAO>(sp =>
+                    new DapperPlayerInventoryItemDAO(sp.GetRequiredService<IDbConnectionFactory>())
+                )
                 .AddSingleton<IPlayerStatsDAO>(sp =>
                     new DapperPlayerStatsDAO(sp.GetRequiredService<IDbConnectionFactory>())
                 );
@@ -123,6 +131,8 @@ namespace VentusServer
                 .AddSingleton<RoleService>()
                 .AddSingleton<PermissionService>()
                 .AddSingleton<ItemService>()
+                .AddSingleton<PlayerInventoryService>()
+                .AddSingleton<PlayerItemService>()
                 .AddSingleton<PlayerStatsService>();
 
         }
@@ -134,6 +144,8 @@ namespace VentusServer
                 .AddSingleton<PlayerLocation>()
                 .AddSingleton<MapModel>()
                 .AddSingleton<WorldModel>()
+                .AddSingleton<PlayerInventoryModel>()
+                .AddSingleton<PlayerInventoryItemModel>()
                 .AddSingleton<RoleModel>();
 
         }

@@ -10,7 +10,13 @@
         },
         "hp": [25, 30],
         "sprite": [0, 0, 0],
-        "sound": "drink"
+        "sound": "drink",
+        "type": "Consumable",
+        "rarity": "Common",
+        "maxStack": 99,
+        "isTradable": true,
+        "isDroppable": true,
+        "isUsable": true
     },
     "blue_potion": {
         "name": {
@@ -23,7 +29,13 @@
         },
         "mp": "5%",
         "sprite": [0, 1, 0],
-        "sound": "drink"
+        "sound": "drink",
+        "type": "Consumable",
+        "rarity": "Common",
+        "maxStack": 99,
+        "isTradable": true,
+        "isDroppable": true,
+        "isUsable": true
     },
     "gold_coin": {
         "name": {
@@ -34,7 +46,13 @@
             "en": "Worth one credit",
             "es": "Vale por un crédito"
         },
-        "sprite": [0, 0, 3, 8, 10]
+        "sprite": [0, 0, 3, 8, 10],
+        "type": "Currency",
+        "rarity": "Common",
+        "maxStack": 1,
+        "isTradable": true,
+        "isDroppable": false,
+        "isUsable": false
     },
     "beer": {
         "name": {
@@ -46,6 +64,12 @@
             "es": "Recuperas la energía de manera más rápida"
         },
         "sprite": [0, 0, 1],
-        "sound": "beer"
+        "sound": "beer",
+        "type": "Consumable",
+        "rarity": "Common",
+        "maxStack": 99,
+        "isTradable": true,
+        "isDroppable": true,
+        "isUsable": true
     }
 }

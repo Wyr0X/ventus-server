@@ -10,6 +10,7 @@ namespace VentusServer.Services
     {
         private readonly IPlayerDAO _playerDAO;
         private readonly PlayerStatsService _playerStatsService;
+        private readonly PlayerInventoryService _playerInventoryService;
         private readonly PlayerLocationService _playerLocationService;
         private readonly Dictionary<string, int> _nameToIdCache = new();
         private readonly AccountService _accountService;

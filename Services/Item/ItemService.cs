@@ -51,7 +51,7 @@ namespace VentusServer.Services
 
             foreach (var item in parsedItems)
             {
-                var existingItem = await _itemDAO.GetItemByKeyAsync(item.Key);
+                var existingItem = await _itemDAO.GetItemByKeyAsync(item.Key ?? string.Empty);
                 if (existingItem == null)
                 {
                     await _itemDAO.CreateItemAsync(item);

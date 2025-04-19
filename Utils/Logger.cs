@@ -20,6 +20,7 @@ public static class LoggerUtil
         DapperItemDAO,
         DapperPlayerDAO,
         DapperPlayerStatsDAO,
+        DapperPlayerInventoryDAO,
         DapperRoleDAO,
         MapModel,
         BaseCachedService,
@@ -57,11 +58,12 @@ public static class LoggerUtil
         { LogTag.Game, (false, ConsoleColor.Yellow, false) },
         { LogTag.DapperMapDAO, (false, ConsoleColor.Green, false) },
         { LogTag.DapperPlayerDAO, (false, ConsoleColor.Green, false) },
-        { LogTag.DapperPlayerStatsDAO, (false, ConsoleColor.Green, false) },
+        { LogTag.DapperPlayerStatsDAO, (true, ConsoleColor.Green, false) },
         { LogTag.DapperRoleDAO, (false, ConsoleColor.Green, false) },
         { LogTag.DapperAccountDAO, (false, ConsoleColor.Green, false) },
         { LogTag.DapperWorldDAO, (false, ConsoleColor.Green, false) },
-        { LogTag.DapperItemDAO, (false, ConsoleColor.Green, false) },
+        { LogTag.DapperItemDAO, (true, ConsoleColor.Green, false) },
+        { LogTag.DapperPlayerInventoryDAO, (true, ConsoleColor.Green, false) },
         { LogTag.RequirePermissionAttribute, (false, ConsoleColor.Blue, false) },
 
 
