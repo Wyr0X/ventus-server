@@ -7,11 +7,13 @@ using VentusServer.DataAccess.Postgres;
 using VentusServer.Services;
 using VentusServer.DataAccess.Interfaces;
 using VentusServer.Domain.Enums;
+using VentusServer.Auth;
 
 namespace VentusServer.Controllers
 {
     [Route("auth")]
     [ApiController]
+
     public class AuthController : ControllerBase
     {
         private readonly AccountService _accountService;
@@ -101,7 +103,8 @@ namespace VentusServer.Controllers
             var hashedPassword = _passwordService.HashPassword(request.Password);
 
             RoleModel? userRole = await _roleService.GetRoleByIdAsync("owner");
-            if (userRole == null){
+            if (userRole == null)
+            {
                 LoggerUtil.Log(LoggerUtil.LogTag.AuthController, "Error: No se encontro el rol de usuario.");
                 return BadRequest("No se encontro el rol de usuario.");
             }

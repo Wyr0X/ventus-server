@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json.Linq;
+using VentusServer.Domain.Models;
 
 namespace VentusServer.Services
 {
@@ -8,79 +11,122 @@ namespace VentusServer.Services
         public static List<ItemModel> ParseItemsFromJson(string json)
         {
             var result = new List<ItemModel>();
-            var root = JObject.Parse(json);
 
-            foreach (var itemProp in root.Properties())
+            // Soporta tanto un array en la raíz como un objeto con propiedad "items"
+            JToken root = JToken.Parse(json);
+            JArray itemsArray = root.Type switch
             {
-                var key = itemProp.Name;
-                var itemData = itemProp.Value;
+                JTokenType.Array => (JArray)root,
+                JTokenType.Object when root["items"] is JArray arr => arr,
+                _ => throw new ArgumentException("JSON inválido: se esperaba un array o un objeto con 'items'")
+            };
 
+            foreach (JToken token in itemsArray)
+            {
+                // Key obligatorio
+                var key = token["key"]?.ToString()
+                    ?? throw new ArgumentException("Falta 'key' en el ítem JSON.");
+
+                // Traducciones
                 var name = new TranslatedTextModel
                 {
-                    En = itemData["name"]?["en"]?.ToString() ?? "Unnamed",
-                    Es = itemData["name"]?["es"]?.ToString() ?? ""
+                    En = token["name"]?["en"]?.ToString() ?? "",
+                    Es = token["name"]?["es"]?.ToString() ?? ""
+                };
+                var description = new TranslatedTextModel
+                {
+                    En = token["description"]?["en"]?.ToString() ?? "",
+                    Es = token["description"]?["es"]?.ToString() ?? ""
                 };
 
-                var desc = new TranslatedTextModel
-                {
-                    En = itemData["desc"]?["en"]?.ToString() ?? "",
-                    Es = itemData["desc"]?["es"]?.ToString() ?? ""
-                };
+                // Tipos y rarezas
+                var type = Enum.TryParse<ItemType>(token["type"]?.ToString(), out var tVal)
+                    ? tVal
+                    : throw new ArgumentException($"Tipo inválido: {token["type"]}");
+                var rarity = Enum.TryParse<ItemRarity>(token["rarity"]?.ToString(), out var rVal)
+                    ? rVal
+                    : ItemRarity.Common;
 
-                int? hpMin = null, hpMax = null;
-                if (itemData["hp"] is JArray hpArray && hpArray.Count == 2)
+                // Flags y valores opcionales
+                var maxStack = token["maxStack"]?.ToObject<int?>();
+                var requiredLevel = token["requiredLevel"]?.ToObject<int?>();
+                var price = token["price"]?.ToObject<int?>();
+                var isTradable = token["isTradable"]?.ToObject<bool>() ?? false;
+                var isDroppable = token["isDroppable"]?.ToObject<bool>() ?? false;
+                var isUsable = token["isUsable"]?.ToObject<bool>() ?? false;
+
+                // Sprite como int[]
+                var sprite = token["sprite"] is JArray spArr
+                    ? spArr.Select(j => j.ToObject<int>()).ToArray()
+                    : Array.Empty<int>();
+
+                var sound = token["sound"]?.ToString();
+                var iconPath = token["iconPath"]?.ToString() ?? "";
+
+                // Sub-estructuras según el tipo
+                WeaponStats? weaponData = null;
+                ArmorStats? armorData = null;
+                ConsumableEffect? consumableData = null;
+
+                if (type == ItemType.Weapon && token["weaponData"] is JObject w)
                 {
-                    hpMin = (int?)hpArray[0];
-                    hpMax = (int?)hpArray[1];
+                    weaponData = new WeaponStats
+                    {
+                        WeaponType = Enum.Parse<WeaponType>(w["weaponType"]?.ToString() ?? "Sword"),
+                        MinDamage = w["minDamage"]?.ToObject<int>() ?? 0,
+                        MaxDamage = w["maxDamage"]?.ToObject<int>() ?? 0,
+                        AttackSpeed = w["attackSpeed"]?.ToObject<float>() ?? 1f,
+                        Range = w["range"]?.ToObject<int>() ?? 1,
+                        IsTwoHanded = w["isTwoHanded"]?.ToObject<bool>() ?? false,
+                        ManaCost = w["manaCost"]?.ToObject<int?>()
+                    };
+                }
+                else if (type == ItemType.Armor && token["armorData"] is JObject a)
+                {
+                    armorData = new ArmorStats
+                    {
+                        Slot = Enum.Parse<ArmorSlot>(a["slot"]?.ToString() ?? "Chest"),
+                        Defense = a["defense"]?.ToObject<int>() ?? 0,
+                        MagicResistance = a["magicResistance"]?.ToObject<int>() ?? 0,
+                        Durability = a["durability"]?.ToObject<int>() ?? 100
+                    };
+                }
+                else if (type == ItemType.Consumable && token["consumableData"] is JObject c)
+                {
+                    consumableData = new ConsumableEffect
+                    {
+                        Type = c["type"]?.ToString() ?? "",
+                        Amount = c["amount"]?.ToObject<int>() ?? 0,
+                        Duration = c["duration"]?.ToObject<float>() ?? 0f,
+                        EffectName = c["effectName"]?.ToString()
+                    };
                 }
 
-                int? mp = null;
-                if (itemData["mp"] != null && int.TryParse(itemData["mp"]?.ToString(), out var mpVal))
-                    mp = mpVal;
-
-                var sprite = itemData["sprite"]?.Select(t => (int)t).ToArray() ?? Array.Empty<int>();
-                var sound = itemData["sound"]?.ToString();
-
-                // Aquí mapeamos los campos faltantes
-                var itemType = Enum.TryParse<ItemType>(itemData["type"]?.ToString(), out var type) ? type : ItemType.Consumable;
-                var itemRarity = Enum.TryParse<ItemRarity>(itemData["rarity"]?.ToString(), out var rarity) ? rarity : ItemRarity.Common;
-
-                int? damage = itemData["damage"] != null ? (int?)itemData["damage"] : null;
-                int? defense = itemData["defense"] != null ? (int?)itemData["defense"] : null;
-                int? manaBonus = itemData["manaBonus"] != null ? (int?)itemData["manaBonus"] : null;
-                int? strengthBonus = itemData["strengthBonus"] != null ? (int?)itemData["strengthBonus"] : null;
-                int? speedBonus = itemData["speedBonus"] != null ? (int?)itemData["speedBonus"] : null;
-
-                int maxStack = itemData["maxStack"] != null ? (int)itemData["maxStack"] : 1;
-                var iconPath = itemData["iconPath"]?.ToString();
-                bool isTradable = itemData["isTradable"]?.ToObject<bool>() ?? false;
-                bool isDroppable = itemData["isDroppable"]?.ToObject<bool>() ?? false;
-                bool isUsable = itemData["isUsable"]?.ToObject<bool>() ?? false;
-
-                var model = new ItemModel
+                // Construye el ItemModel final
+                var item = new ItemModel
                 {
-                    Key = key, // Se espera un arreglo de keys
+                    Key = key,
                     Name = name,
-                    Description = desc,
-                    Type = itemType,
-                    Rarity = itemRarity,
-                    Damage = damage,
-                    Defense = defense,
-                    ManaBonus = manaBonus,
-                    StrengthBonus = strengthBonus,
-                    SpeedBonus = speedBonus,
+                    Description = description,
+                    Type = type,
+                    Rarity = rarity,
                     MaxStack = maxStack,
-                    IconPath = iconPath,
-                    Sprite = sprite,
-                    Sound = sound,
+                    RequiredLevel = requiredLevel,
+                    Price = price ?? 0,
                     IsTradable = isTradable,
                     IsDroppable = isDroppable,
                     IsUsable = isUsable,
+                    Sprite = sprite,
+                    Sound = sound,
+                    IconPath = iconPath,
+                    WeaponData = weaponData,
+                    ArmorData = armorData,
+                    ConsumableData = consumableData,
                     CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow // Lo establecemos como ahora, aunque en la práctica se actualizaría después
+                    UpdatedAt = DateTime.UtcNow
                 };
 
-                result.Add(model);
+                result.Add(item);
             }
 
             return result;

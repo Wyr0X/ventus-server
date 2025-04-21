@@ -41,7 +41,7 @@ public class SessionManager
 
         PlayerJoin playerJoinMessage = clientMessage.PlayerJoin;
 
-        PlayerLocation? playerLocation = await _playerLocationService.GetPlayerLocationAsync(
+        PlayerLocationModel? playerLocation = await _playerLocationService.GetPlayerLocationAsync(
             playerJoinMessage.PlayerId
         );
         Console.WriteLine("Entra acaaaaaaaaaaaa");
@@ -108,7 +108,7 @@ public class SessionManager
         // Existirá un AccountService(userId, playerId) para saber si existe en la cuenta
         // Validaciones -> ban, si está logueado, si el pj es de la cuenta
         // PlayerBasicModel playerBasic = playerService.GetPlayerBasicById(playerJoinMessage.PlayerId);
-        // PlayerLocation playerLocation = playerService.getPlayerLocationId(playerJoinMessage.PlayerId);
+        // PlayerLocationModel playerLocation = playerService.getPlayerLocationId(playerJoinMessage.PlayerId);
         // var playerInfo = new { playerBasic, playerLocation };
         // _game.worldManager.SpawnPlayer(playerInfo);
     }

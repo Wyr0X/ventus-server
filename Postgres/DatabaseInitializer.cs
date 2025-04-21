@@ -44,9 +44,10 @@ namespace VentusServer.DataAccess.Postgres
                 await InitializePlayerLocationsAsync();
                 await InitializePlayerStatsAsync();
                 await InitializeItemsAsync();
+                await InitializePlayerInventoryAsync();
                 await RoleSeeder.SeedRolesAsync(_roleDAO);
                 await new AccountSeeder(_accountDAO, _passwordService).SeedAsync();
-                // await new ItemSeeder(_itemService).SeedFromFileAsync("Data/items.json");
+                await new ItemSeeder(_itemService).SeedFromFileAsync("Data/items.json");
                 // await new AccountSeeder(_accountDAO, _passwordService).SeedAsync();
                 //  await new PlayerSeeder(_playerDAO, _accountDAO).SeedAsync();
 
@@ -167,13 +168,28 @@ namespace VentusServer.DataAccess.Postgres
                 Console.WriteLine($"❌ Error al crear la tabla 'items': {ex.Message}");
             }
         }
+
+        private async Task InitializePlayerInventoryAsync()
+        {
+            try
+            {
+
+                await _postgresDbService.ExecuteQueryAsync(PlayerInventoryQueries.CreateTableQuery);
+                Console.WriteLine("✅ Tabla 'player_inventory' creada correctamente (si no existía).");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Error al crear la tabla 'items': {ex.Message}");
+            }
+        }
     }
 
 }
+// DO $$ DECLARE
+//     r RECORD;
+// BEGIN
+//     FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
+//         EXECUTE 'DROP TABLE IF EXISTS public.' || quote_ident(r.tablename) || ' CASCADE';
+//     END LOOP;
+// END $$;
 
-// DROP TABLE IF EXISTS player_locations CASCADE;
-// DROP TABLE IF EXISTS player_stats CASCADE;
-// DROP TABLE IF EXISTS players CASCADE;
-// DROP TABLE IF EXISTS maps CASCADE;
-// DROP TABLE IF EXISTS worlds CASCADE;
-// DROP TABLE IF EXISTS accounts CASCADE;

@@ -4,8 +4,8 @@ namespace VentusServer.DataAccess.Queries
     {
         public const string CreateTableQuery = @"
         CREATE TABLE IF NOT EXISTS player_items (
-            id UUID PRIMARY KEY,
-            inventory_id UUID NOT NULL REFERENCES player_inventory(id) ON DELETE CASCADE,
+            id SERIAL PRIMARY KEY,
+            inventory_id int NOT NULL REFERENCES player_inventory(id) ON DELETE CASCADE,
             item_id INT NOT NULL REFERENCES items(id),
             quantity INT DEFAULT 1,
             slot INT,

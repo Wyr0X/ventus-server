@@ -43,5 +43,44 @@ namespace VentusServer.DataAccess.Queries
         public const string DeleteById = "DELETE FROM players WHERE id = @PlayerId;";
         public const string ExistsById = "SELECT EXISTS(SELECT 1 FROM players WHERE id = @PlayerId);";
         public const string ExistsByName = "SELECT EXISTS(SELECT 1 FROM players WHERE name = @Name);";
+
+        public const string SelectStatsByPlayerId = "SELECT * FROM player_stats WHERE player_id = @PlayerId;";
+        public const string SelectInventoryByPlayerId = "SELECT * FROM player_inventory WHERE player_id = @PlayerId;";
+        public const string SelectLocationByPlayerId = "SELECT * FROM player_location WHERE player_id = @PlayerId;";
+
+        // Consultas para obtener detalles adicionales de los jugadores
+        public const string SelectPlayerWithStats = @"
+            SELECT players.*, player_stats.*
+            FROM players
+            LEFT JOIN player_stats ON players.id = player_stats.player_id";
+
+        public const string SelectPlayerWithInventory = @"
+            SELECT players.*, player_inventory.*
+            FROM players
+            LEFT JOIN player_inventory ON players.id = player_inventory.player_id";
+
+        public const string SelectPlayerWithLocation = @"
+            SELECT players.*, player_location.*
+            FROM players
+            LEFT JOIN player_location ON players.id = player_location.player_id";
+        // NUEVAS: filtrar por todos los player_id de la cuenta
+        public const string SelectStatsByAccountId = @"
+        SELECT ps.*
+          FROM player_stats ps
+         WHERE ps.player_id IN (SELECT id FROM players WHERE account_id = @AccountId);
+    ";
+
+        public const string SelectInventoryByAccountId = @"
+        SELECT pi.*
+          FROM player_inventory pi
+         WHERE pi.player_id IN (SELECT id FROM players WHERE account_id = @AccountId);
+    ";
+
+        public const string SelectLocationByAccountId = @"
+        SELECT pl.*
+          FROM player_location pl
+         WHERE pl.player_id IN (SELECT id FROM players WHERE account_id = @AccountId);
+    ";
+
     }
 }

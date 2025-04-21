@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Game.Models
 {
-    public class WorldModel  : BaseModel
+    public class WorldModel : BaseModel
     {
         public int Id { get; set; }
         public required string Name { get; set; }
@@ -15,8 +15,8 @@ namespace Game.Models
 
         // Relaciones
         public List<MapModel> Maps { get; set; } = new List<MapModel>();
-        public List<PlayerLocation> PlayersLocation { get; set; } = new List<PlayerLocation>();
-        public List<PlayerLocation> spawnedPlayers { get; set; } = new List<PlayerLocation>();
+        public List<PlayerLocationModel> PlayersLocation { get; set; } = new List<PlayerLocationModel>();
+        public List<PlayerLocationModel> spawnedPlayers { get; set; } = new List<PlayerLocationModel>();
         public void AddMap(MapModel map)
         {
             if (Maps.Count < MaxMaps)
@@ -77,7 +77,7 @@ namespace Game.Models
                 throw new InvalidOperationException("El jugador con el ID proporcionado no existe en este mundo.");
             }
         }
-   
+
 
     }
 }

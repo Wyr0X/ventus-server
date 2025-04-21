@@ -1,14 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Dapper;
+using VentusServer.DataAccess.Dapper;
 using VentusServer.DataAccess.Interfaces;
 using VentusServer.DataAccess.Mappers;
-using VentusServer.Domain.Models;
 using VentusServer.DataAccess.Queries;
-using VentusServer.DataAccess.Dapper;
-using System.Text.Json;
+using VentusServer.Domain.Models;
 
 namespace VentusServer.DataAccess.Postgres
 {
@@ -19,7 +20,6 @@ namespace VentusServer.DataAccess.Postgres
         public async Task<ItemModel?> GetItemByIdAsync(int id)
         {
             LoggerUtil.Log(LoggerUtil.LogTag.DapperItemDAO, $"🔍 Buscando item por ID: {id}");
-
             using var conn = GetConnection();
 
             try
@@ -30,7 +30,7 @@ namespace VentusServer.DataAccess.Postgres
                     LoggerUtil.Log(LoggerUtil.LogTag.DapperItemDAO, $"❌ No se encontró el item con ID: {id}");
                     return null;
                 }
-                ItemMapper.PrintRow(row);
+
                 var item = ItemMapper.Map(row);
                 LoggerUtil.Log(LoggerUtil.LogTag.DapperItemDAO, $"✅ Item encontrado: {item.Name.En}");
                 return item;
@@ -45,9 +45,7 @@ namespace VentusServer.DataAccess.Postgres
         public async Task<ItemModel?> GetItemByKeyAsync(string key)
         {
             LoggerUtil.Log(LoggerUtil.LogTag.DapperItemDAO, $"🔍 Buscando item por Key: {key}");
-
-            if (string.IsNullOrWhiteSpace(key))
-                return null;
+            if (string.IsNullOrWhiteSpace(key)) return null;
 
             using var conn = GetConnection();
 
@@ -59,7 +57,6 @@ namespace VentusServer.DataAccess.Postgres
                     LoggerUtil.Log(LoggerUtil.LogTag.DapperItemDAO, $"❌ No se encontró el item con key: {key}");
                     return null;
                 }
-                ItemMapper.PrintRow(row);
 
                 var item = ItemMapper.Map(row);
                 LoggerUtil.Log(LoggerUtil.LogTag.DapperItemDAO, $"✅ Item encontrado: {item.Name.En}");
@@ -82,10 +79,8 @@ namespace VentusServer.DataAccess.Postgres
             {
                 var rows = await conn.QueryAsync(ItemQueries.SelectAll);
                 ItemMapper.PrintRow(rows.FirstOrDefault());
-
-                var items = ItemMapper.MapRowsToItems(rows);
-                var firstRow = rows.FirstOrDefault();
-                LoggerUtil.Log(LoggerUtil.LogTag.DapperItemDAO, $"✅ Total items cargados: {items.Count()} {firstRow?.sprite.Count()}");
+                var items = ItemMapper.MapMultipleFromRows(rows);
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperItemDAO, $"✅ Total items cargados: {items.Count()}");
                 return items;
             }
             catch (Exception ex)
@@ -103,25 +98,30 @@ namespace VentusServer.DataAccess.Postgres
 
             try
             {
+                Console.WriteLine(item.RequiredLevel);
                 await conn.ExecuteAsync(ItemQueries.Insert, new
                 {
-                    item.Id,
+                    item.Key,
                     Name = JsonSerializer.Serialize(item.Name),
                     Description = JsonSerializer.Serialize(item.Description),
                     item.Type,
                     item.Rarity,
-                    item.Sound,
-                    item.Damage,
-                    item.Defense,
-                    item.ManaBonus,
-                    item.StrengthBonus,
-                    item.SpeedBonus,
+                    item.RequiredLevel,
+                    item.Price,
+                    item.Quantity,
                     item.MaxStack,
-                    item.IconPath,
-                    item.Sprite,
                     item.IsTradable,
                     item.IsDroppable,
                     item.IsUsable,
+                    item.IconPath,
+                    item.Sprite,
+                    item.Sound,
+                    Data = JsonSerializer.Serialize(new
+                    {
+                        item.WeaponData,
+                        item.ArmorData,
+                        item.ConsumableData
+                    }),
                     item.CreatedAt,
                     item.UpdatedAt
                 });
@@ -150,18 +150,19 @@ namespace VentusServer.DataAccess.Postgres
                     Description = JsonSerializer.Serialize(item.Description),
                     item.Type,
                     item.Rarity,
-                    item.Sound,
-                    item.Damage,
-                    item.Defense,
-                    item.ManaBonus,
-                    item.StrengthBonus,
-                    item.SpeedBonus,
                     item.MaxStack,
-                    item.IconPath,
-                    item.Sprite,
+                    item.RequiredLevel,
+                    item.Price,
+                    item.Quantity,
                     item.IsTradable,
                     item.IsDroppable,
                     item.IsUsable,
+                    WeaponData = item.WeaponData == null ? null : JsonSerializer.Serialize(item.WeaponData),
+                    ArmorData = item.ArmorData == null ? null : JsonSerializer.Serialize(item.ArmorData),
+                    ConsumableData = item.ConsumableData == null ? null : JsonSerializer.Serialize(item.ConsumableData),
+                    item.Sound,
+                    item.IconPath,
+                    item.Sprite,
                     item.UpdatedAt
                 });
 
@@ -170,24 +171,6 @@ namespace VentusServer.DataAccess.Postgres
             catch (Exception ex)
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.DapperItemDAO, $"❌ Error al actualizar item {item.Name.En}: {ex.Message}");
-                throw;
-            }
-        }
-
-        public async Task DeleteItemAsync(Guid id)
-        {
-            LoggerUtil.Log(LoggerUtil.LogTag.DapperItemDAO, $"🗑 Eliminando item con ID: {id}");
-
-            using var conn = GetConnection();
-
-            try
-            {
-                await conn.ExecuteAsync(ItemQueries.Delete, new { Id = id });
-                LoggerUtil.Log(LoggerUtil.LogTag.DapperItemDAO, $"✅ Item eliminado con ID: {id}");
-            }
-            catch (Exception ex)
-            {
-                LoggerUtil.Log(LoggerUtil.LogTag.DapperItemDAO, $"❌ Error al eliminar item con ID {id}: {ex.Message}");
                 throw;
             }
         }

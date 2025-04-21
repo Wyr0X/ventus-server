@@ -1,75 +1,109 @@
-{
-    "red_potion": {
-        "name": {
-            "en": "Red Potion",
-            "es": "Poción Roja"
-        },
-        "desc": {
-            "en": "Heals some missing health points",
-            "es": "Cura algunos puntos de vida faltantes"
-        },
-        "hp": [25, 30],
-        "sprite": [0, 0, 0],
-        "sound": "drink",
-        "type": "Consumable",
-        "rarity": "Common",
-        "maxStack": 99,
-        "isTradable": true,
-        "isDroppable": true,
-        "isUsable": true
+[
+    {
+      "key": "red_potion",
+      "name": {
+        "en": "Red Potion",
+        "es": "Poción Roja"
+      },
+      "description": {
+        "en": "Heals some missing health points",
+        "es": "Cura algunos puntos de vida faltantes"
+      },
+      "type": "Consumable",
+      "rarity": "Common",
+      "maxStack": 10,
+      "requiredLevel": 1,
+      "value": 10,
+      "isTradable": true,
+      "isDroppable": true,
+      "isUsable": true,
+      "consumableData": {
+        "type": "Heal",
+        "amount": 25,
+        "duration": 0.0,
+        "effectName": null
+      },
+      "sprite": [0, 0, 0],
+      "sound": "drink",
+      "iconPath": "/icons/red_potion.png"
     },
-    "blue_potion": {
-        "name": {
-            "en": "Blue Potion",
-            "es": "Poción Azul"
-        },
-        "desc": {
-            "en": "Restores some mana",
-            "es": "Restaura un poco de maná"
-        },
-        "mp": "5%",
-        "sprite": [0, 1, 0],
-        "sound": "drink",
-        "type": "Consumable",
-        "rarity": "Common",
-        "maxStack": 99,
-        "isTradable": true,
-        "isDroppable": true,
-        "isUsable": true
+    {
+      "key": "blue_potion",
+      "name": {
+        "en": "Blue Potion",
+        "es": "Poción Azul"
+      },
+      "description": {
+        "en": "Restores some mana",
+        "es": "Restaura un poco de maná"
+      },
+      "type": "Consumable",
+      "rarity": "Common",
+      "maxStack": 10,
+      "requiredLevel": 1,
+      "value": 8,
+      "isTradable": true,
+      "isDroppable": true,
+      "isUsable": true,
+      "consumableData": {
+        "type": "Mana",
+        "amount": 5,
+        "duration": 0.0,
+        "effectName": null
+      },
+      "sprite": [0, 1, 0],
+      "sound": "drink",
+      "iconPath": "/icons/blue_potion.png"
     },
-    "gold_coin": {
-        "name": {
-            "en": "Gold Coin",
-            "es": "Moneda de Oro"
-        },
-        "desc": {
-            "en": "Worth one credit",
-            "es": "Vale por un crédito"
-        },
-        "sprite": [0, 0, 3, 8, 10],
-        "type": "Currency",
-        "rarity": "Common",
-        "maxStack": 1,
-        "isTradable": true,
-        "isDroppable": false,
-        "isUsable": false
+    {
+      "key": "gold_coin",
+      "name": {
+        "en": "Gold Coin",
+        "es": "Moneda de Oro"
+      },
+      "description": {
+        "en": "Worth one credit",
+        "es": "Vale por un crédito"
+      },
+      "type": "Resource",
+      "rarity": "Common",
+      "maxStack": 1000,
+      "requiredLevel": null,
+      "value": 1,
+      "isTradable": true,
+      "isDroppable": false,
+      "isUsable": false,
+      "sprite": [0, 0, 3, 8, 10],
+      "sound": null,
+      "iconPath": "/icons/gold_coin.png"
     },
-    "beer": {
-        "name": {
-            "en": "Beer",
-            "es": "Cerveza"
-        },
-        "desc": {
-            "en": "Restores energy faster",
-            "es": "Recuperas la energía de manera más rápida"
-        },
-        "sprite": [0, 0, 1],
-        "sound": "beer",
-        "type": "Consumable",
-        "rarity": "Common",
-        "maxStack": 99,
-        "isTradable": true,
-        "isDroppable": true,
-        "isUsable": true
+    {
+      "key": "beer",
+      "name": {
+        "en": "Beer",
+        "es": "Cerveza"
+      },
+      "description": {
+        "en": "Restores energy faster",
+        "es": "Recuperas la energía de manera más rápida"
+      },
+      "type": "Consumable",
+      "rarity": "Uncommon",
+      "maxStack": 5,
+      "requiredLevel": 1,
+      "value": 5,
+      "isTradable": true,
+      "isDroppable": true,
+      "isUsable": true,
+      "consumableData": {
+        "type": "Buff",
+        "amount": 0,
+        "duration": 30.0,
+        "effectName": "StaminaRegen"
+      },
+      "sprite": [0, 0, 1],
+      "sound": "beer",
+      "iconPath": "/icons/beer.png"
     }
-}
+  ]
+  

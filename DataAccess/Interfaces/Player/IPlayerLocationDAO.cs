@@ -4,9 +4,9 @@ namespace VentusServer.DataAccess.Interfaces
 {
     public interface IPlayerLocationDAO
     {
-        Task<PlayerLocation?> GetPlayerLocationAsync(int playerId);
-        Task SavePlayerLocationAsync(PlayerLocation location);
+        Task<PlayerLocationModel?> GetPlayerLocationAsync(int playerId);
+        Task SavePlayerLocationAsync(PlayerLocationModel location);
         Task DeletePlayerLocationAsync(int playerId);
-        Task CreatePlayerLocationAsync(PlayerLocation location);
+        Task CreatePlayerLocationAsync(PlayerLocationModel location);
     }
 }

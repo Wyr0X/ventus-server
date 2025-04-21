@@ -22,7 +22,7 @@ public static class EnvValidator
             throw new Exception("Faltan variables de entorno para la base de datos.");
         }
 
-        string postgresConnectionString = $"Host={host};Username={username};Password={password};Database={dbName}";
+        string postgresConnectionString = $"Host={host};Username={username};Password={password};Database={dbName};Include Error Detail=true";
 
         return (credentialsPath, postgresConnectionString);
     }

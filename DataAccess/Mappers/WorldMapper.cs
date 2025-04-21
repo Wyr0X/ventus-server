@@ -18,8 +18,8 @@ namespace VentusServer.DataAccess.Mappers
                 MaxPlayers = row.max_players,
                 LevelRequirements = row.level_requirements,
                 Maps = new List<MapModel>(),
-                PlayersLocation = new List<PlayerLocation>(),
-                spawnedPlayers = new List<PlayerLocation>()
+                PlayersLocation = new List<PlayerLocationModel>(),
+                spawnedPlayers = new List<PlayerLocationModel>()
             };
         }
 
@@ -52,8 +52,8 @@ namespace VentusServer.DataAccess.Mappers
                 MaxPlayers = entity.MaxPlayers,
                 LevelRequirements = entity.LevelRequirements,
                 Maps = new List<MapModel>(),
-                PlayersLocation = new List<PlayerLocation>(),
-                spawnedPlayers = new List<PlayerLocation>()
+                PlayersLocation = new List<PlayerLocationModel>(),
+                spawnedPlayers = new List<PlayerLocationModel>()
             };
         }
         public static void PrintRow(dynamic row)

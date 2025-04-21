@@ -1,7 +1,7 @@
 
 using Game.Models;
 
-public class PlayerLocation  : BaseModel
+public class PlayerLocationModel : BaseModel
 {
     public int PosX { get; set; }
     public int PosY { get; set; }

@@ -1,6 +1,6 @@
 public class PlayerStatsFactory
 {
-    public static PlayerStatsModel CrearPlayerStatsPorDefecto(Race race, Gender gender)
+    public static PlayerStatsModel CreateDefaultPlayerStats(Race race, Gender gender)
     {
         // Crear un modelo base con valores predeterminados
         var stats = new PlayerStatsModel

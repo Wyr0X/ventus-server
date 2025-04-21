@@ -35,7 +35,7 @@ public class GameEngine : Engine
     {
 
         // worldManager.Update();
-      //  _worldManager.UpdateWorld();
+        //  _worldManager.UpdateWorld();
     }
 
     private void HandleMouseDown(int X, int Y)
@@ -82,10 +82,11 @@ public class GameEngine : Engine
         }
 
     }
-    public void UnSpawnPlayer(Guid accountId, PlayerModel playerModel, PlayerLocation playerLocation)
+    public void UnSpawnPlayer(Guid accountId, PlayerModel playerModel, PlayerLocationModel playerLocation)
     {
         PlayerEntity? playerEntity = (PlayerEntity?)Entities.GetPlayerByAccountId(accountId);
-        if (playerEntity != null){
+        if (playerEntity != null)
+        {
 
             Entities.Remove(playerEntity);
             _worldManager.UnSpawnPlayer(playerLocation.World.Id);
@@ -93,7 +94,7 @@ public class GameEngine : Engine
         }
 
     }
-    public void SpawnPlayer(Guid accountId, PlayerModel playerModel, PlayerLocation playerLocation)
+    public void SpawnPlayer(Guid accountId, PlayerModel playerModel, PlayerLocationModel playerLocation)
     {
 
         EventBuffer eventBuffer = new EventBuffer();

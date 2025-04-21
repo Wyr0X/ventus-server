@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
+using VentusServer.Domain.Models;
 
 public class PlayerModel : BaseModel
 {
     public required int Id { get; set; }
     public required Guid AccountId { get; set; }  // Relación con la cuenta
-    public string Name { get; set; }
+    public required string Name { get; set; }
     public required Gender Gender { get; set; }
     public required Race Race { get; set; }
     public int Level { get; set; }
@@ -13,8 +14,12 @@ public class PlayerModel : BaseModel
     public DateTime CreatedAt { get; set; }
     public DateTime LastLogin { get; set; }
     public Boolean isSpawned { get; set; } = false;
+    public PlayerInventoryModel? Inventory { get; set; }
+    public PlayerStatsModel? Stats { get; set; }
+    public PlayerLocationModel? Location { get; set; }
 
-    public string Status { get; set; } // Estado: "Online", "Offline", "Banned"
+
+    public string Status { get; set; } = "Offline"; // Estado: "Online", "Offline", "Banned"
 
 
 

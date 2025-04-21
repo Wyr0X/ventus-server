@@ -93,9 +93,7 @@ namespace VentusServer
                 .AddSingleton<IPlayerInventoryDAO>(sp =>
                     new DapperPlayerInventoryDAO(sp.GetRequiredService<IDbConnectionFactory>())
                 )
-                .AddSingleton<IPlayerInventoryItemDAO>(sp =>
-                    new DapperPlayerInventoryItemDAO(sp.GetRequiredService<IDbConnectionFactory>())
-                )
+
                 .AddSingleton<IPlayerStatsDAO>(sp =>
                     new DapperPlayerStatsDAO(sp.GetRequiredService<IDbConnectionFactory>())
                 );
@@ -132,7 +130,7 @@ namespace VentusServer
                 .AddSingleton<PermissionService>()
                 .AddSingleton<ItemService>()
                 .AddSingleton<PlayerInventoryService>()
-                .AddSingleton<PlayerItemService>()
+                .AddSingleton<StoreService>()
                 .AddSingleton<PlayerStatsService>();
 
         }
@@ -141,7 +139,7 @@ namespace VentusServer
         {
             services
                 .AddSingleton<PlayerModel>()
-                .AddSingleton<PlayerLocation>()
+                .AddSingleton<PlayerLocationModel>()
                 .AddSingleton<MapModel>()
                 .AddSingleton<WorldModel>()
                 .AddSingleton<PlayerInventoryModel>()
@@ -160,7 +158,8 @@ namespace VentusServer
                 .AddSingleton<AdminRolesController>()
                 .AddSingleton<AdminLogController>()
                 .AddSingleton<AdminItemController>()
-
+                .AddSingleton<ItemController>()
+                .AddSingleton<StoreController>()
                 .AddSingleton(sp =>
                     new Lazy<WebSocketServerController>(
                         () => sp.GetRequiredService<WebSocketServerController>()
