@@ -19,6 +19,7 @@ namespace VentusServer.DataAccess.Mappers
                 Gold = entity.Gold,
                 CreatedAt = entity.CreatedAt,
                 UpdatedAt = entity.UpdatedAt,
+                MaxSlots = entity.MaxSlots,
                 Items = new List<PlayerInventoryItemModel>()
             };
 
@@ -54,6 +55,7 @@ namespace VentusServer.DataAccess.Mappers
                 PlayerId = (int)row.player_id,
                 Gold = (int)row.gold,
                 Items = itemsDoc,
+                MaxSlots = row.max_slots,
                 CreatedAt = (DateTime)row.created_at,
                 UpdatedAt = (DateTime)row.updated_at
             };
@@ -69,6 +71,7 @@ namespace VentusServer.DataAccess.Mappers
                 Id = model.Id,
                 PlayerId = model.PlayerId,
                 Gold = model.Gold,
+                MaxSlots = model.MaxSlots,
                 Items = JsonDocument.Parse(JsonSerializer.Serialize(model.Items)),
                 CreatedAt = model.CreatedAt,
                 UpdatedAt = model.UpdatedAt

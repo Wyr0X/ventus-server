@@ -92,6 +92,7 @@ namespace VentusServer.Services
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow
                 };
+                LoggerUtil.Log(LoggerUtil.LogTag.StoreService, $"ítem agregado.{inventory.Items.Count} - {newItem.ItemId}");
 
                 inventory.Items.Add(newItem);
                 Console.WriteLine(inventory.Items.Count);

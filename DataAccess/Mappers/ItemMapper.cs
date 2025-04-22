@@ -131,7 +131,7 @@ namespace VentusServer.DataAccess.Mappers
                 var item = new ItemModel
                 {
                     Id = row.id,
-                    Key = row.key,
+                    Key = row.item_key,
                     Name = name,
                     Description = description,
                     Type = type,

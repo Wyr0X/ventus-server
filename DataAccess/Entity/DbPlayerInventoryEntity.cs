@@ -8,6 +8,7 @@ namespace VentusServer.DataAccess.Entities
         public int Id { get; set; }
         public int PlayerId { get; set; }
         public int Gold { get; set; }
+        public int MaxSlots { get; set; }
 
         public JsonDocument? Items { get; set; }
 

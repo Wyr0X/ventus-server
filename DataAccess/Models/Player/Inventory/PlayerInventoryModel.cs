@@ -7,6 +7,7 @@ namespace VentusServer.Domain.Models
     {
         public int Id { get; set; }
         public int PlayerId { get; set; }
+        public int MaxSlots { get; set; }
         public int Gold { get; set; }
 
         public DateTime CreatedAt { get; set; }

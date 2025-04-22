@@ -48,7 +48,7 @@ namespace Game.DTOs
 
     public class GetPlayersResponseDTO
     {
-        public required List<PlayerDTO> Players { get; set; }
+        public required List<PlayerModel> Players { get; set; }
     }
 }
 public class PlayerStatsDTO
@@ -83,5 +83,5 @@ public class InventoryItemDTO
     public string Name { get; set; } = "";
     public int Quantity { get; set; }
     public bool IsEquipped { get; set; } = false;
-    public int Slot {get; set;}
+    public int Slot { get; set; }
 }

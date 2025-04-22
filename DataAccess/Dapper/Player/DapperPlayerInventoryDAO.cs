@@ -55,6 +55,8 @@ namespace VentusServer.DataAccess.DAO
                 model.PlayerId,
                 model.Gold,
                 Items = JsonSerializer.Serialize(model.Items),
+                model.MaxSlots,
+
                 model.CreatedAt,
                 model.UpdatedAt
             });

@@ -1,5 +1,3 @@
-// VentusServer.DataAccess.Queries/PlayerInventoryQueries.cs
-
 namespace VentusServer.DataAccess.Queries
 {
     public static class PlayerInventoryQueries
@@ -10,13 +8,14 @@ namespace VentusServer.DataAccess.Queries
                 player_id INT NOT NULL UNIQUE REFERENCES players(id) ON DELETE CASCADE,
                 gold INT DEFAULT 0,
                 items JSONB DEFAULT '[]',
+                max_slots INT DEFAULT 20,
                 created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
             );";
 
         public const string Insert = @"
-            INSERT INTO player_inventory (player_id, gold, items, created_at, updated_at)
-            VALUES (@PlayerId, @Gold, @Items::jsonb, @CreatedAt, @UpdatedAt)
+            INSERT INTO player_inventory (player_id, gold, items, max_slots, created_at, updated_at)
+            VALUES (@PlayerId, @Gold, @Items::jsonb, @MaxSlots, @CreatedAt, @UpdatedAt)
             RETURNING id;";
 
         public const string UpdateGold = @"
@@ -28,6 +27,12 @@ namespace VentusServer.DataAccess.Queries
         public const string UpdateItems = @"
             UPDATE player_inventory
             SET items = @Items::jsonb,
+                updated_at = @UpdatedAt
+            WHERE player_id = @PlayerId;";
+
+        public const string UpdateMaxSlots = @"
+            UPDATE player_inventory
+            SET max_slots = @MaxSlots,
                 updated_at = @UpdatedAt
             WHERE player_id = @PlayerId;";
 

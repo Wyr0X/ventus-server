@@ -141,92 +141,16 @@ namespace VentusServer.Controllers
                 var playerDTOs = new List<PlayerDTO>();
                 Console.WriteLine($"[PlayerController] Players obtenido {players.Count}");
 
-                foreach (var player in players)
+                if (players != null)
                 {
-
-                    Console.WriteLine($"[PlayerController] Players test {player.Stats}");
-
-                    playerDTOs.Add(new PlayerDTO
-                    {
-                        Id = player.Id,
-                        AccountId = player.AccountId,
-                        Name = player.Name,
-                        Gender = (int)player.Gender,
-                        Race = (int)player.Race,
-                        Class = (int)player.Class,
-                        Level = player.Level,
-                        CreatedAt = player.CreatedAt,
-                        LastLogin = player.LastLogin,
-                        Status = player.Status,
-
-                        Location = player.Location == null ? null : new PlayerLocationDTO
-                        {
-                            PosX = player.Location.PosX,
-                            PosY = player.Location.PosY,
-                            Map = player.Location.Map == null ? null : new MapDTO
-                            {
-                                Id = player.Location.Map.Id,
-                                Name = player.Location.Map.Name,
-                                MinLevel = player.Location.Map.MinLevel,
-                                MaxPlayers = player.Location.Map.MaxPlayers
-                            },
-                            World = player.Location.World == null ? null : new WorldDTO
-                            {
-                                Id = player.Location.World.Id,
-                                Name = player.Location.World.Name,
-                                Description = player.Location.World.Description
-                            }
-                        },
-
-                        Stats = player.Stats == null ? null : new PlayerStatsDTO
-                        {
-                            Level = player.Stats.Level,
-                            Xp = player.Stats.Xp,
-                            Gold = player.Stats.Gold,
-                            BankGold = player.Stats.BankGold,
-                            FreeSkillPoints = player.Stats.FreeSkillPoints,
-                            Hp = player.Stats.Hp,
-                            Mp = player.Stats.Mp,
-                            Sp = player.Stats.Sp,
-                            MaxHp = player.Stats.MaxHp,
-                            MaxMp = player.Stats.MaxMp,
-                            MaxSp = player.Stats.MaxSp,
-                            Hunger = player.Stats.Hunger,
-                            Thirst = player.Stats.Thirst,
-                            KilledNpcs = player.Stats.KilledNpcs,
-                            KilledUsers = player.Stats.KilledUsers,
-                            Deaths = player.Stats.Deaths,
-                            LastUpdated = player.Stats.LastUpdated
-                        },
-
-
-                        Inventory = player.Inventory is null ? null : new PlayerInventoryDTO
-                        {
-                            Items = player.Inventory.Items?.Select(item => new InventoryItemDTO
-                            {
-                                ItemId = item.ItemId,
-                                Name = item.Name,
-                                Quantity = item.Quantity,
-                                Slot = item.Slot,
-                                IsEquipped = item.isEquipped
-                            }).ToList() ?? new List<InventoryItemDTO>()
-                        }
-                    });
+                    return Ok(new GetPlayersResponseDTO { Players = players });
                 }
-
-                if (playerDTOs.Count == 0)
-                {
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine($"[PlayerController] No se encontraron personajes para la cuenta {accountId}.");
-                    Console.ResetColor();
-                    return Ok(new GetPlayersResponseDTO { Players = new List<PlayerDTO>() });
-                }
+                return Ok(new GetPlayersResponseDTO { Players = [] });
 
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine($"[SUCCESS] Se obtuvieron {playerDTOs.Count} personajes para la cuenta {accountId}.");
                 Console.ResetColor();
 
-                return Ok(new GetPlayersResponseDTO { Players = playerDTOs });
 
             }
             catch (Exception ex)

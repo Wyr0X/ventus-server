@@ -158,6 +158,7 @@ namespace VentusServer
                 .AddSingleton<AdminRolesController>()
                 .AddSingleton<AdminLogController>()
                 .AddSingleton<AdminItemController>()
+                .AddSingleton<GameController>()
                 .AddSingleton<ItemController>()
                 .AddSingleton<StoreController>()
                 .AddSingleton(sp =>
