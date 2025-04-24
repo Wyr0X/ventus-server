@@ -7,7 +7,7 @@ public class PlayerLocationModel : BaseModel
     public int PosY { get; set; }
 
     // Relaciones
-    public required PlayerModel Player { get; set; }
+    public required int PlayerId { get; set; }
     public required WorldModel World { get; set; }
 
     public required MapModel Map { get; set; }

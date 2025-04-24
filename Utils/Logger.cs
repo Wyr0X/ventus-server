@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 
 public static class LoggerUtil
 {
@@ -9,6 +6,8 @@ public static class LoggerUtil
         Init,
         AuthController,
         AdminAccountController,
+        SpellController,
+        StoreController,
         AdminRolesController,
         WebSocketAuthentificationService,
         AuthService,
@@ -21,7 +20,7 @@ public static class LoggerUtil
         DapperPlayerDAO,
         DapperPlayerStatsDAO,
         DapperPlayerInventoryDAO,
-
+        DapperPlayerSpellsDAO,
         DapperRoleDAO,
         MapModel,
         BaseCachedService,
@@ -42,6 +41,8 @@ public static class LoggerUtil
     {
         { LogTag.AuthController, (false, ConsoleColor.Cyan, false) },
         { LogTag.AdminAccountController, (false, ConsoleColor.Cyan, false) },
+        { LogTag.SpellController, (false, ConsoleColor.Cyan, false) },
+        { LogTag.StoreController, (true, ConsoleColor.Cyan, false) },
         { LogTag.AdminRolesController, (false, ConsoleColor.Cyan, false) },
         { LogTag.WebSocketAuthentificationService, (false, ConsoleColor.DarkMagenta, false) },
         { LogTag.WebSocketServerController, (false, ConsoleColor.DarkMagenta, false) },
@@ -55,18 +56,19 @@ public static class LoggerUtil
         { LogTag.WorldService, (false, ConsoleColor.DarkBlue, false) },
         { LogTag.AuthService, (false, ConsoleColor.DarkBlue, false) },
         { LogTag.RoleService, (false, ConsoleColor.DarkBlue, false) },
-        { LogTag.StoreService, (true, ConsoleColor.DarkBlue, false) },
+        { LogTag.StoreService, (false, ConsoleColor.DarkBlue, false) },
         { LogTag.DB, (false, ConsoleColor.Yellow, false) },
         { LogTag.Init, (false, ConsoleColor.Yellow, false) },
         { LogTag.Game, (false, ConsoleColor.Yellow, false) },
         { LogTag.DapperMapDAO, (false, ConsoleColor.Green, false) },
         { LogTag.DapperPlayerDAO, (false, ConsoleColor.Green, false) },
-        { LogTag.DapperPlayerStatsDAO, (true, ConsoleColor.Green, false) },
+        { LogTag.DapperPlayerStatsDAO, (false, ConsoleColor.Green, false) },
         { LogTag.DapperRoleDAO, (false, ConsoleColor.Green, false) },
         { LogTag.DapperAccountDAO, (false, ConsoleColor.Green, false) },
         { LogTag.DapperWorldDAO, (false, ConsoleColor.Green, false) },
-        { LogTag.DapperItemDAO, (true, ConsoleColor.Green, false) },
-        { LogTag.DapperPlayerInventoryDAO, (true, ConsoleColor.Green, false) },
+        { LogTag.DapperItemDAO, (false, ConsoleColor.Green, false) },
+        { LogTag.DapperPlayerInventoryDAO, (false, ConsoleColor.Green, false) },
+        { LogTag.DapperPlayerSpellsDAO, (true, ConsoleColor.Green, false) },
         { LogTag.RequirePermissionAttribute, (false, ConsoleColor.Blue, false) },
 
 

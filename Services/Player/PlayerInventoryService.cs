@@ -10,10 +10,9 @@ public class PlayerInventoryService
         _inventoryDAO = inventoryDAO;
     }
 
-    public async Task<PlayerInventoryModel> GetInventoryByPlayerId(int playerId)
+    public async Task<PlayerInventoryModel?> GetInventoryByPlayerId(int playerId)
     {
         var inventory = await _inventoryDAO.GetByPlayerId(playerId);
-
         return inventory;
     }
 
@@ -48,7 +47,7 @@ public class PlayerInventoryService
         return inventoryModel;
     }
 
-    public async Task UpdateGold(int playerId, int gold, DateTime updatedAt)
+    public async Task UpdateGold(int playerId, int gold)
     {
         await _inventoryDAO.UpdateGold(playerId, gold);
     }
@@ -61,7 +60,7 @@ public class PlayerInventoryService
     public async Task<bool> BuyItemAsync(PlayerModel player, ItemModel itemToBuy)
     {
         // Verificar que el ítem sea comprable
-        if (itemToBuy.Price == null || itemToBuy.Price <= 0)
+        if (itemToBuy.Price <= 0)
             throw new InvalidOperationException("Este ítem no se puede comprar.");
 
         var inventory = await GetInventoryByPlayerId(player.Id);
@@ -72,19 +71,29 @@ public class PlayerInventoryService
             return false; // No tiene suficiente oro
 
         // Verificar si ya tiene el ítem (si es stackeable)
-        var existingItem = inventory.Items.FirstOrDefault(i => i.ItemId == itemToBuy.Id && itemToBuy.MaxStack != null);
+        var existingItem = inventory.Items.FirstOrDefault(i => i.ItemId == itemToBuy.Id);
 
         if (existingItem != null)
         {
-            existingItem.Quantity += 1;
-            existingItem.UpdatedAt = DateTime.Now;
-            existingItem.Quantity = (existingItem.Quantity) + (itemToBuy.Quantity ?? 1);
-            await _inventoryDAO.UpsertAsync(inventory);
+            if (itemToBuy.MaxStack != null && existingItem.Quantity + 1 <= itemToBuy.MaxStack)
+            {
+                existingItem.Quantity += 1;
+            }
+            else if (itemToBuy.MaxStack == null)
+            {
+                existingItem.Quantity += 1;
+            }
+            else
+            {
+                return false;
+            }
 
+            existingItem.UpdatedAt = DateTime.Now;
+            await _inventoryDAO.UpsertAsync(inventory);
         }
         else
         {
-            // Buscar slot libre
+            // Buscar slot libre (esto podría ser manejado por la base de datos)
             int nextSlot = inventory.Items.Count;
 
             var newItem = new PlayerInventoryItemModel
@@ -99,8 +108,7 @@ public class PlayerInventoryService
                 Icon = itemToBuy.IconPath,
             };
 
-            inventory.Items.Append(newItem);
-
+            inventory.Items.Add(newItem);
             await _inventoryDAO.UpsertAsync(inventory);
         }
 
@@ -112,4 +120,12 @@ public class PlayerInventoryService
         return true;
     }
 
+    public async Task UpdateInventory(PlayerInventoryModel inventory)
+    {
+        if (inventory == null)
+        {
+            throw new ArgumentNullException(nameof(inventory), "El inventario no puede ser nulo.");
+        }
+        await _inventoryDAO.UpsertAsync(inventory);
+    }
 }

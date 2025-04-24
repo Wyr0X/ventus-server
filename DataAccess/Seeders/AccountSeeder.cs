@@ -39,6 +39,7 @@ namespace VentusServer.Seeders
                 Credits = 0,
                 RoleId = "owner",
                 LastLogin = null,
+                LastIpAddress = "localhost",
                 SessionId = Guid.Empty
             };
 

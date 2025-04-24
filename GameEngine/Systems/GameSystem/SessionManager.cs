@@ -54,7 +54,7 @@ public class SessionManager
         if (accountModel != null)
         {
             int? currentActivePlayer = accountModel.ActivePlayerId;
-            if (currentActivePlayer != null)
+            if (currentActivePlayer != null && playerModel != null && playerLocation != null)
             {
                 _game.UnSpawnPlayer(messagePair.AccountId, playerModel, playerLocation);
                 playerModel.isSpawned = false;

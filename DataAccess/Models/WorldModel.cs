@@ -67,7 +67,7 @@ namespace Game.Models
         }
         public void RemovePlayer(int playerId)
         {
-            var playerLocation = PlayersLocation.FirstOrDefault(p => p.Player.Id == playerId);
+            var playerLocation = PlayersLocation.FirstOrDefault(p => p.PlayerId == playerId);
             if (playerLocation != null)
             {
                 PlayersLocation.Remove(playerLocation);

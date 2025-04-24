@@ -19,7 +19,7 @@ public class MovementManager
         _game = game;
     }
 
-    public async void HandlePlayerInput(Guid accountId, PlayerInput playerInput)
+    public void HandlePlayerInput(Guid accountId, PlayerInput playerInput)
     {
         RepeatedField<uint> protoKeys = playerInput.Keys; // Ejemplo de entrada
 

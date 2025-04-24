@@ -136,7 +136,8 @@ namespace VentusServer.Controllers
                 {
                     IncludeInventory = true,
                     IncludeLocation = true,
-                    IncludeStats = true
+                    IncludeStats = true,
+                    IncludeSpells = true,
                 });
                 var playerDTOs = new List<PlayerDTO>();
                 Console.WriteLine($"[PlayerController] Players obtenido {players.Count}");
@@ -147,9 +148,6 @@ namespace VentusServer.Controllers
                 }
                 return Ok(new GetPlayersResponseDTO { Players = [] });
 
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"[SUCCESS] Se obtuvieron {playerDTOs.Count} personajes para la cuenta {accountId}.");
-                Console.ResetColor();
 
 
             }

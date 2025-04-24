@@ -1,8 +1,8 @@
 public class ItemCreateDTO
 {
-    public string Key { get; set; }
-    public TranslatedTextDTO Name { get; set; }
-    public TranslatedTextDTO Description { get; set; }
+    public required string Key { get; set; }
+    public required TranslatedTextDTO Name { get; set; }
+    public required TranslatedTextDTO Description { get; set; }
 
     public ItemType Type { get; set; }
     public ItemRarity Rarity { get; set; }
@@ -22,6 +22,6 @@ public class ItemCreateDTO
 
     public int[]? Sprite { get; set; }
     public string? Sound { get; set; }
-    public string IconPath { get; set; }
+    public string? IconPath { get; set; }
 }
 

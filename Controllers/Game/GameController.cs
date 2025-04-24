@@ -48,6 +48,7 @@ public class GameController : ControllerBase
             IncludeStats = true,
             IncludeInventory = true,
             IncludeLocation = true,
+            IncludeSpells = true,
         });
         if (player == null || player.AccountId != account.AccountId)
             return NotFound("Personaje no válido o no pertenece a tu cuenta.");

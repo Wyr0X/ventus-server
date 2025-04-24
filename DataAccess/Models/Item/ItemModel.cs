@@ -1,7 +1,7 @@
 public class ItemModel
 {
     public int Id { get; set; }
-    public string Key { get; set; }
+    public required string Key { get; set; }
 
     public required TranslatedTextModel Name { get; set; }
     public required TranslatedTextModel Description { get; set; }
@@ -30,7 +30,7 @@ public class ItemModel
     // Otros posibles
     public int[]? Sprite { get; set; }
     public string? Sound { get; set; }
-    public string IconPath { get; set; } // Para el frontend
+    public string IconPath { get; set; } = ""; // Para el frontend
 
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }

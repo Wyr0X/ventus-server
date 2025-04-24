@@ -1,6 +1,3 @@
-using System;
-using System.Threading.Tasks;
-using Npgsql;
 using VentusServer.DataAccess.Interfaces;
 using VentusServer.DataAccess.Queries;
 using VentusServer.DataAccess.Seeders;
@@ -19,17 +16,20 @@ namespace VentusServer.DataAccess.Postgres
         IPlayerDAO _playerDAO;
         PasswordService _passwordService;
         ItemService _itemService;
+        ISpellDAO _spellDAO;
+        IPlayerSpellsDAO _playerSpellsDAO;
         public DatabaseInitializer(PostgresDbService postgresDbService, IRoleDAO roleDAO,
         IAccountDAO accountDAO, IPlayerDAO playerDAO, PasswordService passwordService,
-        ItemService itemService)
+        ItemService itemService, ISpellDAO spellDAO, IPlayerSpellsDAO playerSpellsDAO)
         {
-            _itemService = itemService;
             _postgresDbService = postgresDbService;
             _roleDAO = roleDAO;
             _accountDAO = accountDAO;
             _playerDAO = playerDAO;
             _passwordService = passwordService;
             _itemService = itemService;
+            _spellDAO = spellDAO;
+            _playerSpellsDAO = playerSpellsDAO;
         }
 
         public async Task InitializeDatabaseAsync()
@@ -45,11 +45,15 @@ namespace VentusServer.DataAccess.Postgres
                 await InitializePlayerStatsAsync();
                 await InitializeItemsAsync();
                 await InitializePlayerInventoryAsync();
+                await InitializeSpellsAsync();
+                await InitializePlayerSpellsAsync();
                 await RoleSeeder.SeedRolesAsync(_roleDAO);
-                await new AccountSeeder(_accountDAO, _passwordService).SeedAsync();
                 await new ItemSeeder(_itemService).SeedFromFileAsync("Data/items.json");
-                // await new AccountSeeder(_accountDAO, _passwordService).SeedAsync();
-                //  await new PlayerSeeder(_playerDAO, _accountDAO).SeedAsync();
+                var spellSeeder = new SpellSeeder(_spellDAO);
+                await spellSeeder.SeedAsync();
+
+                await new AccountSeeder(_accountDAO, _passwordService).SeedAsync();
+                // await new PlayerSeeder(_playerDAO, _accountDAO).SeedAsync();
 
             }
             catch (Exception ex)
@@ -179,9 +183,40 @@ namespace VentusServer.DataAccess.Postgres
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Error al crear la tabla 'items': {ex.Message}");
+                Console.WriteLine($"❌ Error al crear la tabla 'player_inventory': {ex.Message}");
             }
         }
+        private async Task InitializeSpellsAsync()
+        {
+            try
+            {
+                Console.WriteLine("🔄 Intentando crear la tabla 'spells'...");
+                await _postgresDbService.ExecuteQueryAsync(SpellQueries.CreateTableQuery);
+                Console.WriteLine("✅ Tabla 'spells' creada correctamente (si no existía).");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Error al crear la tabla 'spells': {ex.Message}");
+                // Para obtener más detalles sobre el error, puedes usar:
+                Console.WriteLine($"Detalles del error: {ex.ToString()}");
+            }
+        }
+        private async Task InitializePlayerSpellsAsync()
+        {
+            try
+            {
+                Console.WriteLine("🔄 Intentando crear la tabla 'player_spells'...");
+                await _postgresDbService.ExecuteQueryAsync(PlayerSpellsQueries.CreateTableQuery);
+                Console.WriteLine("✅ Tabla 'player_spells' creada correctamente (si no existía).");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Error al crear la tabla 'player_spells': {ex.Message}");
+                // Para obtener más detalles sobre el error, puedes usar:
+                Console.WriteLine($"Detalles del error: {ex.ToString()}");
+            }
+        }
+
     }
 
 }
@@ -190,6 +225,6 @@ namespace VentusServer.DataAccess.Postgres
 // BEGIN
 //     FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
 //         EXECUTE 'DROP TABLE IF EXISTS public.' || quote_ident(r.tablename) || ' CASCADE';
-//     END LOOP;
+// END LOOP;
 // END $$;
 

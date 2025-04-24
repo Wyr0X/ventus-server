@@ -11,17 +11,20 @@ namespace VentusServer.Services
         private readonly IPlayerDAO _playerDAO;
         private readonly PlayerStatsService _playerStatsService;
         private readonly PlayerInventoryService _playerInventoryService;
+        private readonly PlayerSpellsService _playerSpellsService;
         private readonly PlayerLocationService _playerLocationService;
         private readonly Dictionary<string, int> _nameToIdCache = new();
         private readonly AccountService _accountService;
         public PlayerService(IPlayerDAO playerDAO, PlayerLocationService playerLocationService,
-            PlayerStatsService playerStatsService, PlayerInventoryService playerInventoryService, AccountService accountService)
+            PlayerStatsService playerStatsService, PlayerInventoryService playerInventoryService,
+             AccountService accountService, PlayerSpellsService playerSpellsService)
         {
             _playerDAO = playerDAO;
             _playerLocationService = playerLocationService;
             _playerInventoryService = playerInventoryService;
             _playerStatsService = playerStatsService;
             _accountService = accountService;
+            _playerSpellsService = playerSpellsService;
         }
 
         // =============================
@@ -116,8 +119,10 @@ namespace VentusServer.Services
                 var location = await _playerLocationService.CreateDefaultPlayerLocation(player);
                 var stats = await _playerStatsService.CreateDefaultPlayerStatsAsync(player.Id, createPlayerDTO);
                 var inventory = await _playerInventoryService.CreateDefaultInventory(player);
+                var spells = await _playerSpellsService.CreateDefaultSpells(player);
                 player.Location = location;
                 player.Stats = stats;
+                player.Spells = spells;
                 // player.Inventory = inventory;
                 Console.WriteLine($"✅ Jugador '{player.Name}' creado exitosamente con ID {player.Location}.");
                 return player;
@@ -296,7 +301,18 @@ namespace VentusServer.Services
                             Console.WriteLine($"❌ Error al cargar ubicación para {player.Name}: {task.Exception?.Message}");
                     }));
             }
-
+            if (options.IncludeSpells)
+            {
+                Console.WriteLine($"📍 Cargando hechizos para el jugador {player.Name} (ID: {player.Id})...");
+                tasks.Add(_playerSpellsService.LoadPlayerSpellsInModel(player)
+                    .ContinueWith(task =>
+                    {
+                        if (task.IsCompletedSuccessfully)
+                            Console.WriteLine($"✅ Hechizos cargada para {player.Name}.");
+                        else
+                            Console.WriteLine($"❌ Error al cargar los hechizos para {player.Name}: {task.Exception?.Message}");
+                    }));
+            }
             await Task.WhenAll(tasks);
         }
 

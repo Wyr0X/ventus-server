@@ -16,7 +16,7 @@ namespace VentusServer.Services
             _playerStatsDAO = playerStatsDAO;
         }
 
-        private async Task<PlayerStatsModel> GetOrLoadPlayerStatsAsync(int playerId)
+        private async Task<PlayerStatsModel?> GetOrLoadPlayerStatsAsync(int playerId)
         {
             if (_cache.TryGetValue(playerId, out var playerStats))
             {
@@ -28,16 +28,17 @@ namespace VentusServer.Services
             if (playerStats != null)
             {
                 _cache[playerId] = playerStats; // Guardamos en caché
-            }
+                return playerStats;
 
-            return playerStats;
+            }
+            return null;
         }
 
-        public async Task<PlayerStatsModel> GetPlayerStatsAsync(int playerId)
+        public async Task<PlayerStatsModel?> GetPlayerStatsAsync(int playerId)
         {
             return await GetOrLoadPlayerStatsAsync(playerId);
         }
-        public async Task<PlayerStatsModel> LoadPlayerStatsInModel(PlayerModel player)
+        public async Task<PlayerStatsModel?> LoadPlayerStatsInModel(PlayerModel player)
         {
             var playerStats = await GetPlayerStatsAsync(player.Id);
             player.Stats = playerStats;
@@ -182,5 +183,6 @@ namespace VentusServer.Services
             await _playerStatsDAO.DeletePlayerStatsAsync(playerId);
             _cache.TryRemove(playerId, out _); // Elimina de la cache
         }
+
     }
 }

@@ -23,7 +23,7 @@ public class AccountModel : BaseModel
 
     // Datos adicionales
     public int Credits { get; set; }
-    public string LastIpAddress { get; set; } = default!;
+    public required string LastIpAddress { get; set; } = default!;
     public int? ActivePlayerId { get; set; }
 
     // Rol

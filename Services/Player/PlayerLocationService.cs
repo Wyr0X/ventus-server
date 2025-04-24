@@ -59,10 +59,10 @@ namespace VentusServer.Services
         {
             try
             {
-                LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"Guardando ubicación del jugador con ID: {location.Player.Id}...");
+                LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"Guardando ubicación del jugador con ID: {location.PlayerId}...");
                 await _playerLocationDAO.SavePlayerLocationAsync(location);
-                Set(location.Player.Id, location); // Refrescar cache
-                LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"✅ Ubicación del jugador con ID: {location.Player.Id} guardada correctamente.");
+                Set(location.PlayerId, location); // Refrescar cache
+                LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"✅ Ubicación del jugador con ID: {location.PlayerId} guardada correctamente.");
             }
             catch (Exception ex)
             {
@@ -74,10 +74,10 @@ namespace VentusServer.Services
         {
             try
             {
-                LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"Creando ubicación para el jugador con ID: {playerLocation.Player.Id}...");
+                LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"Creando ubicación para el jugador con ID: {playerLocation.PlayerId}...");
                 await _playerLocationDAO.CreatePlayerLocationAsync(playerLocation);
-                Set(playerLocation.Player.Id, playerLocation); // Agregar a la cache
-                LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"✅ Ubicación del jugador con ID: {playerLocation.Player.Id} creada correctamente.");
+                Set(playerLocation.PlayerId, playerLocation); // Agregar a la cache
+                LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"✅ Ubicación del jugador con ID: {playerLocation.PlayerId} creada correctamente.");
             }
             catch (Exception ex)
             {
@@ -94,17 +94,18 @@ namespace VentusServer.Services
 
             MapModel? map = await _mapService.GetMapByIdAsync(defaultMapId);
             WorldModel? world = await _worldService.GetWorldByIdAsync(defaultWorldId);
-            LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"Mapa encontrado: {map.Id} World Encontrado ${world.Id}");
 
             if (world != null && map != null)
             {
+                LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"Mapa encontrado: {map.Id} World Encontrado ${world.Id}");
+
                 PlayerLocationModel playerLocation = new PlayerLocationModel
                 {
                     World = world,
                     Map = map,
                     PosX = 0,
                     PosY = 0,
-                    Player = player
+                    PlayerId = player.Id
                 };
 
                 LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"Ubicación predeterminada para el jugador con ID: {player.Id} creada correctamente.");
