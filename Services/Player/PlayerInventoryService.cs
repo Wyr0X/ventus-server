@@ -40,7 +40,8 @@ public class PlayerInventoryService
             CreatedAt = DateTime.Now,
             Gold = 0,
             Items = [],
-            PlayerId = playerModel.Id
+            PlayerId = playerModel.Id,
+            MaxSlots = 22,
         };
 
         await CreateInventory(inventoryModel);

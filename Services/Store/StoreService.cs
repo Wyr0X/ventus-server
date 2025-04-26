@@ -111,6 +111,12 @@ namespace VentusServer.Services
                 return BuyResult.Fail("No tienes suficiente oro para comprar este carrito.");
             }
 
+            if (inventory.MaxSlots < inventory.Items.Count() + items.Count())
+            {
+                LoggerUtil.Log(LoggerUtil.LogTag.StoreService, $"No tienes suficiente espacio en el inventario.");
+                return BuyResult.Fail("No tienes suficiente espacio en el inventario.");
+            }
+
             inventory.Gold -= totalCost;
             LoggerUtil.Log(LoggerUtil.LogTag.StoreService, $"Oro descontado. Nuevo saldo: {inventory.Gold}", "BuyCartAsync");
 
@@ -138,7 +144,8 @@ namespace VentusServer.Services
                     }
                     else
                     {
-                        int nextSlot = inventory.Items.Count;
+
+                        int nextSlot = GetNextAvailableInventorySlot(inventory);
                         var newItem = new PlayerInventoryItemModel
                         {
                             ItemId = cartItem.ItemId,
@@ -174,7 +181,11 @@ namespace VentusServer.Services
                     UpdatedAt = DateTime.UtcNow
                 };
             }
-
+            if (spellInventory.MaxSlots < spellInventory.Spells.Count() + spells.Count())
+            {
+                LoggerUtil.Log(LoggerUtil.LogTag.StoreService, $"No tienes suficiente espacio para los hechizos.");
+                return BuyResult.Fail("No tienes suficiente espacio para los hechizos.");
+            }
             foreach (var cartSpell in spells)
             {
                 var spell = await _spellService.GetSpellByIdAsync(cartSpell.SpellId);
@@ -188,11 +199,13 @@ namespace VentusServer.Services
                     }
                     else
                     {
+                        int nextSlot = GetNextAvailableSpellsSlot(spellInventory);
+
                         var newSpell = new PlayerSpellModel
                         {
                             SpellId = cartSpell.SpellId,
                             IsEquipped = false,
-                            Slot = spellInventory.Spells.Count,
+                            Slot = nextSlot,
                             CreatedAt = DateTime.UtcNow,
                             UpdatedAt = DateTime.UtcNow
                         };
@@ -211,6 +224,40 @@ namespace VentusServer.Services
 
             LoggerUtil.Log(LoggerUtil.LogTag.StoreService, $"Carrito comprado exitosamente para jugador {player.Id}", "BuyCartAsync");
             return BuyResult.CreateSuccess();
+        }
+        private int GetNextAvailableInventorySlot(PlayerInventoryModel inventory)
+        {
+            // Creamos un HashSet con todos los slots ocupados
+            HashSet<int> occupiedSlots = inventory.Items.Select(item => item.Slot).ToHashSet();
+
+            // Buscamos el primer slot no ocupado
+            for (int slot = 0; slot < inventory.MaxSlots; slot++)
+            {
+                if (!occupiedSlots.Contains(slot))
+                {
+                    return slot + 1;
+                }
+            }
+
+            // Si no hay espacio disponible
+            throw new InvalidOperationException("No hay slots disponibles en el inventario.");
+        }
+        private int GetNextAvailableSpellsSlot(PlayerSpellsModel playerSpells)
+        {
+            // Creamos un HashSet con todos los slots ocupados
+            HashSet<int> occupiedSlots = playerSpells.Spells.Select(spell => spell.Slot).ToHashSet();
+
+            // Buscamos el primer slot no ocupado
+            for (int slot = 0; slot < playerSpells.MaxSlots; slot++)
+            {
+                if (!occupiedSlots.Contains(slot))
+                {
+                    return slot + 1;
+                }
+            }
+
+            // Si no hay espacio disponible
+            throw new InvalidOperationException("No hay slots disponibles en el inventario.");
         }
     }
 
