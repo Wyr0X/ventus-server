@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using VentusServer.Domain.Enums;
 using VentusServer.Services;
-using static LoggerUtil;
+using static Log;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
 public class RequirePermissionAttribute : Attribute, IAsyncAuthorizationFilter

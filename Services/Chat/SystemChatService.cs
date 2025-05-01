@@ -13,11 +13,11 @@ public class SystemChatService : ChatMessageChannel
 
 
         ServerMessage serverMessage = CreateSystemMessage(messageText, type);
-        LoggerUtil.Log(LoggerUtil.LogTag.SystemChatService, $"Broadcast message for ${accountIds.Count}  - Message: ${serverMessage}");
+        Log.Log(Log.LogTag.SystemChatService, $"Broadcast message for ${accountIds.Count}  - Message: ${serverMessage}");
 
         foreach (var accountId in accountIds)
         {
-            LoggerUtil.Log(LoggerUtil.LogTag.SystemChatService, $"Broadcast message for ${accountId}  - Message: ${serverMessage}");
+            Log.Log(Log.LogTag.SystemChatService, $"Broadcast message for ${accountId}  - Message: ${serverMessage}");
 
             sendServerPacketByAccountId(accountId, serverMessage);
         }

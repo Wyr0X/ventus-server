@@ -1,6 +1,6 @@
-public class EventBuffer : Component
+public class EventBuffer
 {
-    private Queue<GameEvent> eventQueue = new Queue<GameEvent>();
+    private readonly Queue<GameEvent> eventQueue = new();
 
     // Encolar un evento en el buffer global
     public void EnqueueEvent(GameEvent gameEvent)
@@ -23,6 +23,4 @@ public class EventBuffer : Component
     {
         return eventQueue.Count > 0;
     }
-
-
 }
