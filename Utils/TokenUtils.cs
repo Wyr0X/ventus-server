@@ -25,7 +25,7 @@ public static class TokenUtils
             issuer: "ventus", // El emisor del token
             audience: "ventus", // La audiencia esperada del token
             claims: claims,
-            expires: DateTime.Now.AddDays(1), // El token expirará en 1 día
+            expires: DateTime.Now.AddHours(24), // El token expirará en 1 hora
             signingCredentials: creds
         );
 

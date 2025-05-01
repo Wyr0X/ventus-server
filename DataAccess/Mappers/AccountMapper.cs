@@ -22,7 +22,7 @@ namespace VentusServer.DataAccess.Mappers
                 LastLogin = row.last_login,
                 SessionId = row.session_id,
                 CreatedAt = row.created_at,
-                ActivePlayerId = null ,
+                ActivePlayerId = null,
                 RoleId = row.role_id
             };
         }
@@ -65,12 +65,12 @@ namespace VentusServer.DataAccess.Mappers
                 IsDeleted = entity.IsDeleted,
                 IsBanned = entity.IsBanned,
                 Credits = entity.Credits,
-                LastIpAddress = entity.LastIpAddress,
+                LastIpAddress = entity.LastIpAddress ?? "",
                 LastLogin = entity.LastLogin,
                 SessionId = entity.SessionId,
                 CreatedAt = entity.CreatedAt,
-                ActivePlayerId = null ,
-                RoleId =  entity.RoleId
+                ActivePlayerId = null,
+                RoleId = entity.RoleId
             };
         }
     }

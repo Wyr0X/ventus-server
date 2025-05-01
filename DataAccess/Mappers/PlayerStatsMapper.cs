@@ -6,7 +6,7 @@ using VentusServer.DataAccess.Entities;
 
 namespace VentusServer.DataAccess.Mappers
 {
-    public class PlayerStatsMapper  : BaseMapper
+    public class PlayerStatsMapper : BaseMapper
     {
         // 🧭 Mapeo desde un resultado dinámico de Dapper a un modelo de estadísticas de jugador
         public static PlayerStatsModel FromRow(dynamic row)
@@ -18,7 +18,7 @@ namespace VentusServer.DataAccess.Mappers
                 Xp = row.xp,
                 Gold = row.gold,
                 BankGold = row.bank_gold,
-                FreeSkillPoints = row.free_skillpoints,
+                FreeSkillPoints = row.free_skill_points,
                 Hp = row.hp,
                 Mp = row.mp,
                 Sp = row.sp,

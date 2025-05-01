@@ -16,7 +16,7 @@ namespace VentusServer.Services
             _playerStatsDAO = playerStatsDAO;
         }
 
-        private async Task<PlayerStatsModel> GetOrLoadPlayerStatsAsync(int playerId)
+        private async Task<PlayerStatsModel?> GetOrLoadPlayerStatsAsync(int playerId)
         {
             if (_cache.TryGetValue(playerId, out var playerStats))
             {
@@ -28,20 +28,27 @@ namespace VentusServer.Services
             if (playerStats != null)
             {
                 _cache[playerId] = playerStats; // Guardamos en caché
-            }
+                return playerStats;
 
-            return playerStats;
+            }
+            return null;
         }
 
-        public async Task<PlayerStatsModel> GetPlayerStatsAsync(int playerId)
+        public async Task<PlayerStatsModel?> GetPlayerStatsAsync(int playerId)
         {
             return await GetOrLoadPlayerStatsAsync(playerId);
         }
-
+        public async Task<PlayerStatsModel?> LoadPlayerStatsInModel(PlayerModel player)
+        {
+            var playerStats = await GetPlayerStatsAsync(player.Id);
+            player.Stats = playerStats;
+            return playerStats;
+        }
         public async Task SavePlayerStatsAsync(PlayerStatsModel playerStats)
         {
             try
             {
+                Console.WriteLine($"LAST UPDATED {playerStats.LastUpdated}");
                 await _playerStatsDAO.SavePlayerStatsAsync(playerStats);
                 _cache[playerStats.PlayerId] = playerStats; // Actualizamos la cache
             }
@@ -51,14 +58,16 @@ namespace VentusServer.Services
             }
         }
 
-        public async Task CreateDefaultPlayerStatsAsync(int playerId, CreatePlayerDTO createPlayerDTO)
+        public async Task<PlayerStatsModel?> CreateDefaultPlayerStatsAsync(int playerId, CreatePlayerDTO createPlayerDTO)
         {
             // Crear las estadísticas por defecto usando el factory
-            var playerStats = PlayerStatsFactory.CrearPlayerStatsPorDefecto(createPlayerDTO.Race, createPlayerDTO.Gender);
+            var playerStats = PlayerStatsFactory.CreateDefaultPlayerStats(createPlayerDTO.Race, createPlayerDTO.Gender);
             playerStats.PlayerId = playerId; // Asignamos el ID del jugador
 
             // Guardar las estadísticas del jugador recién creado
+
             await SavePlayerStatsAsync(playerStats);
+            return playerStats;
         }
 
         // Métodos para actualizar las estadísticas del jugador...
@@ -174,5 +183,6 @@ namespace VentusServer.Services
             await _playerStatsDAO.DeletePlayerStatsAsync(playerId);
             _cache.TryRemove(playerId, out _); // Elimina de la cache
         }
+
     }
 }

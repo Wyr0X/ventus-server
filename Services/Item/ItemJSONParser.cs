@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 using VentusServer.Domain.Models;
+using VentusServer.Domain.Enums; // Asegúrate de tener tus enums aquí si están separados
 
 namespace VentusServer.Services
 {
@@ -11,53 +10,93 @@ namespace VentusServer.Services
     {
         public static List<ItemModel> ParseItemsFromJson(string json)
         {
-            var result = new List<ItemModel>();
-            var root = JObject.Parse(json);
-
-            foreach (var itemProp in root.Properties())
+            var jsonItems = JsonSerializer.Deserialize<List<JsonItem>>(json, new JsonSerializerOptions
             {
-                var key = itemProp.Name;
-                var itemData = itemProp.Value;
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            });
 
-                var Name = itemData["name"]?["en"]?.ToString() ?? "Unnamed";
-                var Description = itemData["desc"]?["en"]?.ToString() ?? "";
+            var result = new List<ItemModel>();
 
-                int? hpMin = null, hpMax = null;
-                if (itemData["hp"] is JArray hpArray && hpArray.Count == 2)
+            foreach (var jsonItem in jsonItems!)
+            {
+                var item = new ItemModel
                 {
-                    hpMin = (int?)hpArray[0];
-                    hpMax = (int?)hpArray[1];
-                }
-
-                int? mp = null;
-                if (itemData["mp"] != null)
-                {
-                    // Si es número (ej. 5) -> parse directo
-                    // Si es string tipo "5%" -> ignoramos o parseamos como -1 o similar
-                    if (int.TryParse(itemData["mp"]?.ToString(), out var mpVal))
-                        mp = mpVal;
-                }
-
-                var sprite = itemData["sprite"]?.Select(t => (int)t).ToArray() ?? Array.Empty<int>();
-                var sound = itemData["sound"]?.ToString();
-
-                var model = new ItemModel
-                {
-                    Key = key,
-                    Name = Name,
-                    Description = Description,
-                    HpMin = hpMin,
-                    HpMax = hpMax,
-                    MP = mp,
-                    Sprite = sprite,
-                    Sound = sound,
-                    CreatedAt = DateTime.UtcNow, // Asignar la fecha actual al crear el modelo
-
+                    Key = jsonItem.Key,
+                    Name = new TranslatedTextModel
+                    {
+                        En = jsonItem.Name.En,
+                        Es = jsonItem.Name.Es
+                    },
+                    Description = new TranslatedTextModel
+                    {
+                        En = jsonItem.Description.En,
+                        Es = jsonItem.Description.Es
+                    },
+                    Type = Enum.Parse<ItemType>(jsonItem.Type),
+                    Rarity = Enum.Parse<ItemRarity>(jsonItem.Rarity),
+                    MaxStack = jsonItem.MaxStack,
+                    Quantity = null,
+                    RequiredLevel = jsonItem.RequiredLevel,
+                    IsTradeable = jsonItem.IsTradable,
+                    IsDroppable = jsonItem.IsDroppable,
+                    IsUsable = jsonItem.IsUsable,
+                    Price = jsonItem.Value,
+                    Sprite = jsonItem.Sprite,
+                    Sound = jsonItem.Sound,
+                    IconPath = jsonItem.IconPath,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
                 };
-                result.Add(model);
+
+                if (jsonItem.ConsumableData != null)
+                {
+                    item.ConsumableData = new ConsumableEffect
+                    {
+                        Type = jsonItem.ConsumableData.Type,
+                        Amount = jsonItem.ConsumableData.Amount,
+                        Duration = (float)jsonItem.ConsumableData.Duration,
+                        EffectName = jsonItem.ConsumableData.EffectName
+                    };
+                }
+
+                result.Add(item);
             }
 
             return result;
+        }
+
+        // Estructuras auxiliares para deserialización
+        private class JsonItem
+        {
+            public string Key { get; set; } = null!;
+            public Translations Name { get; set; } = null!;
+            public Translations Description { get; set; } = null!;
+            public string Type { get; set; } = null!;
+            public string Rarity { get; set; } = null!;
+            public int? MaxStack { get; set; }
+            public int? RequiredLevel { get; set; }
+            public int Value { get; set; }
+            public bool IsTradable { get; set; }
+            public bool IsDroppable { get; set; }
+            public bool IsUsable { get; set; }
+            public ConsumableData? ConsumableData { get; set; }
+            public int[]? Sprite { get; set; }
+            public string? Sound { get; set; }
+            public string IconPath { get; set; } = null!;
+        }
+
+        private class Translations
+        {
+            public string En { get; set; } = null!;
+            public string Es { get; set; } = null!;
+        }
+
+        private class ConsumableData
+        {
+            public string Type { get; set; } = null!;
+            public int Amount { get; set; }
+            public double Duration { get; set; }
+            public string? EffectName { get; set; }
         }
     }
 }

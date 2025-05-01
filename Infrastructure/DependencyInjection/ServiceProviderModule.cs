@@ -10,6 +10,7 @@ using VentusServer.DataAccess.Dapper;
 using VentusServer.DataAccess.Interfaces;
 using VentusServer.DataAccess.Postgres;
 using VentusServer.Services;
+using VentusServer.Domain.Models;
 
 namespace ventus_server.Infrastructure.DependencyInjection
 {
@@ -27,7 +28,6 @@ namespace ventus_server.Infrastructure.DependencyInjection
             RegisterModels(services);
             RegisterControllers(services);
             var provider = services.BuildServiceProvider();
-            provider.GetRequiredService<SessionHandler>();
             provider.GetRequiredService<ChatHandler>();
 
             return new ServiceProviderContainer(services, provider);
@@ -61,34 +61,47 @@ namespace ventus_server.Infrastructure.DependencyInjection
         private static void RegisterDAOs(IServiceCollection services)
         {
             services
-                .AddSingleton<IPlayerDAO>(sp => new DapperPlayerDAO(
-                    sp.GetRequiredService<IDbConnectionFactory>()
-                ))
-                .AddSingleton<IAccountDAO>(sp => new DapperAccountDAO(
-                    sp.GetRequiredService<IDbConnectionFactory>()
-                ))
-                .AddSingleton<IWorldDAO>(sp => new DapperWorldDAO(
-                    sp.GetRequiredService<IDbConnectionFactory>()
-                ))
-                .AddSingleton<IMapDAO>(sp => new DapperMapDAO(
-                    sp.GetRequiredService<IDbConnectionFactory>(),
-                    sp.GetRequiredService<IWorldDAO>()
-                ))
-                .AddSingleton<IPlayerLocationDAO>(sp => new DapperPlayerLocationDAO(
-                    sp.GetRequiredService<IDbConnectionFactory>(),
-                    sp.GetRequiredService<IPlayerDAO>(),
-                    sp.GetRequiredService<IWorldDAO>(),
-                    sp.GetRequiredService<IMapDAO>()
-                ))
-                .AddSingleton<IRoleDAO>(sp => new DapperRoleDAO(
-                    sp.GetRequiredService<IDbConnectionFactory>()
-                ))
-                .AddSingleton<IItemDAO>(sp => new DapperItemDAO(
-                    sp.GetRequiredService<IDbConnectionFactory>()
-                ))
-                .AddSingleton<IPlayerStatsDAO>(sp => new DapperPlayerStatsDAO(
-                    sp.GetRequiredService<IDbConnectionFactory>()
-                ));
+                .AddSingleton<IPlayerDAO>(sp =>
+                    new DapperPlayerDAO(sp.GetRequiredService<IDbConnectionFactory>())
+                )
+
+                .AddSingleton<IAccountDAO>(sp =>
+                    new DapperAccountDAO(sp.GetRequiredService<IDbConnectionFactory>())
+                )
+
+                .AddSingleton<IWorldDAO>(sp =>
+                    new DapperWorldDAO(sp.GetRequiredService<IDbConnectionFactory>())
+                )
+                .AddSingleton<IMapDAO>(sp =>
+                    new DapperMapDAO(sp.GetRequiredService<IDbConnectionFactory>(), sp.GetRequiredService<IWorldDAO>())
+                )
+
+                .AddSingleton<IPlayerLocationDAO>(sp =>
+                    new DapperPlayerLocationDAO(
+                        sp.GetRequiredService<IDbConnectionFactory>(),
+                        sp.GetRequiredService<IPlayerDAO>(),
+                        sp.GetRequiredService<IWorldDAO>(),
+                        sp.GetRequiredService<IMapDAO>()
+                    )
+                )
+                .AddSingleton<IRoleDAO>(sp =>
+                    new DapperRoleDAO(sp.GetRequiredService<IDbConnectionFactory>())
+                )
+                .AddSingleton<ISpellDAO>(sp =>
+                    new DapperSpellDAO(sp.GetRequiredService<IDbConnectionFactory>())
+                )
+                .AddSingleton<IItemDAO>(sp =>
+                    new DapperItemDAO(sp.GetRequiredService<IDbConnectionFactory>())
+                )
+                .AddSingleton<IPlayerInventoryDAO>(sp =>
+                    new DapperPlayerInventoryDAO(sp.GetRequiredService<IDbConnectionFactory>())
+                )
+                .AddSingleton<IPlayerSpellsDAO>(sp =>
+                    new DapperPlayerSpellsDAO(sp.GetRequiredService<IDbConnectionFactory>())
+                )
+                .AddSingleton<IPlayerStatsDAO>(sp =>
+                    new DapperPlayerStatsDAO(sp.GetRequiredService<IDbConnectionFactory>())
+                );
         }
 
         private static void RegisterHandlers(IServiceCollection services)
@@ -116,6 +129,10 @@ namespace ventus_server.Infrastructure.DependencyInjection
                 .AddSingleton<RoleService>()
                 .AddSingleton<PermissionService>()
                 .AddSingleton<ItemService>()
+                .AddSingleton<PlayerInventoryService>()
+                .AddSingleton<StoreService>()
+                .AddSingleton<SpellService>()
+                .AddSingleton<PlayerSpellsService>()
                 .AddSingleton<PlayerStatsService>();
         }
 
@@ -123,9 +140,11 @@ namespace ventus_server.Infrastructure.DependencyInjection
         {
             services
                 .AddSingleton<PlayerModel>()
-                .AddSingleton<PlayerLocation>()
+                .AddSingleton<PlayerLocationModel>()
                 .AddSingleton<MapModel>()
                 .AddSingleton<WorldModel>()
+                .AddSingleton<PlayerInventoryModel>()
+                .AddSingleton<PlayerInventoryItemModel>()
                 .AddSingleton<RoleModel>();
         }
 
@@ -139,9 +158,16 @@ namespace ventus_server.Infrastructure.DependencyInjection
                 .AddSingleton<AdminRolesController>()
                 .AddSingleton<AdminLogController>()
                 .AddSingleton<AdminItemController>()
-                .AddSingleton(sp => new Lazy<WebSocketServerController>(
-                    () => sp.GetRequiredService<WebSocketServerController>()
-                ));
+                .AddSingleton<GameController>()
+                .AddSingleton<ItemController>()
+                .AddSingleton<StoreController>()
+                .AddSingleton<StoreController>()
+                .AddSingleton<SpellController>()
+                .AddSingleton(sp =>
+                    new Lazy<WebSocketServerController>(
+                        () => sp.GetRequiredService<WebSocketServerController>()
+                    )
+                );
         }
     }
 }

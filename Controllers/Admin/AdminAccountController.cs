@@ -120,7 +120,7 @@ namespace VentusServer.Controllers.Admin
                     .Select(e => new
                     {
                         Field = e.Key,
-                        Errors = e.Value.Errors.Select(err => err.ErrorMessage).ToList()
+                        Errors = e.Value?.Errors?.Select(err => err.ErrorMessage).ToList() ?? new List<string>()
                     });
 
                 Log(LogTag.AdminAccountController, $"ModelState inválido: {System.Text.Json.JsonSerializer.Serialize(errors)}", isError: true);

@@ -6,7 +6,7 @@ using VentusServer.DataAccess.Postgres;
 
 namespace VentusServer.Services
 {
-    public class PlayerLocationService : BaseCachedService<PlayerLocation, int>
+    public class PlayerLocationService : BaseCachedService<PlayerLocationModel, int>
     {
         private readonly IPlayerLocationDAO _playerLocationDAO;
         private readonly MapService _mapService;
@@ -22,7 +22,7 @@ namespace VentusServer.Services
         /// <summary>
         /// Carga la ubicación de un jugador desde la fuente original (DAO).
         /// </summary>
-        protected override async Task<PlayerLocation?> LoadModelAsync(int playerId)
+        protected override async Task<PlayerLocationModel?> LoadModelAsync(int playerId)
         {
             try
             {
@@ -41,20 +41,28 @@ namespace VentusServer.Services
             }
         }
 
-        public async Task<PlayerLocation?> GetPlayerLocationAsync(int playerId)
+        public async Task<PlayerLocationModel?> GetPlayerLocationAsync(int playerId)
         {
             Log.Log(Log.LogTag.PlayerLocationService, $"Obteniendo ubicación del jugador con ID: {playerId}...");
             return await GetOrLoadAsync(playerId);
         }
 
-        public async Task SavePlayerLocationAsync(PlayerLocation location)
+        public async Task<PlayerLocationModel?> LoadPlayerLocationInModel(PlayerModel playerModel)
+        {
+            var playerLocation = await GetPlayerLocationAsync(playerModel.Id);
+
+            playerModel.Location = playerLocation;
+            return playerLocation;
+        }
+
+        public async Task SavePlayerLocationAsync(PlayerLocationModel location)
         {
             try
             {
-                Log.Log(Log.LogTag.PlayerLocationService, $"Guardando ubicación del jugador con ID: {location.Player.Id}...");
+                LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"Guardando ubicación del jugador con ID: {location.PlayerId}...");
                 await _playerLocationDAO.SavePlayerLocationAsync(location);
-                Set(location.Player.Id, location); // Refrescar cache
-                Log.Log(Log.LogTag.PlayerLocationService, $"✅ Ubicación del jugador con ID: {location.Player.Id} guardada correctamente.");
+                Set(location.PlayerId, location); // Refrescar cache
+                LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"✅ Ubicación del jugador con ID: {location.PlayerId} guardada correctamente.");
             }
             catch (Exception ex)
             {
@@ -62,14 +70,14 @@ namespace VentusServer.Services
             }
         }
 
-        public async Task CreatePlayerLocation(PlayerLocation playerLocation)
+        public async Task CreatePlayerLocation(PlayerLocationModel playerLocation)
         {
             try
             {
-                Log.Log(Log.LogTag.PlayerLocationService, $"Creando ubicación para el jugador con ID: {playerLocation.Player.Id}...");
+                LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"Creando ubicación para el jugador con ID: {playerLocation.PlayerId}...");
                 await _playerLocationDAO.CreatePlayerLocationAsync(playerLocation);
-                Set(playerLocation.Player.Id, playerLocation); // Agregar a la cache
-                Log.Log(Log.LogTag.PlayerLocationService, $"✅ Ubicación del jugador con ID: {playerLocation.Player.Id} creada correctamente.");
+                Set(playerLocation.PlayerId, playerLocation); // Agregar a la cache
+                LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"✅ Ubicación del jugador con ID: {playerLocation.PlayerId} creada correctamente.");
             }
             catch (Exception ex)
             {
@@ -77,7 +85,7 @@ namespace VentusServer.Services
             }
         }
 
-        public async Task<PlayerLocation?> CreateDefaultPlayerLocation(PlayerModel player)
+        public async Task<PlayerLocationModel?> CreateDefaultPlayerLocation(PlayerModel player)
         {
             int defaultWorldId = 1;
             int defaultMapId = 1;
@@ -86,17 +94,18 @@ namespace VentusServer.Services
 
             MapModel? map = await _mapService.GetMapByIdAsync(defaultMapId);
             WorldModel? world = await _worldService.GetWorldByIdAsync(defaultWorldId);
-            Log.Log(Log.LogTag.PlayerLocationService, $"Mapa encontrado: {map.Id} World Encontrado ${world.Id}");
 
             if (world != null && map != null)
             {
-                PlayerLocation playerLocation = new PlayerLocation
+                LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"Mapa encontrado: {map.Id} World Encontrado ${world.Id}");
+
+                PlayerLocationModel playerLocation = new PlayerLocationModel
                 {
                     World = world,
                     Map = map,
                     PosX = 0,
                     PosY = 0,
-                    Player = player
+                    PlayerId = player.Id
                 };
 
                 Log.Log(Log.LogTag.PlayerLocationService, $"Ubicación predeterminada para el jugador con ID: {player.Id} creada correctamente.");
@@ -110,9 +119,9 @@ namespace VentusServer.Services
 
         public async Task DeletePlayerLocationAsync(int playerId)
         {
-            Log.Log(Log.LogTag.PlayerLocationService, $"Eliminando ubicación para el jugador con ID: {playerId}...");
-            
-            PlayerLocation? playerLocation = await GetPlayerLocationAsync(playerId);
+            LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"Eliminando ubicación para el jugador con ID: {playerId}...");
+
+            PlayerLocationModel? playerLocation = await GetPlayerLocationAsync(playerId);
             if (playerLocation != null)
             {
                 WorldModel? world = playerLocation.World;

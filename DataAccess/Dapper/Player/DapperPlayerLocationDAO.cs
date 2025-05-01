@@ -31,7 +31,7 @@ namespace VentusServer.DataAccess.Dapper
             await connection.ExecuteAsync(PlayerLocationQueries.CreateTableQuery);
         }
 
-        public async Task<PlayerLocation?> GetPlayerLocationAsync(int playerId)
+        public async Task<PlayerLocationModel?> GetPlayerLocationAsync(int playerId)
         {
             using var connection = GetConnection();
             var result = await connection.QuerySingleOrDefaultAsync(PlayerLocationQueries.SelectByPlayerId, new { PlayerId = playerId });
@@ -47,14 +47,14 @@ namespace VentusServer.DataAccess.Dapper
             return PlayerLocationMapper.Map(result, player, world, map);
         }
 
-        public async Task SavePlayerLocationAsync(PlayerLocation location)
+        public async Task SavePlayerLocationAsync(PlayerLocationModel location)
         {
             using var connection = GetConnection();
             await connection.ExecuteAsync(PlayerLocationQueries.InsertOrUpdate,
                 PlayerLocationMapper.ToDbParameters(location));
         }
 
-        public async Task CreatePlayerLocationAsync(PlayerLocation location)
+        public async Task CreatePlayerLocationAsync(PlayerLocationModel location)
         {
             using var connection = GetConnection();
             await connection.ExecuteAsync(PlayerLocationQueries.Insert,

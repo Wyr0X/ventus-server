@@ -83,7 +83,7 @@ namespace VentusServer.Controllers
                 Console.WriteLine($"[SUCCESS] Personaje {newPlayer.Name} creado exitosamente para la cuenta {accountId}.");
                 Console.ResetColor();
 
-                return Ok(new { Message = "Personaje creado exitosamente", Player = newPlayer });
+                return Ok(new { Message = "Personaje creado exitosamente" });
             }
             catch (Exception ex)
             {
@@ -132,61 +132,24 @@ namespace VentusServer.Controllers
                 Console.WriteLine($"[PlayerController] Obteniendo personajes para la cuenta {accountId}");
                 Console.ResetColor();
 
-                var players = await _playerService.GetPlayersByAccountId(account.AccountId);
+                var players = await _playerService.GetPlayersByAccountId(account.AccountId, new PlayerModuleOptions
+                {
+                    IncludeInventory = true,
+                    IncludeLocation = true,
+                    IncludeStats = true,
+                    IncludeSpells = true,
+                });
                 var playerDTOs = new List<PlayerDTO>();
                 Console.WriteLine($"[PlayerController] Players obtenido {players.Count}");
 
-                foreach (var player in players)
+                if (players != null)
                 {
-                    var playerLocation = await _playerLocationService.GetPlayerLocationAsync(player.Id);
-
-                    if (playerLocation == null)
-                    {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine($"[PlayerController] La ubicación del jugador {player.Name} tiene datos nulos en Map o World.");
-                        Console.ResetColor();
-                        continue;
-                    }
-                    if (playerLocation == null) continue;
-
-                    playerDTOs.Add(new PlayerDTO
-                    {
-                        Id = player.Id,
-                        AccountId = player.AccountId,
-                        Name = player.Name,
-                        Gender = (int)player.Gender,
-                        Race = (int)player.Race,
-                        Level = player.Level,
-                        Class = (int)player.Class,
-                        CreatedAt = player.CreatedAt,
-                        LastLogin = player.LastLogin,
-                        Status = player.Status,
-                        Location = new PlayerLocationDTO
-                        {
-                            PosX = playerLocation.PosX,
-                            PosY = playerLocation.PosY,
-                            Map = new MapDTO
-                            {
-                                Id = playerLocation.Map.Id,
-                                Name = playerLocation.Map.Name,
-                                MinLevel = playerLocation.Map.MinLevel,
-                                MaxPlayers = playerLocation.Map.MaxPlayers
-                            },
-                            World = new WorldDTO
-                            {
-                                Id = playerLocation.World.Id,
-                                Name = playerLocation.World.Name,
-                                Description = playerLocation.World.Description
-                            }
-                        }
-                    });
+                    return Ok(new GetPlayersResponseDTO { Players = players });
                 }
+                return Ok(new GetPlayersResponseDTO { Players = [] });
 
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"[SUCCESS] Se obtuvieron {playerDTOs.Count} personajes para la cuenta {accountId}.");
-                Console.ResetColor();
 
-                return Ok(new GetPlayersResponseDTO { Players = playerDTOs });
+
             }
             catch (Exception ex)
             {

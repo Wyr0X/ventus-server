@@ -1,0 +1,4 @@
+[17:42:16] [StoreController] Jugador con ID 1 no encontrado para AccountId 45a8f0b9-ba60-434c-86ad-6969ab18aac1
+[18:06:04] [StoreController] Compra fallida: No tienes suficiente oro para comprar este carrito.
+[19:48:34] [StoreController] Compra fallida: Ya tienes el hechizo con ID lightning_storm en tu inventario.
+[19:48:35] [StoreController] Compra fallida: Ya tienes el hechizo con ID lightning_storm en tu inventario.

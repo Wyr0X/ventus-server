@@ -63,7 +63,7 @@ public class ChatManager
         string? nickNameToSend = chatSend.NickNameToSend;
         if (nickNameToSend != null)
         {
-            PlayerLocation? playerLocation = await _playerLocationService.GetPlayerLocationAsync(playerId);
+            PlayerLocationModel? playerLocation = await _playerLocationService.GetPlayerLocationAsync(playerId);
             PlayerModel? playerToSend = await _playerService.GetPlayerByName(nickNameToSend);
             if (playerLocation != null && playerModel != null && playerToSend != null && playerToSend.isSpawned)
             {
@@ -82,7 +82,7 @@ public class ChatManager
         int playerId = chatSend.PlayerId;
 
         PlayerModel? playerModel = await _playerService.GetPlayerByIdAsync(playerId);
-        PlayerLocation? playerLocation = await _playerLocationService.GetPlayerLocationAsync(playerId);
+        PlayerLocationModel? playerLocation = await _playerLocationService.GetPlayerLocationAsync(playerId);
         if (playerLocation != null && playerModel != null)
         {
             List<Entity> playersInTheWorld = _game._worldManager.GetCharactersInWorld(playerLocation.World.Id);

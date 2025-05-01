@@ -14,7 +14,7 @@ public class EventsSystem
         {
             Guid key = kvp.Key; // La clave del diccionario
             PlayerEntity player = kvp.Value; // El valor asociado (PlayerEntity)
-            EventBuffer eventBuffer = (EventBuffer)player.Get(typeof(EventBuffer));
+            EventBuffer? eventBuffer = player.Get(typeof(EventBuffer)) as EventBuffer;
             if (eventBuffer == null) continue;
             while (eventBuffer.HasEvents())
             {

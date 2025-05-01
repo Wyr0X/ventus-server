@@ -92,12 +92,7 @@ namespace VentusServer.DataAccess.Dapper
                 else
                 {
                     LoggerUtil.Log(LoggerUtil.LogTag.DapperPlayerDAO, $"No se encontraron jugadores para el AccountId {accountId}.");
-                }
-
-                // LoggerUtil.Log del contenido de los resultados para ver los datos crudos
-                foreach (var row in result)
-                {
-                    LoggerUtil.Log(LoggerUtil.LogTag.DapperPlayerDAO, $"Resultado obtenido: {row}");
+                    return new List<PlayerModel>();
                 }
 
                 // Mapeo de los resultados

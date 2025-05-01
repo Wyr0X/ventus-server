@@ -1,6 +1,6 @@
 namespace Game.Models
 {
-    public class MapModel  : BaseModel
+    public class MapModel : BaseModel
     {
         public int Id { get; set; }
         public required string Name { get; set; }
@@ -12,8 +12,8 @@ namespace Game.Models
         public WorldModel? WorldModel { get; set; }
 
         // Lista de jugadores en el mapa
-        public List<PlayerLocation> PlayersLocation { get; set; } = new List<PlayerLocation>();  // Relación entre el jugador y el mapa
-        public List<PlayerLocation> spawnedPlayers { get; set; }  = new List<PlayerLocation>();
+        public List<PlayerLocationModel> PlayersLocation { get; set; } = new List<PlayerLocationModel>();  // Relación entre el jugador y el mapa
+        public List<PlayerLocationModel> spawnedPlayers { get; set; } = new List<PlayerLocationModel>();
 
         // Lógica de negocio
 
@@ -41,7 +41,7 @@ namespace Game.Models
 
         public void RemovePlayer(int playerId)
         {
-            var playerLocation = PlayersLocation.FirstOrDefault(p => p.Player.Id == playerId);
+            var playerLocation = PlayersLocation.FirstOrDefault(p => p.PlayerId == playerId);
             if (playerLocation != null)
             {
                 PlayersLocation.Remove(playerLocation);

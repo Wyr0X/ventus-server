@@ -18,13 +18,16 @@ namespace VentusServer.DataAccess.Dapper
         // Obtener las estadísticas de un jugador por su ID
         public async Task<PlayerStatsModel?> GetPlayerStatsByIdAsync(int playerId)
         {
+            LoggerUtil.Log(LoggerUtil.LogTag.DapperPlayerStatsDAO, $"Buscando estadísticas de jugador por ID:  {playerId}");
+
             if (playerId <= 0) return null;
 
             try
             {
-                LoggerUtil.Log(LoggerUtil.LogTag.DapperPlayerStatsDAO, $"Buscando estadísticas de jugador por ID: {playerId}");
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperPlayerStatsDAO, $"Buscando estadísticas de jugador por ID:  {playerId}");
                 using var connection = _connectionFactory.CreateConnection();
                 var row = await connection.QueryFirstOrDefaultAsync(PlayerStatsQueries.SelectByPlayerId, new { PlayerId = playerId });
+                PlayerStatsMapper.PrintRow(row);
                 return row == null ? null : PlayerStatsMapper.FromRow(row);
             }
             catch (Exception ex)

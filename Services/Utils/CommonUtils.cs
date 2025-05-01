@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using Newtonsoft.Json;
 
 public enum NotificationLevel
 {
@@ -10,4 +11,28 @@ public enum NotificationLevel
 
     [Description("ERROR")]
     Error
+}
+public static class CommonUtils
+{
+    public static T? SafeDeserialize<T>(string? json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+            return default;
+
+        json = json.Trim();
+
+        // Solo intentar deserializar si parece un JSON válido
+        if (!(json.StartsWith("{") || json.StartsWith("[")))
+            return default;
+
+        try
+        {
+            return JsonConvert.DeserializeObject<T>(json);
+        }
+        catch (JsonException)
+        {
+            // Log si querés: Console.WriteLine($"Falló la deserialización: {json}");
+            return default;
+        }
+    }
 }

@@ -1,13 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Dapper;
+using VentusServer.DataAccess.Dapper;
 using VentusServer.DataAccess.Interfaces;
 using VentusServer.DataAccess.Mappers;
-using VentusServer.Domain.Models;
 using VentusServer.DataAccess.Queries;
-using VentusServer.DataAccess.Dapper;
+using VentusServer.Domain.Models;
 
 namespace VentusServer.DataAccess.Postgres
 {
@@ -18,7 +20,6 @@ namespace VentusServer.DataAccess.Postgres
         public async Task<ItemModel?> GetItemByIdAsync(int id)
         {
             LoggerUtil.Log(LoggerUtil.LogTag.DapperItemDAO, $"🔍 Buscando item por ID: {id}");
-
             using var conn = GetConnection();
 
             try
@@ -31,7 +32,7 @@ namespace VentusServer.DataAccess.Postgres
                 }
 
                 var item = ItemMapper.Map(row);
-                LoggerUtil.Log(LoggerUtil.LogTag.DapperItemDAO, $"✅ Item encontrado: {item.Key}");
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperItemDAO, $"✅ Item encontrado: {item.Name.En}");
                 return item;
             }
             catch (Exception ex)
@@ -44,9 +45,7 @@ namespace VentusServer.DataAccess.Postgres
         public async Task<ItemModel?> GetItemByKeyAsync(string key)
         {
             LoggerUtil.Log(LoggerUtil.LogTag.DapperItemDAO, $"🔍 Buscando item por Key: {key}");
-
-            if (string.IsNullOrWhiteSpace(key))
-                return null;
+            if (string.IsNullOrWhiteSpace(key)) return null;
 
             using var conn = GetConnection();
 
@@ -60,7 +59,7 @@ namespace VentusServer.DataAccess.Postgres
                 }
 
                 var item = ItemMapper.Map(row);
-                LoggerUtil.Log(LoggerUtil.LogTag.DapperItemDAO, $"✅ Item encontrado: {item.Key}");
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperItemDAO, $"✅ Item encontrado: {item.Name.En}");
                 return item;
             }
             catch (Exception ex)
@@ -79,8 +78,9 @@ namespace VentusServer.DataAccess.Postgres
             try
             {
                 var rows = await conn.QueryAsync(ItemQueries.SelectAll);
-                var items = ItemMapper.MapRowsToItems(rows);
-                LoggerUtil.Log(LoggerUtil.LogTag.DapperItemDAO, $"✅ Total items cargados: {items.Count}");
+                ItemMapper.PrintRow(rows.FirstOrDefault());
+                var items = ItemMapper.MapMultipleFromRows(rows);
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperItemDAO, $"✅ Total items cargados: {items.Count()}");
                 return items;
             }
             catch (Exception ex)
@@ -92,36 +92,52 @@ namespace VentusServer.DataAccess.Postgres
 
         public async Task CreateItemAsync(ItemModel item)
         {
-            LoggerUtil.Log(LoggerUtil.LogTag.DapperItemDAO, $"➕ Creando item: {item.Key}");
+            LoggerUtil.Log(LoggerUtil.LogTag.DapperItemDAO, $"➕ Creando item: {item.Name.En}");
 
             using var conn = GetConnection();
 
             try
             {
+                Console.WriteLine(item.RequiredLevel);
                 await conn.ExecuteAsync(ItemQueries.Insert, new
                 {
                     item.Key,
-                    item.Name,
-                    item.Description,
+                    Name = JsonSerializer.Serialize(item.Name),
+                    Description = JsonSerializer.Serialize(item.Description),
+                    item.Type,
+                    item.Rarity,
+                    item.RequiredLevel,
+                    item.Price,
+                    item.Quantity,
+                    item.MaxStack,
+                    item.IsTradable,
+                    item.IsDroppable,
+                    item.IsUsable,
+                    item.IconPath,
                     item.Sprite,
                     item.Sound,
-                    item.HpMin,
-                    item.HpMax,
-                    item.MP,
+                    Data = JsonSerializer.Serialize(new
+                    {
+                        item.WeaponData,
+                        item.ArmorData,
+                        item.ConsumableData
+                    }),
+                    item.CreatedAt,
+                    item.UpdatedAt
                 });
 
-                LoggerUtil.Log(LoggerUtil.LogTag.DapperItemDAO, $"✅ Item creado: {item.Key}");
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperItemDAO, $"✅ Item creado: {item.Name.En}");
             }
             catch (Exception ex)
             {
-                LoggerUtil.Log(LoggerUtil.LogTag.DapperItemDAO, $"❌ Error al crear item {item.Key}: {ex.Message}");
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperItemDAO, $"❌ Error al crear item {item.Name.En}: {ex.Message}");
                 throw;
             }
         }
 
         public async Task UpdateItemAsync(ItemModel item)
         {
-            LoggerUtil.Log(LoggerUtil.LogTag.DapperItemDAO, $"✏️ Actualizando item: {item.Key}");
+            LoggerUtil.Log(LoggerUtil.LogTag.DapperItemDAO, $"✏️ Actualizando item: {item.Name.En}");
 
             using var conn = GetConnection();
 
@@ -129,21 +145,32 @@ namespace VentusServer.DataAccess.Postgres
             {
                 await conn.ExecuteAsync(ItemQueries.Update, new
                 {
-                    item.Key,
-                    item.Name,
-                    item.Description,
-                    item.Sprite,
+                    item.Id,
+                    Name = JsonSerializer.Serialize(item.Name),
+                    Description = JsonSerializer.Serialize(item.Description),
+                    item.Type,
+                    item.Rarity,
+                    item.MaxStack,
+                    item.RequiredLevel,
+                    item.Price,
+                    item.Quantity,
+                    item.IsTradable,
+                    item.IsDroppable,
+                    item.IsUsable,
+                    WeaponData = item.WeaponData == null ? null : JsonSerializer.Serialize(item.WeaponData),
+                    ArmorData = item.ArmorData == null ? null : JsonSerializer.Serialize(item.ArmorData),
+                    ConsumableData = item.ConsumableData == null ? null : JsonSerializer.Serialize(item.ConsumableData),
                     item.Sound,
-                    item.HpMin,
-                    item.HpMax,
-                    item.MP,
+                    item.IconPath,
+                    item.Sprite,
+                    item.UpdatedAt
                 });
 
-                LoggerUtil.Log(LoggerUtil.LogTag.DapperItemDAO, $"✅ Item actualizado: {item.Key}");
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperItemDAO, $"✅ Item actualizado: {item.Name.En}");
             }
             catch (Exception ex)
             {
-                LoggerUtil.Log(LoggerUtil.LogTag.DapperItemDAO, $"❌ Error al actualizar item {item.Key}: {ex.Message}");
+                LoggerUtil.Log(LoggerUtil.LogTag.DapperItemDAO, $"❌ Error al actualizar item {item.Name.En}: {ex.Message}");
                 throw;
             }
         }
