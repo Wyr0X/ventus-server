@@ -10,6 +10,8 @@ using Game.Models;
 using VentusServer.DataAccess.Interfaces;
 using VentusServer.DataAccess.Dapper;
 using VentusServer.Controllers.Admin;
+using VentusServer.Domain.Models;
+using VentusServer.DataAccess.DAO;
 
 namespace VentusServer
 {
@@ -27,6 +29,7 @@ namespace VentusServer
             RegisterModels(services);
             RegisterControllers(services);
             var provider = services.BuildServiceProvider();
+            provider.GetRequiredService<ChatHandler>();
 
             return new ServiceProviderContainer(services, provider);
         }
@@ -43,6 +46,7 @@ namespace VentusServer
                 .AddSingleton<ConcurrentDictionary<string, WebSocket>>()
                 .AddSingleton<MessageSender>()
                 .AddSingleton<RequirePermissionAttribute>()
+                .AddSingleton<TaskScheduler>()
                 .AddSingleton(provider => new Lazy<MessageSender>(provider.GetRequiredService<MessageSender>))
                 .AddSingleton<IDbConnectionFactory>(sp =>
                     new NpgsqlConnectionFactory(
@@ -82,8 +86,17 @@ namespace VentusServer
                 .AddSingleton<IRoleDAO>(sp =>
                     new DapperRoleDAO(sp.GetRequiredService<IDbConnectionFactory>())
                 )
+                .AddSingleton<ISpellDAO>(sp =>
+                    new DapperSpellDAO(sp.GetRequiredService<IDbConnectionFactory>())
+                )
                 .AddSingleton<IItemDAO>(sp =>
                     new DapperItemDAO(sp.GetRequiredService<IDbConnectionFactory>())
+                )
+                .AddSingleton<IPlayerInventoryDAO>(sp =>
+                    new DapperPlayerInventoryDAO(sp.GetRequiredService<IDbConnectionFactory>())
+                )
+                .AddSingleton<IPlayerSpellsDAO>(sp =>
+                    new DapperPlayerSpellsDAO(sp.GetRequiredService<IDbConnectionFactory>())
                 )
                 .AddSingleton<IPlayerStatsDAO>(sp =>
                     new DapperPlayerStatsDAO(sp.GetRequiredService<IDbConnectionFactory>())
@@ -92,12 +105,12 @@ namespace VentusServer
 
         private static void RegisterHandlers(IServiceCollection services)
         {
-
+            services
+                .AddSingleton<ChatHandler>();
         }
 
         private static void RegisterManagers(IServiceCollection services)
         {
-
         }
 
         private static void RegisterServices(IServiceCollection services)
@@ -114,6 +127,10 @@ namespace VentusServer
                 .AddSingleton<RoleService>()
                 .AddSingleton<PermissionService>()
                 .AddSingleton<ItemService>()
+                .AddSingleton<PlayerInventoryService>()
+                .AddSingleton<StoreService>()
+                .AddSingleton<SpellService>()
+                .AddSingleton<PlayerSpellsService>()
                 .AddSingleton<PlayerStatsService>();
 
         }
@@ -125,6 +142,8 @@ namespace VentusServer
                 .AddSingleton<PlayerLocationModel>()
                 .AddSingleton<MapModel>()
                 .AddSingleton<WorldModel>()
+                .AddSingleton<PlayerInventoryModel>()
+                .AddSingleton<PlayerInventoryItemModel>()
                 .AddSingleton<RoleModel>();
 
         }
@@ -139,7 +158,11 @@ namespace VentusServer
                 .AddSingleton<AdminRolesController>()
                 .AddSingleton<AdminLogController>()
                 .AddSingleton<AdminItemController>()
-
+                .AddSingleton<GameController>()
+                .AddSingleton<ItemController>()
+                .AddSingleton<StoreController>()
+                .AddSingleton<StoreController>()
+                .AddSingleton<SpellController>()
                 .AddSingleton(sp =>
                     new Lazy<WebSocketServerController>(
                         () => sp.GetRequiredService<WebSocketServerController>()
