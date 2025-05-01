@@ -1,14 +1,12 @@
 
 syntax = "proto3";
-package ventus.server.common;
-
 
 message MessagePong {
-  string message = 1;
+    string message = 1;
 }
 
 message StatusMessage {
-  string message = 1;
-  string level = 2; // info, warning, error
-  int64 timestamp = 4;
+    string message = 1;
+    string level = 2; // info, warning, error
+    int64 timestamp = 4;
 }

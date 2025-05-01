@@ -1,65 +1,60 @@
+using System;
 using System.Collections.Concurrent;
 using System.Net.WebSockets;
-using Game.Models;
 using Microsoft.Extensions.DependencyInjection;
-using ventus_server.Startup;
 using VentusServer.Controllers;
-using VentusServer.Controllers.Admin;
-using VentusServer.DataAccess;
-using VentusServer.DataAccess.Dapper;
-using VentusServer.DataAccess.Interfaces;
 using VentusServer.DataAccess.Postgres;
 using VentusServer.Services;
-using VentusServer.Domain.Models;
+using VentusServer.DataAccess;
+using Game.Models;
+using VentusServer.DataAccess.Interfaces;
+using VentusServer.DataAccess.Dapper;
+using VentusServer.Controllers.Admin;
 
-namespace ventus_server.Infrastructure.DependencyInjection
+namespace VentusServer
 {
     public static class ServiceProviderModule
     {
-        public static ServiceProviderContainer Build(GameConfiguration gameConfiguration)
+        public static ServiceProviderContainer Build(string firebaseCredentialsPath, string postgresConnectionString)
         {
             var services = new ServiceCollection();
 
-            RegisterInfrastructure(services, gameConfiguration);
-            RegisterDAOs(services);
+            RegisterInfrastructure(services, firebaseCredentialsPath, postgresConnectionString);
+            RegisterDAOs(services, postgresConnectionString);
             RegisterHandlers(services);
             RegisterManagers(services);
             RegisterServices(services);
             RegisterModels(services);
             RegisterControllers(services);
             var provider = services.BuildServiceProvider();
-            provider.GetRequiredService<ChatHandler>();
 
             return new ServiceProviderContainer(services, provider);
         }
 
-        private static void RegisterInfrastructure(
-            IServiceCollection services,
-            GameConfiguration gameConfiguration
-        )
+
+        private static void RegisterInfrastructure(IServiceCollection services, string firebaseCredentialsPath, string postgresConnectionString)
         {
             services
                 .AddSingleton<PostgresDbService>()
-                .AddSingleton<MessageDispatcher>()
-                .AddSingleton<FirebaseService>(sp => new FirebaseService(
-                    gameConfiguration.CredentialsPath
-                ))
+                .AddSingleton<FirebaseService>(sp => new FirebaseService(firebaseCredentialsPath))
                 .AddSingleton<JwtService>()
                 .AddSingleton<GameServer>()
                 .AddSingleton<DatabaseInitializer>()
                 .AddSingleton<ConcurrentDictionary<string, WebSocket>>()
                 .AddSingleton<MessageSender>()
                 .AddSingleton<RequirePermissionAttribute>()
-                .AddSingleton(provider => new Lazy<MessageSender>(
-                    provider.GetRequiredService<MessageSender>
-                ))
-                .AddSingleton<IDbConnectionFactory>(sp => new NpgsqlConnectionFactory(
-                    gameConfiguration.PostgresConnectionString
-                ));
+                .AddSingleton(provider => new Lazy<MessageSender>(provider.GetRequiredService<MessageSender>))
+                .AddSingleton<IDbConnectionFactory>(sp =>
+                    new NpgsqlConnectionFactory(
+                        postgresConnectionString
+                    )
+                );
         }
 
-        private static void RegisterDAOs(IServiceCollection services)
+        private static void RegisterDAOs(IServiceCollection services, string connectionString)
         {
+
+            // Ahora usamos la fábrica en vez del connectionString
             services
                 .AddSingleton<IPlayerDAO>(sp =>
                     new DapperPlayerDAO(sp.GetRequiredService<IDbConnectionFactory>())
@@ -87,17 +82,8 @@ namespace ventus_server.Infrastructure.DependencyInjection
                 .AddSingleton<IRoleDAO>(sp =>
                     new DapperRoleDAO(sp.GetRequiredService<IDbConnectionFactory>())
                 )
-                .AddSingleton<ISpellDAO>(sp =>
-                    new DapperSpellDAO(sp.GetRequiredService<IDbConnectionFactory>())
-                )
                 .AddSingleton<IItemDAO>(sp =>
                     new DapperItemDAO(sp.GetRequiredService<IDbConnectionFactory>())
-                )
-                .AddSingleton<IPlayerInventoryDAO>(sp =>
-                    new DapperPlayerInventoryDAO(sp.GetRequiredService<IDbConnectionFactory>())
-                )
-                .AddSingleton<IPlayerSpellsDAO>(sp =>
-                    new DapperPlayerSpellsDAO(sp.GetRequiredService<IDbConnectionFactory>())
                 )
                 .AddSingleton<IPlayerStatsDAO>(sp =>
                     new DapperPlayerStatsDAO(sp.GetRequiredService<IDbConnectionFactory>())
@@ -106,34 +92,30 @@ namespace ventus_server.Infrastructure.DependencyInjection
 
         private static void RegisterHandlers(IServiceCollection services)
         {
-            services.AddSingleton<SessionHandler>().AddSingleton<ChatHandler>();
+
         }
 
         private static void RegisterManagers(IServiceCollection services)
         {
-            services.AddSingleton<SessionManager>().AddSingleton<ChatManager>();
+
         }
 
         private static void RegisterServices(IServiceCollection services)
         {
             services
+
                 .AddSingleton<PasswordService>()
                 .AddSingleton<WorldService>()
                 .AddSingleton<MapService>()
                 .AddSingleton<PlayerService>()
                 .AddSingleton<PlayerLocationService>()
-                .AddSingleton<GlobalChatService>()
-                .AddSingleton<ModerationService>()
                 .AddSingleton<AccountService>()
                 .AddSingleton<ResponseService>()
                 .AddSingleton<RoleService>()
                 .AddSingleton<PermissionService>()
                 .AddSingleton<ItemService>()
-                .AddSingleton<PlayerInventoryService>()
-                .AddSingleton<StoreService>()
-                .AddSingleton<SpellService>()
-                .AddSingleton<PlayerSpellsService>()
                 .AddSingleton<PlayerStatsService>();
+
         }
 
         private static void RegisterModels(IServiceCollection services)
@@ -143,9 +125,8 @@ namespace ventus_server.Infrastructure.DependencyInjection
                 .AddSingleton<PlayerLocationModel>()
                 .AddSingleton<MapModel>()
                 .AddSingleton<WorldModel>()
-                .AddSingleton<PlayerInventoryModel>()
-                .AddSingleton<PlayerInventoryItemModel>()
                 .AddSingleton<RoleModel>();
+
         }
 
         private static void RegisterControllers(IServiceCollection services)
@@ -158,11 +139,7 @@ namespace ventus_server.Infrastructure.DependencyInjection
                 .AddSingleton<AdminRolesController>()
                 .AddSingleton<AdminLogController>()
                 .AddSingleton<AdminItemController>()
-                .AddSingleton<GameController>()
-                .AddSingleton<ItemController>()
-                .AddSingleton<StoreController>()
-                .AddSingleton<StoreController>()
-                .AddSingleton<SpellController>()
+
                 .AddSingleton(sp =>
                     new Lazy<WebSocketServerController>(
                         () => sp.GetRequiredService<WebSocketServerController>()

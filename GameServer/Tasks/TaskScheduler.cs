@@ -1,4 +1,4 @@
-using Ventus.Client;
+using Ventus.Network.Packets;
 
 public class TaskScheduler
 {
@@ -15,7 +15,7 @@ public class TaskScheduler
 
     public void Dispatch(UserMessagePair message)
     {
-        var type = (ClientPacket)message.ClientMessage.Type;
+        var type = message.PacketType;
 
         if (_handlers.TryGetValue(type, out var handlerList))
         {
@@ -26,7 +26,7 @@ public class TaskScheduler
         }
         else
         {
-            eventBuffer.EnqueueEvent(new GameEvent { Type = GameEventType.Packet, Data = message });
+            eventBuffer.EnqueueEvent(new GameEvent { Type = GameEventType.ClientPacket, Data = message });
         }
     }
 }

@@ -11,14 +11,14 @@ public static class DatabaseStartup
 
         if (!connected)
         {
-            Log.Log(Log.LogTag.DB, "No se pudo conectar a la base de datos.");
+            LoggerUtil.Log(LoggerUtil.LogTag.DB, "No se pudo conectar a la base de datos.");
             return false;
         }
 
         var initializer = serviceProvider.GetRequiredService<DatabaseInitializer>();
         await initializer.InitializeDatabaseAsync();
 
-        Log.Log(Log.LogTag.DB, "Conexión e inicialización de base de datos exitosa.");
+        LoggerUtil.Log(LoggerUtil.LogTag.DB, "Conexión e inicialización de base de datos exitosa.");
         return true;
     }
 }

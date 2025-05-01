@@ -3,10 +3,7 @@ using System.Net;
 using System.Net.WebSockets;
 using Google.Protobuf;
 using Grpc.Core;
-using Protos.Auth;
-using Ventus.Client;
-using Ventus.Server;
-using Ventus.Server.Common;
+using Ventus.Network.Packets;
 using VentusServer.Services;
 
 public class WebSocketServerController
@@ -14,17 +11,17 @@ public class WebSocketServerController
     private readonly WebSocketAuthenticationService _authService;
     private readonly WebSocketConnectionManager _connectionManager;
     private readonly ConcurrentQueue<UserMessagePair> _messageQueue;
-    private readonly MessageDispatcher _messageDispatcher;
+    private readonly TaskScheduler _taskScheduler;
 
-    public WebSocketServerController(MessageDispatcher messageDispatcher, AccountService accountService)
+    public WebSocketServerController(TaskScheduler taskScheduler, AccountService accountService)
     {
-        _messageDispatcher = messageDispatcher;
+        _taskScheduler = taskScheduler;
         _messageQueue = new ConcurrentQueue<UserMessagePair>();
         _authService = new WebSocketAuthenticationService(accountService);
         _connectionManager = new WebSocketConnectionManager();
     }
 
-    public async Task StartServerAsync()
+    public async Task StartServerAsync(CancellationToken cancellationToken)
     {
         var listener = new HttpListener();
         listener.Prefixes.Add("http://localhost:5331/");
@@ -34,6 +31,7 @@ public class WebSocketServerController
 
         while (true)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var context = await listener.GetContextAsync();
             if (context.Request.IsWebSocketRequest)
             {
@@ -54,26 +52,26 @@ public class WebSocketServerController
         }
     }
 
-    public async Task StartLoop()
+    public async Task StartLoop(CancellationToken cancellationToken)
     {
         while (true)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             if (_messageQueue.TryDequeue(out var pair))
-                _messageDispatcher.Dispatch(pair);
+                _taskScheduler.Dispatch(pair);
             await Task.Delay(100);
         }
     }
 
-    public async void SendServerPacketByAccountId(Guid accountId, ServerMessage message)
+    public async void SendServerPacketByAccountId(Guid accountId, IMessage message, ServerPacket serverPacket)
     {
 
 
         if (_connectionManager.TryGetSocket(accountId, out var socket))
         {
 
-            byte[] data = message.ToByteArray();
-            await socket.SendAsync(new(data), WebSocketMessageType.Binary, true, CancellationToken.None);
-            LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"📤 Enviado mensaje a {accountId}: {message.PayloadCase}");
+            var serverPackert = new Packet { Type = (uint)serverPacket, Payload = Google.Protobuf.ByteString.CopyFrom(message.ToByteArray()) };
+            await socket.SendAsync(new ArraySegment<byte>(serverPackert.ToByteArray()), WebSocketMessageType.Binary, true, CancellationToken.None);
         }
         else
         {
@@ -82,11 +80,11 @@ public class WebSocketServerController
 
     }
 
-    public void SendBroadcast(List<Guid> accountIds, ServerMessage message)
+    public void SendBroadcast(List<Guid> accountIds, IMessage message, ServerPacket serverPacket)
     {
         foreach (var id in accountIds)
         {
-            SendServerPacketByAccountId(id, message);
+            SendServerPacketByAccountId(id, message, serverPacket);
         }
     }
 
@@ -106,13 +104,17 @@ public class WebSocketServerController
                 return;
             }
 
-            var clientMessage = ClientMessage.Parser.ParseFrom(ms.ToArray());
+            var packet = Packet.Parser.ParseFrom(ms.ToArray());
+            var packetType = (ClientPacket)packet.Type;
+            IMessage clientPacket = ClientPacketDecoder.Parsers[packetType].ParseFrom(packet.Payload);
+
             LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"Bytes :{ms.ToArray()}");
 
-            LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"Paquete recibido - Tipo :{clientMessage.PayloadCase}");
-            if (clientMessage.PayloadCase == ClientMessage.PayloadOneofCase.LoginRequest)
+            LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"Paquete recibido - Tipo :{packetType}");
+            if (packetType == ClientPacket.LoginRequest)
             {
-                if (!_authService.TryAuthenticate(clientMessage.LoginRequest.Token, out accountId))
+                var loginPacket = (LoginRequest)clientPacket;
+                if (!_authService.TryAuthenticate(loginPacket.Token, out accountId))
                 {
                     LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"❌ Token inválido recibido de {connectionId}");
                     await socket.CloseAsync(WebSocketCloseStatus.PolicyViolation, "Token inválido", CancellationToken.None);
@@ -120,13 +122,12 @@ public class WebSocketServerController
                 }
                 await _connectionManager.RemoveConnectionByAccountId(accountId);
 
-                if (!_connectionManager.TryAuthenticateConnection(connectionId, accountId, clientMessage.LoginRequest.Token, out socket))
+                if (!_connectionManager.TryAuthenticateConnection(connectionId, accountId, loginPacket.Token, out socket))
                 {
                     LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"❌ Fallo al autenticar conexión {connectionId}");
                     await socket.CloseAsync(WebSocketCloseStatus.InternalServerError, "No se pudo autenticar", CancellationToken.None);
                     return;
                 }
-                SendWebSocketStatusOpen(accountId);
                 LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"🔓 Usuario autenticado: {accountId}");
             }
 
@@ -135,7 +136,10 @@ public class WebSocketServerController
                 ms.SetLength(0);
                 result = await socket.ReceiveAsync(new(buffer), CancellationToken.None);
                 ms.Write(buffer, 0, result.Count);
-                clientMessage = ClientMessage.Parser.ParseFrom(ms.ToArray());
+                packet = Packet.Parser.ParseFrom(ms.ToArray());
+                packetType = (ClientPacket)packet.Type;
+                clientPacket = ClientPacketDecoder.Parsers[packetType].ParseFrom(packet.Payload);
+
 
                 if (!_connectionManager.TryGetAccountId(connectionId, out accountId))
                 {
@@ -143,19 +147,20 @@ public class WebSocketServerController
                     await socket.CloseAsync(WebSocketCloseStatus.PolicyViolation, "Usuario no autenticado", CancellationToken.None);
                     return;
                 }
-                LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"Paquete recibido - Tipo :{clientMessage.PayloadCase}");
+                LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"Paquete recibido - Tipo :{packetType}");
 
-                if (clientMessage.PayloadCase == ClientMessage.PayloadOneofCase.MessagePing)
+                if (packetType == ClientPacket.MessagePing)
                 {
                     LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"📥 Ping recibido de {accountId}");
-                    var pong = new ServerMessage { MessagePong = new MessagePong { Message = "Pong" } };
-                    await socket.SendAsync(new(pong.ToByteArray()), WebSocketMessageType.Binary, true, CancellationToken.None);
+                    var pong = new MessagePong { Message = "Pong" };
+                    var pongPacket = new Packet { Payload = Google.Protobuf.ByteString.CopyFrom(pong.ToByteArray()), Type = (uint)ServerPacket.MessagePong };
+                    await socket.SendAsync(new(pongPacket.ToByteArray()), WebSocketMessageType.Binary, true, CancellationToken.None);
                 }
 
                 else
                 {
-                    LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"📥 Mensaje recibido de {accountId}: {clientMessage.PayloadCase}");
-                    _messageQueue.Enqueue(new UserMessagePair(accountId, clientMessage));
+                    LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"📥 Mensaje recibido de {accountId}: {packetType}");
+                    _messageQueue.Enqueue(new UserMessagePair(accountId, clientPacket, packetType));
                 }
             }
         }
@@ -174,30 +179,9 @@ public class WebSocketServerController
             socket.Dispose();
         }
     }
-    public void SendWebSocketStatusOpen(Guid accountId)
-    {
-        LoginResponse loginResponse = new LoginResponse
-        {
-            Success = true
-        };
-        ServerMessage serverMessage = new ServerMessage { LoginResponse = loginResponse };
-        SendServerPacketByAccountId(accountId, serverMessage);
-    }
-    public void SendSessionInvalidate(Guid accountId)
-    {
-        StatusMessage serverStatusMessage = new StatusMessage
-        {
-            Level = NotificationLevel.Info.GetDescription(),
-            Message = "Tu cuenta ha iniciado sesión desde otro lugar. Has sido desconectado.",
-            Timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
-        };
-        ServerMessage serverMessage = new ServerMessage { StatusMessage = serverStatusMessage };
-        SendServerPacketByAccountId(accountId, serverMessage);
 
-    }
     public async Task RemoveConnectionByAccountId(Guid accountId)
     {
         await _connectionManager.RemoveConnectionByAccountId(accountId);
-        SendSessionInvalidate(accountId);
     }
 }

@@ -26,24 +26,24 @@ namespace VentusServer.Services
         {
             try
             {
-                Log.Log(Log.LogTag.PlayerLocationService, $"Cargando ubicación del jugador con ID: {playerId}...");
+                LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"Cargando ubicación del jugador con ID: {playerId}...");
                 var location = await _playerLocationDAO.GetPlayerLocationAsync(playerId);
                 if (location == null)
                 {
-                    Log.Log(Log.LogTag.PlayerLocationService, $"No se encontró ubicación para el jugador con ID: {playerId}.");
+                    LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"No se encontró ubicación para el jugador con ID: {playerId}.");
                 }
                 return location;
             }
             catch (Exception ex)
             {
-                Log.Log(Log.LogTag.PlayerLocationService, $"❌ Error al cargar ubicación del jugador: {ex.Message}");
+                LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"❌ Error al cargar ubicación del jugador: {ex.Message}");
                 return null;
             }
         }
 
         public async Task<PlayerLocationModel?> GetPlayerLocationAsync(int playerId)
         {
-            Log.Log(Log.LogTag.PlayerLocationService, $"Obteniendo ubicación del jugador con ID: {playerId}...");
+            LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"Obteniendo ubicación del jugador con ID: {playerId}...");
             return await GetOrLoadAsync(playerId);
         }
 
@@ -66,7 +66,7 @@ namespace VentusServer.Services
             }
             catch (Exception ex)
             {
-                Log.Log(Log.LogTag.PlayerLocationService, $"❌ Error al guardar la ubicación del jugador: {ex.Message}");
+                LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"❌ Error al guardar la ubicación del jugador: {ex.Message}");
             }
         }
 
@@ -81,7 +81,7 @@ namespace VentusServer.Services
             }
             catch (Exception ex)
             {
-                Log.Log(Log.LogTag.PlayerLocationService, $"❌ Error al crear la ubicación del jugador: {ex.Message}");
+                LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"❌ Error al crear la ubicación del jugador: {ex.Message}");
             }
         }
 
@@ -90,7 +90,7 @@ namespace VentusServer.Services
             int defaultWorldId = 1;
             int defaultMapId = 1;
 
-            Log.Log(Log.LogTag.PlayerLocationService, $"Creando ubicación predeterminada para el jugador con ID: {player.Id}...");
+            LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"Creando ubicación predeterminada para el jugador con ID: {player.Id}...");
 
             MapModel? map = await _mapService.GetMapByIdAsync(defaultMapId);
             WorldModel? world = await _worldService.GetWorldByIdAsync(defaultWorldId);
@@ -108,12 +108,12 @@ namespace VentusServer.Services
                     PlayerId = player.Id
                 };
 
-                Log.Log(Log.LogTag.PlayerLocationService, $"Ubicación predeterminada para el jugador con ID: {player.Id} creada correctamente.");
+                LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"Ubicación predeterminada para el jugador con ID: {player.Id} creada correctamente.");
                 await CreatePlayerLocation(playerLocation);
                 return playerLocation;
             }
 
-            Log.Log(Log.LogTag.PlayerLocationService, $"❌ No se pudo crear la ubicación predeterminada para el jugador con ID: {player.Id}.");
+            LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"❌ No se pudo crear la ubicación predeterminada para el jugador con ID: {player.Id}.");
             return null;
         }
 
@@ -130,22 +130,22 @@ namespace VentusServer.Services
                 if (world != null)
                 {
                     await _worldService.RemovePlayerFromWorld(playerId, world.Id);
-                    Log.Log(Log.LogTag.PlayerLocationService, $"Jugador con ID: {playerId} eliminado del mundo con ID: {world.Id}.");
+                    LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"Jugador con ID: {playerId} eliminado del mundo con ID: {world.Id}.");
                 }
 
                 if (map != null)
                 {
                     await _mapService.RemovePlayerFromMap(playerId, map.Id);
-                    Log.Log(Log.LogTag.PlayerLocationService, $"Jugador con ID: {playerId} eliminado del mapa con ID: {map.Id}.");
+                    LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"Jugador con ID: {playerId} eliminado del mapa con ID: {map.Id}.");
                 }
 
                 await _playerLocationDAO.DeletePlayerLocationAsync(playerId);
                 Invalidate(playerId); // Eliminar de la cache
-                Log.Log(Log.LogTag.PlayerLocationService, $"🗑️ Ubicación del jugador con ID: {playerId} eliminada correctamente.");
+                LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"🗑️ Ubicación del jugador con ID: {playerId} eliminada correctamente.");
             }
             else
             {
-                Log.Log(Log.LogTag.PlayerLocationService, $"❌ No se encontró ubicación para el jugador con ID: {playerId}.");
+                LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"❌ No se encontró ubicación para el jugador con ID: {playerId}.");
             }
         }
     }

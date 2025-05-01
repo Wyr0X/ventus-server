@@ -1,9 +1,7 @@
 
 syntax = "proto3";
-package ventus.client.common;
 
 message MessagePing {
     string message = 1;
-  
-  }
+}
   

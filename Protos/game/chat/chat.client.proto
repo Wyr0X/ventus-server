@@ -1,9 +1,4 @@
 syntax = "proto3";
-package protos.game.client.chat;
-
-
-
-
 
 // 📢 Mensaje normal del chat con diferentes canales
 message ChatSend {
@@ -13,8 +8,6 @@ message ChatSend {
     string channel = 4;  // 📌 Nuevo: canal del mensaje
     optional string nickNameToSend = 5;
 }
-
-
 
 // 📜 Mensaje de comandos (/mute, /w, /roll)
 message ChatCommand {

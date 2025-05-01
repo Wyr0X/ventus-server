@@ -1,9 +1,4 @@
 syntax = "proto3";
-package protos.game.server.chat;
-
-
-
-
 
 // 📢 Mensaje que los jugadores reciben en el chat
 message OutgoingChatMessage {
@@ -14,15 +9,11 @@ message OutgoingChatMessage {
     string channel = 5;  // 📌 Nuevo: canal del mensaje
 }
 
-
-
 // 📢 Mensajes del sistema (avisos, muteos, eventos)
 message SystemMessage {
     string message = 1;
     SystemMessageType type = 2;
 }
-
-
 
 // 🎯 Enumeración de los tipos de mensajes del sistema
 enum SystemMessageType {

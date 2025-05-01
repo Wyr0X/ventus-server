@@ -1,7 +1,5 @@
 syntax = "proto3";
-package protos.client.auth;
-
 
 message LoginRequest {
-  string token = 1;
+    string token = 1;
 }

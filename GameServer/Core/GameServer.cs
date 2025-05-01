@@ -1,28 +1,26 @@
-using Ventus.Client;
 
 public class GameServer
 {
     private CancellationTokenSource? LoopCancellation;
 
-    public WorldManager worldManager;
-    public SyncSystem _syncSystem;
     private readonly SessionSystem _sessionSystem;
+    public readonly SystemHandler systemHandler;
     public readonly TaskScheduler taskScheduler;
     public readonly PacketHandler packetHandler;
 
     public GameServer(Lazy<MessageSender> messageSender, TaskScheduler taskScheduler)
     {
-        worldManager = new WorldManager(this.Entities, _syncSystem);
-        _syncSystem = new SyncSystem(this.Entities, messageSender);
+        // worldManager = new WorldManager(this.Entities, _syncSystem);
+        // _syncSystem = new SyncSystem(this.Entities, messageSender);
         this.taskScheduler = taskScheduler;
-        _sessionSystem = new SessionSystem(this);
+        this.systemHandler = new SystemHandler();
+        _sessionSystem = new SessionSystem(this, systemHandler);
         packetHandler = new PacketHandler(this);
     }
 
-    public async Task Run()
+    public async Task Run(CancellationToken cancellationToken)
     {
-        LoopCancellation = new CancellationTokenSource();
-        await Loop(LoopCancellation.Token);
+        await Loop(cancellationToken);
     }
 
     private async Task Loop(CancellationToken cancellationToken)
@@ -44,7 +42,7 @@ public class GameServer
         // Manejar eventos
         HandleEvents();
         // Actualizar entidades
-        _worldManager.Update();
+        // _worldManager.Update();
         // Flush packets
     }
 
@@ -56,40 +54,48 @@ public class GameServer
             switch (gameEvent.Type)
             {
                 case GameEventType.CustomGameEvent:
-                    _sessionSystem.HandleSpawnPlayer(gameEvent.Data!);
+                    var data = gameEvent.Data;
+
+                    systemHandler.HandlePacket(data);
                     break;
                 case GameEventType.ClientPacket:
-                    packetHandler.HandlePacket((UserMessagePair)gameEvent.Data);
+
+
+                    if (gameEvent.Data is UserMessagePair userMessagePair)
+                    {
+                        packetHandler.HandlePacket(userMessagePair);
+                    }
+
                     break;
             }
             gameEvent = taskScheduler.eventBuffer.DequeueEvent();
         }
     }
 
-    public void EnqueuEvent(GameEvent gameEvent)
-    {
-        Entity? playerEntity = Entities.GetPlayerByAccountId(gameEvent.GetAccountId());
-        if (playerEntity != null)
-        {
-            EventBuffer? eventBuffer = (EventBuffer?)playerEntity.Get(typeof(EventBuffer));
-            if (eventBuffer != null)
-            {
-                eventBuffer.EnqueueEvent(gameEvent);
-            }
-        }
-    }
+    // public void EnqueuEvent(GameEvent gameEvent)
+    // {
+    //     Entity? playerEntity = Entities.GetPlayerByAccountId(gameEvent.GetAccountId());
+    //     if (playerEntity != null)
+    //     {
+    //         EventBuffer? eventBuffer = (EventBuffer?)playerEntity.Get(typeof(EventBuffer));
+    //         if (eventBuffer != null)
+    //         {
+    //             eventBuffer.EnqueueEvent(gameEvent);
+    //         }
+    //     }
+    // }
 
-    public void UnSpawnPlayer(
-        Guid accountId,
-        PlayerModel playerModel,
-        PlayerLocation playerLocation
-    )
-    {
-        PlayerEntity? playerEntity = (PlayerEntity?)Entities.GetPlayerByAccountId(accountId);
-        if (playerEntity != null)
-        {
-            Entities.Remove(playerEntity);
-            _worldManager.UnSpawnPlayer(playerLocation.World.Id);
-        }
-    }
+    // public void UnSpawnPlayer(
+    //     Guid accountId,
+    //     PlayerModel playerModel,
+    //     PlayerLocation playerLocation
+    // )
+    // {
+    //     PlayerEntity? playerEntity = (PlayerEntity?)Entities.GetPlayerByAccountId(accountId);
+    //     if (playerEntity != null)
+    //     {
+    //         Entities.Remove(playerEntity);
+    //         _worldManager.UnSpawnPlayer(playerLocation.World.Id);
+    //     }
+    // }
 }

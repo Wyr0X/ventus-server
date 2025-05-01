@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using VentusServer.Domain.Enums;
 using VentusServer.Services;
-using static Log;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
 public class RequirePermissionAttribute : Attribute, IAsyncAuthorizationFilter
@@ -17,7 +16,7 @@ public class RequirePermissionAttribute : Attribute, IAsyncAuthorizationFilter
 
     public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
     {
-        Log(LogTag.RequirePermissionAttribute, "Iniciando verificación de permisos...", "Start");
+        LoggerUtil.Log(LoggerUtil.LogTag.RequirePermissionAttribute, "Iniciando verificación de permisos...", "Start");
 
         var permissionService = context.HttpContext.RequestServices.GetService<PermissionService>();
         var accountService = context.HttpContext.RequestServices.GetService<AccountService>();
@@ -30,8 +29,8 @@ public class RequirePermissionAttribute : Attribute, IAsyncAuthorizationFilter
             if (accountService == null) missingServices.Add(nameof(AccountService));
             if (jwtService == null) missingServices.Add(nameof(JwtService));
 
-            Log(
-                LogTag.RequirePermissionAttribute,
+            LoggerUtil.Log(
+                LoggerUtil.LogTag.RequirePermissionAttribute,
                 $"Fallo al obtener servicios desde el contenedor DI. Faltan: {string.Join(", ", missingServices)}. Permiso requerido: {_requiredPermission}",
                 "Error",
                 isError: true
@@ -57,7 +56,7 @@ public class RequirePermissionAttribute : Attribute, IAsyncAuthorizationFilter
             if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer "))
             {
                 var token = authHeader.Replace("Bearer ", "").Trim();
-                Log(LogTag.RequirePermissionAttribute, $"Token extraído: {token}", "Token");
+                LoggerUtil.Log(LoggerUtil.LogTag.RequirePermissionAttribute, $"Token extraído: {token}", "Token");
 
                 var (accountIdFromToken, sessionId) = jwtService.ValidateToken(token);
                 accountIdStr = accountIdFromToken;
@@ -66,18 +65,18 @@ public class RequirePermissionAttribute : Attribute, IAsyncAuthorizationFilter
                 {
                     context.HttpContext.Items[HttpContextKeys.AccountId] = accountIdStr;
                     context.HttpContext.Items[HttpContextKeys.SessionId] = sessionId;
-                    Log(LogTag.RequirePermissionAttribute, $"AccountId obtenido del token: {accountIdStr}", "Token");
+                    LoggerUtil.Log(LoggerUtil.LogTag.RequirePermissionAttribute, $"AccountId obtenido del token: {accountIdStr}", "Token");
                 }
                 else
                 {
-                    Log(LogTag.RequirePermissionAttribute, "Token inválido o expirado.", "Token", isError: true);
+                    LoggerUtil.Log(LoggerUtil.LogTag.RequirePermissionAttribute, "Token inválido o expirado.", "Token", isError: true);
                     context.Result = new UnauthorizedResult();
                     return;
                 }
             }
             else
             {
-                Log(LogTag.RequirePermissionAttribute, "No se encontró token válido en el header Authorization.", "Token", isError: true);
+                LoggerUtil.Log(LoggerUtil.LogTag.RequirePermissionAttribute, "No se encontró token válido en el header Authorization.", "Token", isError: true);
                 context.Result = new UnauthorizedResult();
                 return;
             }
@@ -86,34 +85,34 @@ public class RequirePermissionAttribute : Attribute, IAsyncAuthorizationFilter
         // 3. Validamos que el accountId sea un GUID válido
         if (!Guid.TryParse(accountIdStr, out var parsedAccountId))
         {
-            Log(LogTag.RequirePermissionAttribute, $"El AccountId '{accountIdStr}' no es un GUID válido.", "Check", isError: true);
+            LoggerUtil.Log(LoggerUtil.LogTag.RequirePermissionAttribute, $"El AccountId '{accountIdStr}' no es un GUID válido.", "Check", isError: true);
             context.Result = new UnauthorizedResult();
             return;
         }
 
         var accountId = parsedAccountId;
 
-        Log(LogTag.RequirePermissionAttribute, $"Verificando cuenta con ID {accountId}.", "Check");
+        LoggerUtil.Log(LoggerUtil.LogTag.RequirePermissionAttribute, $"Verificando cuenta con ID {accountId}.", "Check");
 
         var account = await accountService.GetOrCreateAccountInCacheAsync(accountId);
         if (account == null)
         {
-            Log(LogTag.RequirePermissionAttribute, $"Cuenta no encontrada en caché para ID {accountId}.", "Check", isError: true);
+            LoggerUtil.Log(LoggerUtil.LogTag.RequirePermissionAttribute, $"Cuenta no encontrada en caché para ID {accountId}.", "Check", isError: true);
             context.Result = new UnauthorizedResult();
             return;
         }
 
-        Log(LogTag.RequirePermissionAttribute, $"Chequeando permiso '{_requiredPermission}' para la cuenta '{accountId}'.", "Permission");
+        LoggerUtil.Log(LoggerUtil.LogTag.RequirePermissionAttribute, $"Chequeando permiso '{_requiredPermission}' para la cuenta '{accountId}'.", "Permission");
 
         var hasPermission = await permissionService.HasPermission(account, _requiredPermission);
         if (!hasPermission)
         {
-            Log(LogTag.RequirePermissionAttribute, $"Cuenta '{accountId}' no tiene el permiso requerido: {_requiredPermission}.", "Permission", isError: true);
+            LoggerUtil.Log(LoggerUtil.LogTag.RequirePermissionAttribute, $"Cuenta '{accountId}' no tiene el permiso requerido: {_requiredPermission}.", "Permission", isError: true);
             context.Result = new ForbidResult();
             return;
         }
 
-        Log(LogTag.RequirePermissionAttribute, $"Permiso '{_requiredPermission}' concedido para la cuenta '{accountId}'.", "Permission");
+        LoggerUtil.Log(LoggerUtil.LogTag.RequirePermissionAttribute, $"Permiso '{_requiredPermission}' concedido para la cuenta '{accountId}'.", "Permission");
     }
 }
 public static class HttpContextKeys

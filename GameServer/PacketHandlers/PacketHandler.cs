@@ -1,3 +1,5 @@
+using Ventus.Network.Packets;
+
 public class PacketHandler
 {
     private readonly GameServer _gameServer;
@@ -6,7 +8,6 @@ public class PacketHandler
     public PacketHandler(GameServer gameServer)
     {
         _gameServer = gameServer;
-        new ChatHandler(gameServer);
     }
 
     public void Subscribe(ClientPacket type, Action<UserMessagePair> handler)
@@ -17,15 +18,14 @@ public class PacketHandler
         _handlers[type].Add(handler);
     }
 
-    public void HandlePacket(UserMessagePair message)
+    public void HandlePacket(UserMessagePair userMessagePair)
     {
-        var type = (ClientPacket)message.ClientMessage.Type;
-
+        var type = userMessagePair.PacketType;
         if (_handlers.TryGetValue(type, out var handlerList))
         {
             foreach (var handler in handlerList)
             {
-                handler(message);
+                handler(userMessagePair);
             }
         }
     }

@@ -1,8 +1,5 @@
-using Ventus.Server;
-using Protos.Game.Server.Session;
-using Grpc.Core;
-using Protos.Game.Server.Movement;
-using Protos.Auth; // Necesario para ILogger
+
+using Ventus.Network.Packets;
 
 public class MessageSender
 {
@@ -21,12 +18,8 @@ public class MessageSender
             Success = success
         };
 
-        var serverMessage = new ServerMessage
-        {
-            LoginResponse = loginResponse
-        };
 
-        _websocket.SendServerPacketByAccountId(accountId, serverMessage);
+        _websocket.SendServerPacketByAccountId(accountId, loginResponse, ServerPacket.LoginResponse);
     }
 
     public void SendPlayerPosition(Guid accountId, int playerId, int x, int y)
@@ -39,12 +32,8 @@ public class MessageSender
             Y = y
         };
 
-        var serverMessage = new ServerMessage
-        {
-            PlayerPosition = playerPosition
-        };
 
-        _websocket.SendServerPacketByAccountId(accountId, serverMessage);
+        _websocket.SendServerPacketByAccountId(accountId, playerPosition, ServerPacket.PlayerPosition);
     }
 
     public void SpawnPlayer(Guid accountId, int playerId, float x, float y)
@@ -58,12 +47,7 @@ public class MessageSender
         };
 
 
-        var serverMessage = new ServerMessage
-        {
-            PlayerSpawn = playerSpawn
-        };
-
-        _websocket.SendServerPacketByAccountId(accountId, serverMessage);
+        _websocket.SendServerPacketByAccountId(accountId, playerSpawn, ServerPacket.PlayerSpawn);
     }
 
     // public void SendWorlState(List<Guid> accountsIds, WorldStateUpdate worldStateUpdate)

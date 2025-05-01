@@ -1,7 +1,5 @@
 syntax = "proto3";
 
-package protos.game.client.movement;
-
 message PlayerInput {
-  repeated uint32 keys = 1;  
+    repeated uint32 keys = 1;  
 }

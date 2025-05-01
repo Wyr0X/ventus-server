@@ -1,6 +1,5 @@
 syntax = "proto3";
-package protos.auth;
 
 message LoginResponse {
-  bool success = 1;
+    bool success = 1;
 }
