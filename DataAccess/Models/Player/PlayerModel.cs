@@ -17,7 +17,7 @@ public class PlayerModel : BaseModel
     public PlayerInventoryModel? Inventory { get; set; }
     public PlayerStatsModel? Stats { get; set; }
     public PlayerLocationModel? Location { get; set; }
-    public PlayerSpellsModel? Spells { get; set; }
+    public PlayerSpellsModel? PlayerSpells { get; set; }
 
 
     public string Status { get; set; } = "Offline"; // Estado: "Online", "Offline", "Banned"

@@ -129,4 +129,43 @@ public class PlayerInventoryService
         }
         await _inventoryDAO.UpsertAsync(inventory);
     }
+    public async Task<bool> MoveItemAsync(int playerId, int fromSlot, int toSlot)
+    {
+        var inventory = await _inventoryDAO.GetByPlayerId(playerId);
+
+        if (inventory == null)
+        {
+            throw new InvalidOperationException("Inventario no encontrado.");
+        }
+
+        var itemToMove = inventory.Items.FirstOrDefault(i => i.Slot == fromSlot);
+
+        if (itemToMove == null)
+        {
+            return false; // No hay ítem en el slot de origen
+        }
+
+        var destinationItem = inventory.Items.FirstOrDefault(i => i.Slot == toSlot);
+
+        if (destinationItem != null)
+        {
+            // Hay un ítem en el destino → intercambio de posiciones
+            int tempSlot = itemToMove.Slot;
+            itemToMove.Slot = destinationItem.Slot;
+            destinationItem.Slot = tempSlot;
+        }
+        else
+        {
+            // El slot de destino está vacío → mover directamente
+            itemToMove.Slot = toSlot;
+        }
+
+        itemToMove.UpdatedAt = DateTime.Now;
+
+        // Actualizar en la base de datos
+        await _inventoryDAO.UpsertAsync(inventory);
+
+        return true;
+    }
+
 }

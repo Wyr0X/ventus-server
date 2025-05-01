@@ -122,7 +122,7 @@ namespace VentusServer.Services
         {
             var spell = await GetPlayerSpellsByIdAsync(playerModel.Id);
 
-            playerModel.Spells = spell;
+            playerModel.PlayerSpells = spell;
             return spell;
         }
     }

@@ -8,6 +8,7 @@ namespace VentusServer.Domain.Models
         public required string SpellId { get; set; }
         public bool IsEquipped { get; set; } // Si el hechizo está equipado/preparado
         public int Slot { get; set; }
+        public int? Hotkey { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
     }

@@ -42,7 +42,7 @@ namespace VentusServer.Seeders
                     },
                     School = "Restauración",
                     RequiredLevel = 1,
-                    Icon = "icons/heal_light.png",
+                    Icon ="/images/spells/icons/heal_light.webp",
                     CastSound = "sounds/heal.wav",
                     ImpactSound = "sounds/impact_heal.wav",
                     VfxCast = "vfx/heal_cast.vfx",
@@ -78,7 +78,7 @@ namespace VentusServer.Seeders
                     },
                     School = "Magia",
                     RequiredLevel = 8,
-                    Icon = "icons/lightning_storm.png",
+                    Icon = "/images/spells/icons/lightning_storm.webp",
                     CastSound = "sounds/storm.wav",
                     VfxCast = "vfx/storm_cast.vfx",
                     VfxImpact = "vfx/storm_impact.vfx"
@@ -108,7 +108,7 @@ namespace VentusServer.Seeders
                     },
                     School = "Ilusión",
                     RequiredLevel = 5,
-                    Icon = "icons/invisibility.png",
+                    Icon = "/images/spells/icons/invisibility.webp",
                     CastSound = "sounds/invisibility.wav",
                     VfxCast = "vfx/invisible_cast.vfx"
                 }

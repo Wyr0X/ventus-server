@@ -122,7 +122,7 @@ namespace VentusServer.Services
                 var spells = await _playerSpellsService.CreateDefaultSpells(player);
                 player.Location = location;
                 player.Stats = stats;
-                player.Spells = spells;
+                player.PlayerSpells = spells;
                 // player.Inventory = inventory;
                 Console.WriteLine($"✅ Jugador '{player.Name}' creado exitosamente con ID {player.Location}.");
                 return player;
