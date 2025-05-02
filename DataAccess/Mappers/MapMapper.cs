@@ -19,8 +19,6 @@ namespace VentusServer.DataAccess.Mappers
                 // El WorldModel será asignado aparte en el DAO
                 WorldModel = null,
                 // Estas listas son lógicas y se mantienen en memoria
-                PlayersLocation = new List<PlayerLocationModel>(),
-                spawnedPlayers = new List<PlayerLocationModel>()
             };
         }
 
@@ -53,8 +51,6 @@ namespace VentusServer.DataAccess.Mappers
                 MaxPlayers = entity.MaxPlayers,
                 WorldId = entity.WorldId,
                 WorldModel = null,
-                PlayersLocation = new List<PlayerLocationModel>(),
-                spawnedPlayers = new List<PlayerLocationModel>()
             };
         }
     }

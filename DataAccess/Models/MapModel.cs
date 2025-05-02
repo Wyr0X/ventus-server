@@ -1,5 +1,12 @@
+using System;
+using System.Collections.Generic;
+
 namespace Game.Models
 {
+    /// <summary>
+    /// Representa un mapa dentro de un mundo, con lógica de capacidad y gestión de jugadores.
+    /// Solo mantiene la lista de jugadores presentes y los jugadores spawneados.
+    /// </summary>
     public class MapModel : BaseModel
     {
         public int Id { get; set; }
@@ -8,61 +15,69 @@ namespace Game.Models
         public int MaxPlayers { get; set; }
         public int WorldId { get; set; } // Relación con el mundo al que pertenece
 
-        // Relación con WorldModel
         public WorldModel? WorldModel { get; set; }
 
-        // Lista de jugadores en el mapa
-        public List<PlayerLocationModel> PlayersLocation { get; set; } = new List<PlayerLocationModel>();  // Relación entre el jugador y el mapa
-        public List<PlayerLocationModel> spawnedPlayers { get; set; } = new List<PlayerLocationModel>();
+        // Jugadores actualmente en el mapa
+        private readonly HashSet<int> _playerIds = new();
+        public IReadOnlyCollection<int> PlayersIds => _playerIds;
 
-        // Lógica de negocio
+        // Jugadores spawneados (activos) en el mapa
+        private readonly HashSet<int> _spawnedPlayerIds = new();
+        public IReadOnlyCollection<int> SpawnedPlayerIds => _spawnedPlayerIds;
 
-        // Verifica si un jugador puede acceder a este mapa
-        public bool CanAccess(int playerLevel)
+        /// <summary>
+        /// Verifica si hay espacio para más jugadores.
+        /// </summary>
+        public bool HasSpace() => _playerIds.Count < MaxPlayers;
+
+        /// <summary>
+        /// Verifica si hay espacio para spawnear jugadores activos.
+        /// </summary>
+        public bool HasSpawnSpace() => _spawnedPlayerIds.Count < MaxPlayers;
+
+        /// <summary>
+        /// Agrega un jugador al mapa si cumple el nivel mínimo y hay espacio.
+        /// </summary>
+        public bool AddPlayer(int playerId, int playerLevel)
         {
-            return playerLevel >= MinLevel;
+            if (playerLevel < MinLevel || !HasSpace())
+                return false;
+
+            return _playerIds.Add(playerId);
         }
 
-        // Verifica si hay espacio disponible para más jugadores
-        public bool HasSpace()
+        /// <summary>
+        /// Spawnea (activa) un jugador en el mapa si ya está presente y hay espacio.
+        /// </summary>
+        public bool SpawnPlayer(int playerId)
         {
-            return PlayersLocation.Count < MaxPlayers;
+            if (!_playerIds.Contains(playerId) || !HasSpawnSpace())
+                return false;
+
+            return _spawnedPlayerIds.Add(playerId);
         }
 
-        // Método para agregar un jugador al mapa si hay espacio y puede acceder
-        public bool TryAddPlayer(int playerLevel)
+        /// <summary>
+        /// Remueve un jugador del mapa (tanto de la lista de presentes como de spawneados).
+        /// </summary>
+        public bool RemovePlayer(int playerId)
         {
-            if (CanAccess(playerLevel) && HasSpace())
-            {
-                return true; // El jugador puede entrar
-            }
-            return false; // El jugador no puede entrar
+            bool removed = _playerIds.Remove(playerId);
+            bool despawned = _spawnedPlayerIds.Remove(playerId);
+            return removed || despawned;
         }
 
-        public void RemovePlayer(int playerId)
-        {
-            var playerLocation = PlayersLocation.FirstOrDefault(p => p.PlayerId == playerId);
-            if (playerLocation != null)
-            {
-                PlayersLocation.Remove(playerLocation);
-            }
-            else
-            {
-                throw new InvalidOperationException("El jugador con el ID proporcionado no existe en este mundo.");
-            }
-        }
+        /// <summary>
+        /// Número actual de jugadores en el mapa.
+        /// </summary>
+        public int PlayerCount => _playerIds.Count;
 
-        // Método para imprimir los detalles del mapa
-        public void PrintMapDetails()
-        {
-            LoggerUtil.Log(LoggerUtil.LogTag.MapModel, "### Map Details ###");
-            LoggerUtil.Log(LoggerUtil.LogTag.MapModel, $"ID: {Id}");
-            LoggerUtil.Log(LoggerUtil.LogTag.MapModel, $"Name: {Name}");
-            LoggerUtil.Log(LoggerUtil.LogTag.MapModel, $"Min Level: {MinLevel}");
-            LoggerUtil.Log(LoggerUtil.LogTag.MapModel, $"Max Players: {MaxPlayers}");
-            LoggerUtil.Log(LoggerUtil.LogTag.MapModel, $"World ID: {WorldId}");
-            LoggerUtil.Log(LoggerUtil.LogTag.MapModel, $"Players Count: {PlayersLocation.Count}");
-            LoggerUtil.Log(LoggerUtil.LogTag.MapModel, "### End of Map Details ###");
-        }
+        /// <summary>
+        /// Número actual de jugadores spawneados en el mapa.
+        /// </summary>
+        public int SpawnedCount => _spawnedPlayerIds.Count;
+
+        public override string ToString()
+            => $"Map(Id={Id}, Name={Name}, Players={PlayerCount}/{MaxPlayers}, Spawned={SpawnedCount}/{MaxPlayers})";
     }
 }

@@ -101,8 +101,8 @@ namespace VentusServer.Services
 
                 PlayerLocationModel playerLocation = new PlayerLocationModel
                 {
-                    World = world,
-                    Map = map,
+                    WorldId = defaultWorldId,
+                    MapId = defaultMapId,
                     PosX = 0,
                     PosY = 0,
                     PlayerId = player.Id
@@ -124,8 +124,8 @@ namespace VentusServer.Services
             PlayerLocationModel? playerLocation = await GetPlayerLocationAsync(playerId);
             if (playerLocation != null)
             {
-                WorldModel? world = playerLocation.World;
-                MapModel? map = playerLocation.Map;
+                WorldModel? world = await _worldService.GetWorldByIdAsync(playerLocation.WorldId);
+                MapModel? map = await _mapService.GetMapByIdAsync(playerLocation.MapId);
 
                 if (world != null)
                 {

@@ -26,6 +26,8 @@ public static class LoggerUtil
         BaseCachedService,
         SystemChatService,
         PlayerLocationService,
+        PlayerSpellsService,
+        PlayerService,
         StoreService,
         RoleService,
         AccountService,
@@ -33,7 +35,14 @@ public static class LoggerUtil
         WorldService,
         DB,
         Game,
-        RequirePermissionAttribute
+        RequirePermissionAttribute,
+
+        // Game
+        WorldManager,
+        SessionSystem,
+        GameServer,
+        SessionTasks,
+        TaskScheduler
     }
 
     // Configuración del tag: habilitado, color, guardar en archivo
@@ -44,9 +53,9 @@ public static class LoggerUtil
         { LogTag.SpellController, (false, ConsoleColor.Cyan, false) },
         { LogTag.StoreController, (true, ConsoleColor.Cyan, false) },
         { LogTag.AdminRolesController, (false, ConsoleColor.Cyan, false) },
-        { LogTag.WebSocketAuthentificationService, (false, ConsoleColor.DarkMagenta, false) },
-        { LogTag.WebSocketServerController, (false, ConsoleColor.DarkMagenta, false) },
-        { LogTag.WebSocketConnectionManager, (false, ConsoleColor.DarkMagenta, false) },
+        { LogTag.WebSocketAuthentificationService, (true, ConsoleColor.DarkMagenta, false) },
+        { LogTag.WebSocketServerController, (true, ConsoleColor.DarkMagenta, false) },
+        { LogTag.WebSocketConnectionManager, (true, ConsoleColor.DarkMagenta, false) },
         { LogTag.MapModel, (false, ConsoleColor.DarkGreen, false) },
         { LogTag.BaseCachedService, (false, ConsoleColor.DarkBlue, false) },
         { LogTag.SystemChatService, (false, ConsoleColor.DarkBlue, false) },
@@ -57,6 +66,8 @@ public static class LoggerUtil
         { LogTag.AuthService, (false, ConsoleColor.DarkBlue, false) },
         { LogTag.RoleService, (false, ConsoleColor.DarkBlue, false) },
         { LogTag.StoreService, (false, ConsoleColor.DarkBlue, false) },
+        { LogTag.PlayerService, (false, ConsoleColor.DarkBlue, false) },
+        { LogTag.PlayerSpellsService, (false, ConsoleColor.DarkBlue, false) },
         { LogTag.DB, (false, ConsoleColor.Yellow, false) },
         { LogTag.Init, (false, ConsoleColor.Yellow, false) },
         { LogTag.Game, (false, ConsoleColor.Yellow, false) },
@@ -68,8 +79,13 @@ public static class LoggerUtil
         { LogTag.DapperWorldDAO, (false, ConsoleColor.Green, false) },
         { LogTag.DapperItemDAO, (false, ConsoleColor.Green, false) },
         { LogTag.DapperPlayerInventoryDAO, (false, ConsoleColor.Green, false) },
-        { LogTag.DapperPlayerSpellsDAO, (true, ConsoleColor.Green, false) },
+        { LogTag.DapperPlayerSpellsDAO, (false, ConsoleColor.Green, false) },
         { LogTag.RequirePermissionAttribute, (false, ConsoleColor.Blue, false) },
+        { LogTag.SessionSystem, (true, ConsoleColor.Blue, false) },
+        { LogTag.WorldManager, (true, ConsoleColor.Blue, false) },
+        { LogTag.GameServer, (true, ConsoleColor.Blue, false) },
+        { LogTag.TaskScheduler, (true, ConsoleColor.Blue, false) },
+        { LogTag.SessionTasks, (true, ConsoleColor.Blue, false) },
 
 
     };

@@ -78,7 +78,6 @@ namespace VentusServer.DataAccess.Postgres
             try
             {
                 var rows = await conn.QueryAsync(ItemQueries.SelectAll);
-                ItemMapper.PrintRow(rows.FirstOrDefault());
                 var items = ItemMapper.MapMultipleFromRows(rows);
                 LoggerUtil.Log(LoggerUtil.LogTag.DapperItemDAO, $"✅ Total items cargados: {items.Count()}");
                 return items;

@@ -27,7 +27,6 @@ namespace VentusServer.DataAccess.Dapper
                 LoggerUtil.Log(LoggerUtil.LogTag.DapperPlayerStatsDAO, $"Buscando estadísticas de jugador por ID:  {playerId}");
                 using var connection = _connectionFactory.CreateConnection();
                 var row = await connection.QueryFirstOrDefaultAsync(PlayerStatsQueries.SelectByPlayerId, new { PlayerId = playerId });
-                PlayerStatsMapper.PrintRow(row);
                 return row == null ? null : PlayerStatsMapper.FromRow(row);
             }
             catch (Exception ex)

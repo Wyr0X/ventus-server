@@ -13,8 +13,8 @@ namespace VentusServer.DataAccess.Mappers
                 PosX = dbRow.pos_x,
                 PosY = dbRow.pos_y,
                 PlayerId = player.Id,
-                World = world,
-                Map = map
+                WorldId = world.Id,
+                MapId = map.Id
             };
         }
 
@@ -26,8 +26,8 @@ namespace VentusServer.DataAccess.Mappers
                 PosX = entity.PosX,
                 PosY = entity.PosY,
                 PlayerId = player.Id,
-                World = world,
-                Map = map
+                WorldId = world.Id,
+                MapId = map.Id
             };
         }
 
@@ -37,8 +37,8 @@ namespace VentusServer.DataAccess.Mappers
             return new DbLocationEntity
             {
                 PlayerId = model.PlayerId,
-                WorldId = model.World.Id,
-                MapId = model.Map.Id,
+                WorldId = model.WorldId,
+                MapId = model.MapId,
                 PosX = model.PosX,
                 PosY = model.PosY,
             };
@@ -50,8 +50,8 @@ namespace VentusServer.DataAccess.Mappers
             return new
             {
                 PlayerId = location.PlayerId,
-                WorldId = location.World.Id,
-                MapId = location.Map.Id,
+                WorldId = location.WorldId,
+                MapId = location.MapId,
                 PosX = location.PosX,
                 PosY = location.PosY,
             };

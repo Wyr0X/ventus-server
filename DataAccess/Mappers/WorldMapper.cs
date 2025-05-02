@@ -16,10 +16,7 @@ namespace VentusServer.DataAccess.Mappers
                 Description = row.description,
                 MaxMaps = row.max_maps,
                 MaxPlayers = row.max_players,
-                LevelRequirements = row.level_requirements,
-                Maps = new List<MapModel>(),
-                PlayersLocation = new List<PlayerLocationModel>(),
-                spawnedPlayers = new List<PlayerLocationModel>()
+                LevelRequirement = row.level_requirements,
             };
         }
 
@@ -37,7 +34,7 @@ namespace VentusServer.DataAccess.Mappers
                 Description = model.Description,
                 MaxMaps = model.MaxMaps,
                 MaxPlayers = model.MaxPlayers,
-                LevelRequirements = model.LevelRequirements
+                LevelRequirements = model.LevelRequirement
             };
         }
 
@@ -50,10 +47,7 @@ namespace VentusServer.DataAccess.Mappers
                 Description = entity.Description,
                 MaxMaps = entity.MaxMaps,
                 MaxPlayers = entity.MaxPlayers,
-                LevelRequirements = entity.LevelRequirements,
-                Maps = new List<MapModel>(),
-                PlayersLocation = new List<PlayerLocationModel>(),
-                spawnedPlayers = new List<PlayerLocationModel>()
+                LevelRequirement = entity.LevelRequirements,
             };
         }
         public static void PrintRow(dynamic row)

@@ -1,101 +1,154 @@
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Game.Models;
 
-public class GameServer
+namespace Game.Server
 {
-    private CancellationTokenSource? LoopCancellation;
-
-    private readonly SessionSystem _sessionSystem;
-    public readonly SystemHandler systemHandler;
-    public readonly TaskScheduler taskScheduler;
-    public readonly PacketHandler packetHandler;
-
-    public GameServer(Lazy<MessageSender> messageSender, TaskScheduler taskScheduler)
+    /// <summary>
+    /// Servidor principal: procesa eventos, actualiza mundos y gestiona la sesión.
+    /// </summary>
+    public class GameServer
     {
-        // worldManager = new WorldManager(this.Entities, _syncSystem);
-        // _syncSystem = new SyncSystem(this.Entities, messageSender);
-        this.taskScheduler = taskScheduler;
-        this.systemHandler = new SystemHandler();
-        _sessionSystem = new SessionSystem(this, systemHandler);
-        packetHandler = new PacketHandler(this);
-    }
+        private CancellationTokenSource? _loopCancellation;
 
-    public async Task Run(CancellationToken cancellationToken)
-    {
-        await Loop(cancellationToken);
-    }
+        private readonly SessionSystem _sessionSystem;
+        public readonly SystemHandler systemHandler;
+        public readonly TaskScheduler taskScheduler;
+        public readonly PacketHandler packetHandler;
+        public Dictionary<int, PlayerModel> PlayerModels { get; set; } = new Dictionary<int, PlayerModel>();
+        public readonly GameServiceMediator _gameServiceMediator;
+        public readonly WorldManager worldManager;
+        private readonly ConcurrentQueue<Action> _scheduledActions = new();
+        public readonly WebSocketServerController _webSocketServerController;
 
-    private async Task Loop(CancellationToken cancellationToken)
-    {
-        while (!cancellationToken.IsCancellationRequested)
+        public GameServer(
+            WebSocketServerController webSocketServerController,
+            TaskScheduler taskScheduler,
+            GameServiceMediator gameServiceMediator)
         {
-            Update();
-            await Task.Delay(16); // Aproximadamente 60fps
+            this.taskScheduler = taskScheduler;
+            this.systemHandler = new SystemHandler();
+            _sessionSystem = new SessionSystem(this, systemHandler);
+            this.packetHandler = new PacketHandler(this);
+            _gameServiceMediator = gameServiceMediator;
+            _webSocketServerController = webSocketServerController;
+            worldManager = new WorldManager(this);
+
+            LoggerUtil.Log(LoggerUtil.LogTag.GameServer, "GameServer inicializado.");
         }
-    }
 
-    public void Stop()
-    {
-        LoopCancellation?.Cancel();
-    }
-
-    private void Update()
-    {
-        // Manejar eventos
-        HandleEvents();
-        // Actualizar entidades
-        // _worldManager.Update();
-        // Flush packets
-    }
-
-    private void HandleEvents()
-    {
-        var gameEvent = taskScheduler.eventBuffer.DequeueEvent();
-        while (gameEvent != null)
+        /// <summary>
+        /// Inicia el bucle de actualización a ~60 FPS.
+        /// </summary>
+        public async Task Run(CancellationToken cancellationToken)
         {
-            switch (gameEvent.Type)
+            LoggerUtil.Log(LoggerUtil.LogTag.GameServer, "Iniciando bucle principal.");
+            await Loop(cancellationToken);
+        }
+
+        private async Task Loop(CancellationToken cancellationToken)
+        {
+            int tickCount = 0;
+            while (!cancellationToken.IsCancellationRequested)
             {
-                case GameEventType.CustomGameEvent:
-                    var data = gameEvent.Data;
+                Update();
+                tickCount++;
+                if (tickCount % 600 == 0) // cada 10 segundos aprox
+                {
+                    LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"Tick: {tickCount} - Loop en ejecución.");
+                }
 
-                    systemHandler.HandlePacket(data);
-                    break;
-                case GameEventType.ClientPacket:
-
-
-                    if (gameEvent.Data is UserMessagePair userMessagePair)
-                    {
-                        packetHandler.HandlePacket(userMessagePair);
-                    }
-
-                    break;
+                await Task.Delay(16, cancellationToken); // Aproximadamente 60fps
             }
-            gameEvent = taskScheduler.eventBuffer.DequeueEvent();
+
+            LoggerUtil.Log(LoggerUtil.LogTag.GameServer, "Loop cancelado.");
+        }
+
+        /// <summary>
+        /// Permite que otros threads agenden acciones para el hilo principal.
+        /// </summary>
+        public void Schedule(Action action)
+        {
+            _scheduledActions.Enqueue(action);
+            LoggerUtil.Log(LoggerUtil.LogTag.GameServer, "Acción programada.");
+        }
+
+        /// <summary>
+        /// Cancela el bucle de ejecución.
+        /// </summary>
+        public void Stop()
+        {
+            _loopCancellation?.Cancel();
+            LoggerUtil.Log(LoggerUtil.LogTag.GameServer, "Servidor detenido manualmente.");
+        }
+
+        /// <summary>
+        /// Actualiza la lógica del servidor en cada tick.
+        /// </summary>
+        private void Update()
+        {
+            int processedActions = 0;
+
+            while (_scheduledActions.TryDequeue(out var action))
+            {
+                try
+                {
+                    action();
+                    processedActions++;
+                }
+                catch (Exception ex)
+                {
+                    LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"Error ejecutando acción agendada: {ex.Message}", isError: true);
+                }
+            }
+
+            if (processedActions > 0)
+                LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"Ejecutadas {processedActions} acciones agendadas.");
+
+            HandleEvents();
+
+            // worldManager.Update(); // si se usa
+            // _syncSystem.Flush(); // si se usa
+        }
+
+        /// <summary>
+        /// Despacha todos los eventos encolados.
+        /// </summary>
+        private void HandleEvents()
+        {
+            int handledEvents = 0;
+            GameEvent? gameEvent;
+
+            while ((gameEvent = taskScheduler.eventBuffer.DequeueEvent()) != null)
+            {
+                handledEvents++;
+                LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"Handle event: {gameEvent.Type}.");
+
+                switch (gameEvent.Type)
+                {
+                    case GameEventType.CustomGameEvent:
+                        LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"Handle event: {gameEvent.Type}.");
+
+                        if (gameEvent.Data != null)
+                        {
+                            LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"Handle event: {gameEvent.Type}.");
+
+                            systemHandler.HandlePacket(gameEvent.Data);
+                        }
+                        break;
+
+                    case GameEventType.ClientPacket:
+                        if (gameEvent.Data is UserMessagePair userMessagePair)
+                            packetHandler.HandlePacket(userMessagePair);
+                        break;
+                }
+            }
+
+            if (handledEvents > 0)
+                LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"Procesados {handledEvents} eventos del buffer.");
         }
     }
-
-    // public void EnqueuEvent(GameEvent gameEvent)
-    // {
-    //     Entity? playerEntity = Entities.GetPlayerByAccountId(gameEvent.GetAccountId());
-    //     if (playerEntity != null)
-    //     {
-    //         EventBuffer? eventBuffer = (EventBuffer?)playerEntity.Get(typeof(EventBuffer));
-    //         if (eventBuffer != null)
-    //         {
-    //             eventBuffer.EnqueueEvent(gameEvent);
-    //         }
-    //     }
-    // }
-
-    // public void UnSpawnPlayer(
-    //     Guid accountId,
-    //     PlayerModel playerModel,
-    //     PlayerLocation playerLocation
-    // )
-    // {
-    //     PlayerEntity? playerEntity = (PlayerEntity?)Entities.GetPlayerByAccountId(accountId);
-    //     if (playerEntity != null)
-    //     {
-    //         Entities.Remove(playerEntity);
-    //         _worldManager.UnSpawnPlayer(playerLocation.World.Id);
-    //     }
-    // }
 }

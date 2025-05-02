@@ -15,12 +15,12 @@ namespace VentusServer.Services
 
         protected override async Task<PlayerSpellsModel?> LoadModelAsync(int playerId)
         {
-            Console.WriteLine($"[PlayerSpellsService] LoadModelAsync: Cargando inventario de hechizos del jugador desde la base de datos. PlayerId: {playerId}");
+            LoggerUtil.Log(LoggerUtil.LogTag.PlayerSpellsService, $"[PlayerSpellsService] LoadModelAsync: Cargando inventario de hechizos del jugador desde la base de datos. PlayerId: {playerId}");
             return await _playerSpellsDAO.GetByPlayerId(playerId);
         }
         public async Task<PlayerSpellsModel?> GetPlayerSpellsByIdAsync(int id)
         {
-            Console.WriteLine($"[PlayerSpellsService] GetPlayerSpellsByIdAsync: Cargando inventario de hechizos con ID: {id}");
+            LoggerUtil.Log(LoggerUtil.LogTag.PlayerSpellsService, $"[PlayerSpellsService] GetPlayerSpellsByIdAsync: Cargando inventario de hechizos con ID: {id}");
             return await _playerSpellsDAO.GetByIdAsync(id);
         }
         public async Task<PlayerSpellsModel> CreateDefaultSpells(PlayerModel playerModel)
@@ -47,21 +47,21 @@ namespace VentusServer.Services
 
         public async Task CreateInventoryAsync(PlayerSpellsModel inventoryModel)
         {
-            Console.WriteLine($"[PlayerSpellsService] CreateInventoryAsync: Creando inventario de hechizos para el jugador: {inventoryModel.PlayerId}");
+            LoggerUtil.Log(LoggerUtil.LogTag.PlayerSpellsService, $"[PlayerSpellsService] CreateInventoryAsync: Creando inventario de hechizos para el jugador: {inventoryModel.PlayerId}");
             await _playerSpellsDAO.CreateAsync(inventoryModel);
             Set(inventoryModel.PlayerId, inventoryModel); //agregar al cache
         }
 
         public async Task UpsertInventoryAsync(PlayerSpellsModel inventoryModel)
         {
-            Console.WriteLine($"[PlayerSpellsService] UpsertInventoryAsync: Guardando/Actualizando inventario de hechizos para el jugador: {inventoryModel.PlayerId}");
+            LoggerUtil.Log(LoggerUtil.LogTag.PlayerSpellsService, $"[PlayerSpellsService] UpsertInventoryAsync: Guardando/Actualizando inventario de hechizos para el jugador: {inventoryModel.PlayerId}");
             await _playerSpellsDAO.UpsertAsync(inventoryModel);
             Set(inventoryModel.PlayerId, inventoryModel);
         }
 
         public async Task DeleteInventoryByPlayerIdAsync(int playerId)
         {
-            Console.WriteLine($"[PlayerSpellsService] DeleteInventoryByPlayerIdAsync: Eliminando inventario de hechizos del jugador con ID de jugador: {playerId}");
+            LoggerUtil.Log(LoggerUtil.LogTag.PlayerSpellsService, $"[PlayerSpellsService] DeleteInventoryByPlayerIdAsync: Eliminando inventario de hechizos del jugador con ID de jugador: {playerId}");
             await _playerSpellsDAO.DeleteByPlayerId(playerId);
             Invalidate(playerId); // Invalida la entrada de caché
         }
@@ -101,7 +101,7 @@ namespace VentusServer.Services
             var inventory = await GetOrLoadAsync(playerId); //obtener del cache
             if (inventory == null)
             {
-                Console.WriteLine($"⚠️ No se encontró el inventario de hechizos para el jugador {playerId}.");
+                LoggerUtil.Log(LoggerUtil.LogTag.PlayerSpellsService, $"⚠️ No se encontró el inventario de hechizos para el jugador {playerId}.");
                 return;
             }
 
@@ -111,11 +111,11 @@ namespace VentusServer.Services
                 inventory.Spells.Remove(spellToRemove);
                 inventory.UpdatedAt = DateTime.UtcNow;
                 await UpsertInventoryAsync(inventory);
-                Console.WriteLine($"✅ Hechizo {spellId} eliminado del inventario del jugador {playerId}.");
+                LoggerUtil.Log(LoggerUtil.LogTag.PlayerSpellsService, $"✅ Hechizo {spellId} eliminado del inventario del jugador {playerId}.");
             }
             else
             {
-                Console.WriteLine($"⚠️ El hechizo {spellId} no se encontró en el inventario del jugador {playerId}.");
+                LoggerUtil.Log(LoggerUtil.LogTag.PlayerSpellsService, $"⚠️ El hechizo {spellId} no se encontró en el inventario del jugador {playerId}.");
             }
         }
         public async Task<PlayerSpellsModel?> LoadPlayerSpellsInModel(PlayerModel playerModel)

@@ -2,9 +2,9 @@ using Ventus.Network.Packets;
 
 public class SystemHandler
 {
-    private readonly Dictionary<CustomGameEvent, List<Action<UserMessagePair>>> _handlers = new();
+    private readonly Dictionary<CustomGameEvent, List<Action<dynamic>>> _handlers = new();
 
-    public void Subscribe(CustomGameEvent type, Action<UserMessagePair> handler)
+    public void Subscribe(CustomGameEvent type, Action<dynamic> handler)
     {
         if (!_handlers.ContainsKey(type))
             _handlers[type] = [];
@@ -15,13 +15,28 @@ public class SystemHandler
     public void HandlePacket(dynamic message)
     {
 
-        var type = (CustomGameEvent)message.type;
+        CustomGameEvent type = (CustomGameEvent)message.Type;
+
         if (_handlers.TryGetValue(type, out var handlerList))
         {
+
+            Console.WriteLine($"Se encontraron {handlerList.Count} handlers para el evento {type}");
+
             foreach (var handler in handlerList)
             {
-                handler(message);
+                Console.WriteLine($"Ejecutando handler: {handler.Method.Name}");
+
+                try
+                {
+                    Console.WriteLine($"Ejecutando handler: {handler.Method.Name}");
+                    handler(message);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error al ejecutar el handler: {ex.Message}");
+                }
             }
         }
+
     }
 }

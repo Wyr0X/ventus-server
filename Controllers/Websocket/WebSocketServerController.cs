@@ -12,6 +12,8 @@ public class WebSocketServerController
     private readonly WebSocketConnectionManager _connectionManager;
     private readonly ConcurrentQueue<UserMessagePair> _messageQueue;
     private readonly TaskScheduler _taskScheduler;
+    public readonly OutgoingMessageQueue _outgoingQueue;
+
 
     public WebSocketServerController(TaskScheduler taskScheduler, AccountService accountService)
     {
@@ -19,6 +21,7 @@ public class WebSocketServerController
         _messageQueue = new ConcurrentQueue<UserMessagePair>();
         _authService = new WebSocketAuthenticationService(accountService);
         _connectionManager = new WebSocketConnectionManager();
+        _outgoingQueue = new OutgoingMessageQueue(); // Initialize the _outgoingQueue field
     }
 
     public async Task StartServerAsync(CancellationToken cancellationToken)
@@ -52,15 +55,64 @@ public class WebSocketServerController
         }
     }
 
-    public async Task StartLoop(CancellationToken cancellationToken)
+    public void StartLoop(CancellationToken cancellationToken)
     {
         while (true)
         {
             cancellationToken.ThrowIfCancellationRequested();
             if (_messageQueue.TryDequeue(out var pair))
+            {
+                LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"Dequeue packet: {pair.PacketType}");
+
                 _taskScheduler.Dispatch(pair);
-            await Task.Delay(100);
+            }
+            _ = SendOutgoingPackets(cancellationToken);
         }
+    }
+
+    public async Task SendOutgoingPackets(CancellationToken cancellationToken)
+    {
+
+        var accountIds = _outgoingQueue.GetAccountIdsWithMessages();
+
+        foreach (var accountId in accountIds)
+        {
+            if (!_connectionManager.TryGetSocket(accountId, out var socket) || socket.State != WebSocketState.Open)
+            {
+                continue;
+            }
+            LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"🆔Prepared to send {accountId}");
+
+            var packetsToSend = new List<Packet>();
+
+            while (_outgoingQueue.TryDequeue(accountId, out var outgoingPacket))
+            {
+                if (outgoingPacket == null) return;
+                var packet = new Packet
+                {
+                    Type = (uint)outgoingPacket.PacketType,
+                    Payload = ByteString.CopyFrom(outgoingPacket.Message.ToByteArray())
+                };
+                packetsToSend.Add(packet);
+            }
+
+            using var ms = new MemoryStream();
+            foreach (var packet in packetsToSend)
+            {
+                var bytes = packet.ToByteArray();
+                ms.Write(bytes, 0, bytes.Length);
+            }
+            LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $" Send ${packetsToSend.Count} packets to {accountId}");
+
+            await socket.SendAsync(
+                new ArraySegment<byte>(ms.GetBuffer(), 0, (int)ms.Length),
+                WebSocketMessageType.Binary,
+                true,
+                CancellationToken.None
+            );
+        }
+
+        await Task.Delay(30); // Ajustá esto según la frecuencia de envío deseada
     }
 
     public async void SendServerPacketByAccountId(Guid accountId, IMessage message, ServerPacket serverPacket)

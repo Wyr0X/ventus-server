@@ -8,7 +8,8 @@ public enum GameEventType
 
 public enum CustomGameEvent
 {
-    PlayerSpawn
+    PlayerSpawn,
+    GetWorldData,
 }
 public class GameEvent
 {

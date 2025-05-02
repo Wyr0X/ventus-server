@@ -8,9 +8,9 @@ public class PlayerLocationModel : BaseModel
 
     // Relaciones
     public required int PlayerId { get; set; }
-    public required WorldModel World { get; set; }
+    public required int WorldId { get; set; }
 
-    public required MapModel Map { get; set; }
+    public required int MapId { get; set; }
 
 
 }

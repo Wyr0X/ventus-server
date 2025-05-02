@@ -12,6 +12,7 @@ using VentusServer.DataAccess.Dapper;
 using VentusServer.Controllers.Admin;
 using VentusServer.Domain.Models;
 using VentusServer.DataAccess.DAO;
+using Game.Server;
 
 namespace VentusServer
 {
@@ -29,8 +30,7 @@ namespace VentusServer
             RegisterModels(services);
             RegisterControllers(services);
             var provider = services.BuildServiceProvider();
-            provider.GetRequiredService<ChatHandler>();
-
+            provider.GetRequiredService<SessionTasks>();
             return new ServiceProviderContainer(services, provider);
         }
 
@@ -47,6 +47,9 @@ namespace VentusServer
                 .AddSingleton<MessageSender>()
                 .AddSingleton<RequirePermissionAttribute>()
                 .AddSingleton<TaskScheduler>()
+                .AddSingleton<SystemHandler>()
+                .AddSingleton<SessionTasks>()
+                .AddSingleton<GameServiceMediator>()
                 .AddSingleton(provider => new Lazy<MessageSender>(provider.GetRequiredService<MessageSender>))
                 .AddSingleton<IDbConnectionFactory>(sp =>
                     new NpgsqlConnectionFactory(
@@ -105,8 +108,6 @@ namespace VentusServer
 
         private static void RegisterHandlers(IServiceCollection services)
         {
-            services
-                .AddSingleton<ChatHandler>();
         }
 
         private static void RegisterManagers(IServiceCollection services)

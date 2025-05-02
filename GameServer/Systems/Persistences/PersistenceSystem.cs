@@ -1,15 +1,13 @@
 using VentusServer.DataAccess.Postgres;
+using VentusServer.Services;
 
 public class PersistenceManager
 {
-    public PlayerPersistenceSystem _playerPersistenceSystem { get; }
+    private readonly PlayerService _playerService;
 
-    public PersistenceManager(PlayerPersistenceSystem playerPersistenceSystem)
+    public PersistenceManager(PlayerService playerService)
     {
-        _playerPersistenceSystem = playerPersistenceSystem;
+        _playerService = playerService;
     }
 
-    public void updatePlayer(){
-        // _playerPersistenceSystem.SavePlayerData();
-    }
 }

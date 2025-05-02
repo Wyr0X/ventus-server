@@ -4,6 +4,9 @@ using System.Linq;
 
 namespace Game.Models
 {
+    /// <summary>
+    /// Representa un mundo con mapas, jugadores y lógica de acceso y capacidad.
+    /// </summary>
     public class WorldModel : BaseModel
     {
         public int Id { get; set; }
@@ -11,73 +14,109 @@ namespace Game.Models
         public required string Description { get; set; }
         public int MaxMaps { get; set; }
         public int MaxPlayers { get; set; }
-        public int LevelRequirements { get; set; }
+        public int LevelRequirement { get; set; }
 
-        // Relaciones
-        public List<MapModel> Maps { get; set; } = new List<MapModel>();
-        public List<PlayerLocationModel> PlayersLocation { get; set; } = new List<PlayerLocationModel>();
-        public List<PlayerLocationModel> spawnedPlayers { get; set; } = new List<PlayerLocationModel>();
+        // Mapas contenidos en el mundo
+        private List<MapModel> _maps = new();
+        public IReadOnlyList<MapModel> Maps => _maps;
+
+        // Jugadores que pueden aparecer en el mundo (históricos o conectados)
+        private readonly HashSet<int> _playerIds = new();
+        public IReadOnlyCollection<int> PlayerIds => _playerIds;
+
+        // Jugadores activos/spawneados en el mundo
+        private readonly HashSet<int> _spawnedPlayerIds = new();
+        public IReadOnlyCollection<int> SpawnedPlayerIds => _spawnedPlayerIds;
+
+        /// <summary>
+        /// Añade un nuevo mapa al mundo si no supera el límite.
+        /// </summary>
         public void AddMap(MapModel map)
         {
-            if (Maps.Count < MaxMaps)
-            {
-                Maps.Add(map);
-            }
-            else
-            {
+            if (_maps.Count >= MaxMaps)
                 throw new InvalidOperationException("No se pueden agregar más mapas, se ha alcanzado el límite de mapas.");
+
+            if (map.WorldModel != null)
+            {
+                map.WorldModel.Id = Id;
             }
+            _maps.Add(map);
         }
 
         /// <summary>
         /// Elimina un mapa del mundo por su ID.
         /// </summary>
-        /// <param name="mapId">ID del mapa a eliminar.</param>
         public void RemoveMap(int mapId)
         {
-            var map = Maps.FirstOrDefault(m => m.Id == mapId);
-            if (map != null)
-            {
-                Maps.Remove(map);
-            }
-            else
-            {
-                throw new InvalidOperationException("El mapa con el ID proporcionado no existe.");
-            }
+            var map = _maps.FirstOrDefault(m => m.Id == mapId);
+            if (map == null)
+                throw new InvalidOperationException("El mapa con el ID proporcionado no existe en este mundo.");
+
+            _maps.Remove(map);
         }
 
         /// <summary>
-        /// Verifica si un jugador cumple con los requisitos de nivel para acceder al mundo.
+        /// Verifica si un jugador cumple los requisitos de nivel para acceder al mundo.
         /// </summary>
-        /// <param name="playerLevel">El nivel del jugador.</param>
-        /// <returns>Verdadero si el jugador puede acceder, de lo contrario falso.</returns>
-        public bool CanPlayerAccess(int playerLevel)
+        public bool CanPlayerAccess(int playerLevel) => playerLevel >= LevelRequirement;
+
+        /// <summary>
+        /// Verifica si hay espacio disponible para nuevos jugadores en el mundo.
+        /// </summary>
+        public bool HasSpace() => _playerIds.Count < MaxPlayers;
+
+        /// <summary>
+        /// Intenta añadir un jugador al mundo si cumple requisitos y hay espacio.
+        /// </summary>
+        public bool TryAddPlayer(int playerId, int playerLevel)
         {
-            return playerLevel >= LevelRequirements;
+            // if (!CanPlayerAccess(playerLevel) || !HasSpace())
+            //     return false;
+
+            return _playerIds.Add(playerId);
         }
 
         /// <summary>
-        /// Verifica si hay espacio suficiente en el mundo para más jugadores.
+        /// Intenta spawnear (activar) un jugador en el mundo.
         /// </summary>
-        /// <param name="currentPlayerCount">El número actual de jugadores en el mundo.</param>
-        /// <returns>Verdadero si hay espacio disponible para más jugadores, de lo contrario falso.</returns>
-        public bool HasSpace(int currentPlayerCount)
+        public bool TrySpawnPlayer(int playerId)
         {
-            return currentPlayerCount < MaxPlayers;
-        }
-        public void RemovePlayer(int playerId)
-        {
-            var playerLocation = PlayersLocation.FirstOrDefault(p => p.PlayerId == playerId);
-            if (playerLocation != null)
-            {
-                PlayersLocation.Remove(playerLocation);
-            }
-            else
-            {
-                throw new InvalidOperationException("El jugador con el ID proporcionado no existe en este mundo.");
-            }
+            if (!_playerIds.Contains(playerId) || _spawnedPlayerIds.Count >= MaxPlayers)
+                return false;
+
+            return _spawnedPlayerIds.Add(playerId);
         }
 
+        /// <summary>
+        /// Remueve un jugador del mundo y de sus spawns.
+        /// </summary>
+        public bool RemovePlayer(int playerId)
+        {
+            bool removed = _playerIds.Remove(playerId);
+            bool despawned = _spawnedPlayerIds.Remove(playerId);
+            return removed || despawned;
+        }
 
+        /// <summary>
+        /// Limpia todos los jugadores y spawns del mundo.
+        /// </summary>
+        public void ClearPlayers()
+        {
+            _spawnedPlayerIds.Clear();
+            _playerIds.Clear();
+        }
+
+        /// <summary>
+        /// Número de players registrados en el mundo.
+        /// </summary>
+        public int PlayerCount => _playerIds.Count;
+
+        /// <summary>
+        /// Número de players spawneados actualmente.
+        /// </summary>
+        public int SpawnedCount => _spawnedPlayerIds.Count;
+
+        public override string ToString()
+            => $"World(Id={Id}, Name={Name}, Maps={_maps.Count}/{MaxMaps}, Players={PlayerCount}/{MaxPlayers}, Spawned={SpawnedCount}/{MaxPlayers})";
     }
 }
