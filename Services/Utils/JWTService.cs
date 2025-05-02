@@ -3,32 +3,25 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
 
-public class JwtService
+public static class JwtService
 {
-    private readonly string _jwtSecret;
+    private static readonly string _jwtSecret = "6YpV@cQ3z!mJtX7#dFk$wN9rLp*2HsG0";  // Se puede cambiar a un valor desde configuración si es necesario
 
-    public JwtService()
-    {
-        //_jwtSecret = configuration["Jwt:Secret"];
-        _jwtSecret = "6YpV@cQ3z!mJtX7#dFk$wN9rLp*2HsG0";
-    }
-
-    public string GenerateToken(Guid accountId, string email, Guid sessionId)
+    public static string GenerateToken(Guid accountId, string email, Guid sessionId)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.UTF8.GetBytes(_jwtSecret);
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new System.Security.Claims.ClaimsIdentity(new[]
+            Subject = new ClaimsIdentity(new[]
             {
-            new Claim("accountId", accountId.ToString()),
-            new Claim("email", email),
-            new Claim("sessionId", sessionId.ToString())
-        }),
+                new Claim("accountId", accountId.ToString()),
+                new Claim("email", email),
+                new Claim("sessionId", sessionId.ToString())
+            }),
             Expires = DateTime.UtcNow.AddHours(2),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
         };
@@ -37,7 +30,7 @@ public class JwtService
         return tokenHandler.WriteToken(token);
     }
 
-    public (string? accountId, string? sessionId) ValidateToken(string token)
+    public static (string? accountId, string? sessionId) ValidateToken(string token)
     {
         try
         {

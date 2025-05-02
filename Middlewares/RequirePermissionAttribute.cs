@@ -20,14 +20,12 @@ public class RequirePermissionAttribute : Attribute, IAsyncAuthorizationFilter
 
         var permissionService = context.HttpContext.RequestServices.GetService<PermissionService>();
         var accountService = context.HttpContext.RequestServices.GetService<AccountService>();
-        var jwtService = context.HttpContext.RequestServices.GetService<JwtService>();
 
-        if (permissionService == null || accountService == null || jwtService == null)
+        if (permissionService == null || accountService == null)
         {
             var missingServices = new List<string>();
             if (permissionService == null) missingServices.Add(nameof(PermissionService));
             if (accountService == null) missingServices.Add(nameof(AccountService));
-            if (jwtService == null) missingServices.Add(nameof(JwtService));
 
             LoggerUtil.Log(
                 LoggerUtil.LogTag.RequirePermissionAttribute,
@@ -58,7 +56,7 @@ public class RequirePermissionAttribute : Attribute, IAsyncAuthorizationFilter
                 var token = authHeader.Replace("Bearer ", "").Trim();
                 LoggerUtil.Log(LoggerUtil.LogTag.RequirePermissionAttribute, $"Token extraído: {token}", "Token");
 
-                var (accountIdFromToken, sessionId) = jwtService.ValidateToken(token);
+                var (accountIdFromToken, sessionId) = JwtService.ValidateToken(token);
                 accountIdStr = accountIdFromToken;
 
                 if (!string.IsNullOrEmpty(accountIdStr))

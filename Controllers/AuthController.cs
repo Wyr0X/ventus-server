@@ -17,20 +17,17 @@ namespace VentusServer.Controllers
     public class AuthController : ControllerBase
     {
         private readonly AccountService _accountService;
-        private readonly JwtService _jwtService;
         private readonly PasswordService _passwordService;
         private readonly WebSocketServerController _webSocketServerController;
         private readonly RoleService _roleService;
 
         public AuthController(
             AccountService accountService,
-            JwtService jwtService,
             PasswordService passwordService,
             WebSocketServerController webSocketServerController,
             RoleService roleService)
         {
             _accountService = accountService;
-            _jwtService = jwtService;
             _passwordService = passwordService;
             _webSocketServerController = webSocketServerController;
             _roleService = roleService;
@@ -61,7 +58,7 @@ namespace VentusServer.Controllers
                 LoggerUtil.Log(LoggerUtil.LogTag.AuthController, $"Iniciando proceso de autenticación para 4: {request.Email}");
 
                 var sessionId = Guid.NewGuid();
-                var token = _jwtService.GenerateToken(account.AccountId, account.Email, sessionId);
+                var token = JwtService.GenerateToken(account.AccountId, account.Email, sessionId);
 
 
                 var messageToClient = "";
@@ -125,7 +122,7 @@ namespace VentusServer.Controllers
             LoggerUtil.Log(LoggerUtil.LogTag.AuthController, $"Usuario registrado con éxito: {request.Email}");
             var sessionId = Guid.NewGuid();
 
-            var token = _jwtService.GenerateToken(accountId, request.Email, sessionId);
+            var token = JwtService.GenerateToken(accountId, request.Email, sessionId);
             _ = await _accountService.UpdateSessionId(accountId, sessionId);
 
             return Ok(new { message = "Registro exitoso. Ahora puedes conectarte.", token });
@@ -155,7 +152,7 @@ namespace VentusServer.Controllers
                     return Unauthorized(new { message = "Token no encontrado" });
                 }
 
-                var (validateAccountId, sessionIdStr) = _jwtService.ValidateToken(token);
+                var (validateAccountId, sessionIdStr) = JwtService.ValidateToken(token);
                 if (validateAccountId == null)
                 {
                     return Unauthorized(new { message = "Error al parsear accountId" });
@@ -214,7 +211,7 @@ namespace VentusServer.Controllers
                     return Unauthorized(new { message = "Token no encontrado" });
                 }
 
-                var (accountIdStr, sessionIdStr) = _jwtService.ValidateToken(token);
+                var (accountIdStr, sessionIdStr) = JwtService.ValidateToken(token);
                 if (!Guid.TryParse(accountIdStr, out Guid accountId))
                 {
                     return BadRequest(new { message = "Error al obtener el accountId" });

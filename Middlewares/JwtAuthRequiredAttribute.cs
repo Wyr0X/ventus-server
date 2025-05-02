@@ -12,16 +12,10 @@ namespace VentusServer.Auth
         {
             Console.WriteLine("[JwtAuthRequired] Middleware iniciado.");
 
-            var jwtService = context.HttpContext.RequestServices.GetService<JwtService>();
+
             var authorizationHeader = context.HttpContext.Request.Headers["Authorization"].ToString();
 
 
-            if (jwtService == null)
-            {
-                Console.WriteLine("[JwtAuthRequired] ERROR: JwtService no está disponible.");
-                context.Result = new UnauthorizedObjectResult("Autenticación requerida.");
-                return;
-            }
 
             if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer "))
             {
@@ -33,7 +27,7 @@ namespace VentusServer.Auth
             var token = authorizationHeader.Replace("Bearer ", "").Trim();
             Console.WriteLine($"[JwtAuthRequired] Token extraído: {token}");
 
-            var (accountId, sessionId) = jwtService.ValidateToken(token); // Verificamos el token
+            var (accountId, sessionId) = JwtService.ValidateToken(token); // Verificamos el token
             Console.WriteLine($"[JwtAuthRequired] UserId obtenido del token: {accountId}");
 
             if (string.IsNullOrEmpty(accountId))
@@ -44,7 +38,7 @@ namespace VentusServer.Auth
             }
 
             context.HttpContext.Items["AccountId"] = accountId;
-            context.HttpContext.Items["SessionId"] = sessionId; 
+            context.HttpContext.Items["SessionId"] = sessionId;
 
             Console.WriteLine($"[JwtAuthRequired] AccountId almacenado en HttpContext: {accountId}");
 

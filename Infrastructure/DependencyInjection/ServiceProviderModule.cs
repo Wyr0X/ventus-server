@@ -27,7 +27,6 @@ namespace VentusServer
             RegisterHandlers(services);
             RegisterManagers(services);
             RegisterServices(services);
-            RegisterModels(services);
             RegisterControllers(services);
             var provider = services.BuildServiceProvider();
             provider.GetRequiredService<SessionTasks>();
@@ -39,13 +38,10 @@ namespace VentusServer
         {
             services
                 .AddSingleton<PostgresDbService>()
-                .AddSingleton<FirebaseService>(sp => new FirebaseService(firebaseCredentialsPath))
-                .AddSingleton<JwtService>()
                 .AddSingleton<GameServer>()
                 .AddSingleton<DatabaseInitializer>()
                 .AddSingleton<ConcurrentDictionary<string, WebSocket>>()
                 .AddSingleton<MessageSender>()
-                .AddSingleton<RequirePermissionAttribute>()
                 .AddSingleton<TaskScheduler>()
                 .AddSingleton<SystemHandler>()
                 .AddSingleton<SessionTasks>()
@@ -133,19 +129,6 @@ namespace VentusServer
                 .AddSingleton<SpellService>()
                 .AddSingleton<PlayerSpellsService>()
                 .AddSingleton<PlayerStatsService>();
-
-        }
-
-        private static void RegisterModels(IServiceCollection services)
-        {
-            services
-                .AddSingleton<PlayerModel>()
-                .AddSingleton<PlayerLocationModel>()
-                .AddSingleton<MapModel>()
-                .AddSingleton<WorldModel>()
-                .AddSingleton<PlayerInventoryModel>()
-                .AddSingleton<PlayerInventoryItemModel>()
-                .AddSingleton<RoleModel>();
 
         }
 
