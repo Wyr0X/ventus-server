@@ -16,18 +16,18 @@ namespace VentusServer.Controllers
 
     public class AuthController : ControllerBase
     {
-        private readonly AccountService _accountService;
+        private readonly IAccountService _IAccountService;
         private readonly PasswordService _passwordService;
         private readonly WebSocketServerController _webSocketServerController;
         private readonly RoleService _roleService;
 
         public AuthController(
-            AccountService accountService,
+            IAccountService IAccountService,
             PasswordService passwordService,
             WebSocketServerController webSocketServerController,
             RoleService roleService)
         {
-            _accountService = accountService;
+            _IAccountService = IAccountService;
             _passwordService = passwordService;
             _webSocketServerController = webSocketServerController;
             _roleService = roleService;
@@ -40,7 +40,7 @@ namespace VentusServer.Controllers
             try
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.AuthController, $"Iniciando proceso de autenticación para: {request.Email}");
-                var account = await _accountService.GetAccountByEmailAsync(request.Email);
+                var account = await _IAccountService.GetAccountByEmailAsync(request.Email);
                 LoggerUtil.Log(LoggerUtil.LogTag.AuthController, $"Iniciando proceso de autenticación para 2: {request.Email}");
 
                 if (account == null)
@@ -68,7 +68,7 @@ namespace VentusServer.Controllers
                     messageToClient = "Había otra sesión activa. Se cerró automáticamente para continuar con este inicio de sesión.";
                     await _webSocketServerController.RemoveConnectionByAccountId(account.AccountId);
                 }
-                _ = await _accountService.UpdateSessionId(account.AccountId, sessionId);
+                _ = await _IAccountService.UpdateSessionId(account.AccountId, sessionId);
                 LoggerUtil.Log(LoggerUtil.LogTag.AuthController, "Usuario autenticado correctamente.");
                 return Ok(new { login = true, token, message = messageToClient });
             }
@@ -89,7 +89,7 @@ namespace VentusServer.Controllers
 
             LoggerUtil.Log(LoggerUtil.LogTag.AuthController, $"Iniciando proceso de registro para: {request.Email}");
 
-            var existingUser = await _accountService.GetAccountByEmailAsync(request.Email);
+            var existingUser = await _IAccountService.GetAccountByEmailAsync(request.Email);
             if (existingUser != null)
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.AuthController, "Error: Correo ya en uso.");
@@ -118,12 +118,12 @@ namespace VentusServer.Controllers
                 RoleId = userRole.RoleId
             };
 
-            await _accountService.CreateAccountAsync(newAccount);
+            await _IAccountService.CreateAccountAsync(newAccount);
             LoggerUtil.Log(LoggerUtil.LogTag.AuthController, $"Usuario registrado con éxito: {request.Email}");
             var sessionId = Guid.NewGuid();
 
             var token = JwtService.GenerateToken(accountId, request.Email, sessionId);
-            _ = await _accountService.UpdateSessionId(accountId, sessionId);
+            _ = await _IAccountService.UpdateSessionId(accountId, sessionId);
 
             return Ok(new { message = "Registro exitoso. Ahora puedes conectarte.", token });
         }
@@ -168,7 +168,7 @@ namespace VentusServer.Controllers
 
                 }
 
-                var account = await _accountService.GetOrCreateAccountInCacheAsync(validatedAccountId);
+                var account = await _IAccountService.GetOrCreateAccountInCacheAsync(validatedAccountId);
                 if (account != null && account.SessionId != sessionId)
                 {
                     LoggerUtil.Log(LoggerUtil.LogTag.AuthController, "SessionId no corresponde a la sesión actual.");
@@ -222,7 +222,7 @@ namespace VentusServer.Controllers
                     return BadRequest(new { message = "Error al obtener el sessionId" });
 
                 }
-                AccountModel? account = await _accountService.GetOrLoadAsync(accountId);
+                AccountModel? account = await _IAccountService.GetOrCreateAccountInCacheAsync(accountId);
 
                 if (account == null)
                 {

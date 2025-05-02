@@ -8,19 +8,19 @@ public class SessionTasks
     TaskScheduler _taskScheduler;
     PlayerService _playerService;
     PlayerLocationService _playerLocationService;
-    AccountService _accountService;
+    IAccountService _IAccountService;
 
     public SessionTasks(
         TaskScheduler taskScheduler,
         PlayerService playerService,
         PlayerLocationService playerLocationService,
-        AccountService accountService
+        IAccountService IAccountService
     )
     {
         _taskScheduler = taskScheduler;
         _playerService = playerService;
         _playerLocationService = playerLocationService;
-        _accountService = accountService;
+        _IAccountService = IAccountService;
 
         taskScheduler.Subscribe(ClientPacket.PlayerJoin, this.HandlePlayerJoin);
         Log(LogTag.SessionTasks, "Subscribed to PlayerJoin message");
@@ -43,7 +43,7 @@ public class SessionTasks
                 IncludeSpells = true,
             }
         );
-        AccountModel? accountModel = await _accountService.GetOrLoadAsync(messagePair.AccountId);
+        AccountModel? accountModel = await _IAccountService.GetOrCreateAccountInCacheAsync(messagePair.AccountId);
 
         if (accountModel == null)
         {

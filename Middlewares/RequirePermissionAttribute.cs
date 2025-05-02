@@ -19,13 +19,13 @@ public class RequirePermissionAttribute : Attribute, IAsyncAuthorizationFilter
         LoggerUtil.Log(LoggerUtil.LogTag.RequirePermissionAttribute, "Iniciando verificación de permisos...", "Start");
 
         var permissionService = context.HttpContext.RequestServices.GetService<PermissionService>();
-        var accountService = context.HttpContext.RequestServices.GetService<AccountService>();
+        var IAccountService = context.HttpContext.RequestServices.GetService<IAccountService>();
 
-        if (permissionService == null || accountService == null)
+        if (permissionService == null || IAccountService == null)
         {
             var missingServices = new List<string>();
             if (permissionService == null) missingServices.Add(nameof(PermissionService));
-            if (accountService == null) missingServices.Add(nameof(AccountService));
+            if (IAccountService == null) missingServices.Add(nameof(IAccountService));
 
             LoggerUtil.Log(
                 LoggerUtil.LogTag.RequirePermissionAttribute,
@@ -92,7 +92,7 @@ public class RequirePermissionAttribute : Attribute, IAsyncAuthorizationFilter
 
         LoggerUtil.Log(LoggerUtil.LogTag.RequirePermissionAttribute, $"Verificando cuenta con ID {accountId}.", "Check");
 
-        var account = await accountService.GetOrCreateAccountInCacheAsync(accountId);
+        var account = await IAccountService.GetOrCreateAccountInCacheAsync(accountId);
         if (account == null)
         {
             LoggerUtil.Log(LoggerUtil.LogTag.RequirePermissionAttribute, $"Cuenta no encontrada en caché para ID {accountId}.", "Check", isError: true);

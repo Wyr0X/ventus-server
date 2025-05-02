@@ -12,12 +12,12 @@ namespace VentusServer.Controllers.Admin
     public class AdminPlayersController : ControllerBase
     {
         private readonly PlayerService _playerService;
-        private readonly AccountService _accountService;  // Inyectamos el servicio de cuentas
+        private readonly IAccountService _IAccountService;  // Inyectamos el servicio de cuentas
 
-        public AdminPlayersController(PlayerService playerService, AccountService accountService)
+        public AdminPlayersController(PlayerService playerService, IAccountService IAccountService)
         {
             _playerService = playerService;
-            _accountService = accountService;  // Inicializamos el servicio de cuentas
+            _IAccountService = IAccountService;  // Inicializamos el servicio de cuentas
         }
 
         // Obtener todos los jugadores

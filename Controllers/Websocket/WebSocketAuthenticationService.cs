@@ -4,12 +4,12 @@ using VentusServer.Services;
 public class WebSocketAuthenticationService
 {
 
-    private readonly AccountService _accountService;
+    private readonly IAccountService _IAccountService;
 
 
-    public WebSocketAuthenticationService(AccountService accountService)
+    public WebSocketAuthenticationService(IAccountService IAccountService)
     {
-        _accountService = accountService;
+        _IAccountService = IAccountService;
     }
 
     public bool TryAuthenticate(string token, out Guid accountId)

@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Game.Models;
 using VentusServer.DataAccess.Interfaces;
 
 namespace VentusServer.Services
@@ -14,22 +10,27 @@ namespace VentusServer.Services
         private readonly PlayerSpellsService _playerSpellsService;
         private readonly PlayerLocationService _playerLocationService;
         private readonly Dictionary<string, int> _nameToIdCache = new();
-        private readonly AccountService _accountService;
-        public PlayerService(IPlayerDAO playerDAO, PlayerLocationService playerLocationService,
-            PlayerStatsService playerStatsService, PlayerInventoryService playerInventoryService,
-             AccountService accountService, PlayerSpellsService playerSpellsService)
+        private readonly IAccountService _IAccountService;
+
+        public PlayerService(
+            IPlayerDAO playerDAO,
+            PlayerLocationService playerLocationService,
+            PlayerStatsService playerStatsService,
+            PlayerInventoryService playerInventoryService,
+            IAccountService IAccountService,
+            PlayerSpellsService playerSpellsService)
         {
             _playerDAO = playerDAO;
             _playerLocationService = playerLocationService;
             _playerInventoryService = playerInventoryService;
             _playerStatsService = playerStatsService;
-            _accountService = accountService;
+            _IAccountService = IAccountService;
             _playerSpellsService = playerSpellsService;
         }
 
-        // =============================
-        // CRUD BÁSICO
-        // =============================
+        // ============================= 
+        // CRUD BÁSICO 
+        // ============================= 
 
         public async Task<PlayerModel?> GetPlayerByIdAsync(int playerId, PlayerModuleOptions? options = null)
         {
@@ -43,7 +44,6 @@ namespace VentusServer.Services
 
             options ??= new PlayerModuleOptions();
             await LoadPlayerModulesAsync(player, options);
-
             return player;
         }
 
@@ -59,9 +59,36 @@ namespace VentusServer.Services
                     return;
                 }
 
+                // Guardar el jugador
                 await _playerDAO.SavePlayerAsync(player);
                 _nameToIdCache[player.Name] = player.Id;
                 LoggerUtil.Log(LoggerUtil.LogTag.PlayerService, "✅ Jugador guardado correctamente.");
+
+                // Verificar y guardar los módulos (stats, inventory, spells, location)
+                if (player.Stats != null)
+                {
+                    LoggerUtil.Log(LoggerUtil.LogTag.PlayerService, "📊 Guardando estadísticas del jugador...");
+                    await _playerStatsService.SavePlayerStatsAsync(player.Stats);
+                }
+
+                if (player.Inventory != null)
+                {
+                    LoggerUtil.Log(LoggerUtil.LogTag.PlayerService, "🎒 Guardando inventario del jugador...");
+                    await _playerInventoryService.SaveInventoryAsync(player.Inventory);
+                }
+
+                if (player.PlayerSpells != null)
+                {
+                    LoggerUtil.Log(LoggerUtil.LogTag.PlayerService, "✨ Guardando hechizos del jugador...");
+                    await _playerSpellsService.UpsertSpellAsync(player.PlayerSpells);
+                }
+
+                if (player.Location != null)
+                {
+                    LoggerUtil.Log(LoggerUtil.LogTag.PlayerService, "📍 Guardando ubicación del jugador...");
+                    await _playerLocationService.SavePlayerLocationAsync(player.Location);
+                }
+
             }
             catch (Exception ex)
             {
@@ -69,13 +96,15 @@ namespace VentusServer.Services
             }
         }
 
+
         public async Task<bool> DeletePlayerAsync(int playerId)
         {
             try
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.PlayerService, $"🗑️ Eliminando jugador con ID: {playerId}");
                 var deleted = await _playerDAO.DeletePlayerAsync(playerId);
-                if (deleted) LoggerUtil.Log(LoggerUtil.LogTag.PlayerService, "✅ Jugador eliminado correctamente.");
+                if (deleted)
+                    LoggerUtil.Log(LoggerUtil.LogTag.PlayerService, "✅ Jugador eliminado correctamente.");
                 return deleted;
             }
             catch (Exception ex)
@@ -98,10 +127,21 @@ namespace VentusServer.Services
                 return false;
             }
         }
+        public async Task<AccountModel?> GetAccountByPlayerIdAsync(int playerId)
+        {
+            LoggerUtil.Log(LoggerUtil.LogTag.PlayerService, $"🔍 Obteniendo cuenta asociada al jugador ID: {playerId}");
+            var player = await GetPlayerByIdAsync(playerId);
+            if (player == null)
+            {
+                LoggerUtil.Log(LoggerUtil.LogTag.PlayerService, $"⚠️ No se pudo obtener la cuenta porque el jugador no existe.");
+                return null;
+            }
 
-        // =============================
-        // CREACIÓN DE JUGADOR
-        // =============================
+            return await _IAccountService.GetOrCreateAccountInCacheAsync(player.AccountId);
+        }
+        // ============================= 
+        // CREACIÓN DE JUGADOR 
+        // ============================= 
 
         public async Task<PlayerModel?> CreatePlayer(Guid accountId, CreatePlayerDTO createPlayerDTO)
         {
@@ -116,15 +156,9 @@ namespace VentusServer.Services
                 }
 
                 var player = await _playerDAO.CreatePlayerAsync(accountId, createPlayerDTO);
-                var location = await _playerLocationService.CreateDefaultPlayerLocation(player);
-                var stats = await _playerStatsService.CreateDefaultPlayerStatsAsync(player.Id, createPlayerDTO);
-                var inventory = await _playerInventoryService.CreateDefaultInventory(player);
-                var spells = await _playerSpellsService.CreateDefaultSpells(player);
-                player.Location = location;
-                player.Stats = stats;
-                player.PlayerSpells = spells;
-                // player.Inventory = inventory;
-                LoggerUtil.Log(LoggerUtil.LogTag.PlayerService, $"✅ Jugador '{player.Name}' creado exitosamente con ID {player.Location}.");
+                await InitializePlayerModules(player, createPlayerDTO);
+
+                LoggerUtil.Log(LoggerUtil.LogTag.PlayerService, $"✅ Jugador '{player.Name}' creado exitosamente con ID {player.Id}.");
                 return player;
             }
             catch (Exception ex)
@@ -134,20 +168,27 @@ namespace VentusServer.Services
             }
         }
 
-        // =============================
-        // CONSULTAS
-        // =============================
+        private async Task InitializePlayerModules(PlayerModel player, CreatePlayerDTO createPlayerDTO)
+        {
+            var location = await _playerLocationService.CreateDefaultPlayerLocation(player);
+            var stats = await _playerStatsService.CreateDefaultPlayerStatsAsync(player.Id, createPlayerDTO);
+            var inventory = await _playerInventoryService.CreateDefaultInventory(player);
+            var spells = await _playerSpellsService.CreateDefaultSpells(player);
+
+            player.Location = location;
+            player.Stats = stats;
+            player.PlayerSpells = spells;
+            player.Inventory = inventory; // Si se utiliza más adelante, descomentar esta línea.
+        }
+
+        // ============================= 
+        // CONSULTAS 
+        // ============================= 
 
         public async Task<List<PlayerModel>> GetAllPlayers()
         {
             LoggerUtil.Log(LoggerUtil.LogTag.PlayerService, "📄 Obteniendo todos los jugadores...");
             return await _playerDAO.GetAllPlayersAsync();
-        }
-
-        public async Task<List<PlayerModel>> GetPlayerWithCompleteInfo()
-        {
-            LoggerUtil.Log(LoggerUtil.LogTag.PlayerService, "📄 Obteniendo todos los jugadores con información completa (simple)...");
-            return await _playerDAO.GetAllPlayersAsync(); // Puede ajustarse si se necesita info extra
         }
 
         public async Task<List<PlayerModel>> GetPlayersByAccountId(Guid accountId, PlayerModuleOptions? options = null)
@@ -192,22 +233,9 @@ namespace VentusServer.Services
             return player;
         }
 
-        public async Task<AccountModel?> GetAccountByPlayerIdAsync(int playerId)
-        {
-            LoggerUtil.Log(LoggerUtil.LogTag.PlayerService, $"🔍 Obteniendo cuenta asociada al jugador ID: {playerId}");
-            var player = await GetPlayerByIdAsync(playerId);
-            if (player == null)
-            {
-                LoggerUtil.Log(LoggerUtil.LogTag.PlayerService, $"⚠️ No se pudo obtener la cuenta porque el jugador no existe.");
-                return null;
-            }
-
-            return await _accountService.GetOrCreateAccountInCacheAsync(player.AccountId);
-        }
-
-        // =============================
-        // CACHE
-        // =============================
+        // ============================= 
+        // CACHE 
+        // ============================= 
 
         public async Task<PlayerModel?> GetOrCreatePlayerInCacheAsync(int playerId)
         {
@@ -265,56 +293,38 @@ namespace VentusServer.Services
 
             if (options.IncludeStats)
             {
-                LoggerUtil.Log(LoggerUtil.LogTag.PlayerService, $"📊 Cargando estadísticas para el jugador {player.Name} (ID: {player.Id})...");
-                tasks.Add(_playerStatsService.LoadPlayerStatsInModel(player)
-                    .ContinueWith(task =>
-                    {
-                        if (task.IsCompletedSuccessfully)
-                            LoggerUtil.Log(LoggerUtil.LogTag.PlayerService, $"✅ Estadísticas cargadas para {player.Name}.");
-                        else
-                            LoggerUtil.Log(LoggerUtil.LogTag.PlayerService, $"❌ Error al cargar estadísticas para {player.Name}: {task.Exception?.Message}");
-                    }));
+                tasks.Add(LoadModuleWithLogging(_playerStatsService.LoadPlayerStatsInModel(player), "Estadísticas", player));
             }
 
             if (options.IncludeInventory)
             {
-                LoggerUtil.Log(LoggerUtil.LogTag.PlayerService, $"🎒 Cargando inventario para el jugador {player.Name} (ID: {player.Id})...");
-                tasks.Add(_playerInventoryService.LoadPlayerInventoryInModule(player)
-                    .ContinueWith(task =>
-                    {
-                        if (task.IsCompletedSuccessfully)
-                            LoggerUtil.Log(LoggerUtil.LogTag.PlayerService, $"✅ Inventario cargado para {player.Name}.");
-                        else
-                            LoggerUtil.Log(LoggerUtil.LogTag.PlayerService, $"❌ Error al cargar inventario para {player.Name}: {task.Exception?.Message}");
-                    }));
+                tasks.Add(LoadModuleWithLogging(_playerInventoryService.LoadPlayerInventoryInModule(player), "Inventario", player));
             }
 
             if (options.IncludeLocation)
             {
-                LoggerUtil.Log(LoggerUtil.LogTag.PlayerService, $"📍 Cargando ubicación para el jugador {player.Name} (ID: {player.Id})...");
-                tasks.Add(_playerLocationService.LoadPlayerLocationInModel(player)
-                    .ContinueWith(task =>
-                    {
-                        if (task.IsCompletedSuccessfully)
-                            LoggerUtil.Log(LoggerUtil.LogTag.PlayerService, $"✅ Ubicación cargada para {player.Name}.");
-                        else
-                            LoggerUtil.Log(LoggerUtil.LogTag.PlayerService, $"❌ Error al cargar ubicación para {player.Name}: {task.Exception?.Message}");
-                    }));
+                tasks.Add(LoadModuleWithLogging(_playerLocationService.LoadPlayerLocationInModel(player), "Ubicación", player));
             }
+
             if (options.IncludeSpells)
             {
-                LoggerUtil.Log(LoggerUtil.LogTag.PlayerService, $"📍 Cargando hechizos para el jugador {player.Name} (ID: {player.Id})...");
-                tasks.Add(_playerSpellsService.LoadPlayerSpellsInModel(player)
-                    .ContinueWith(task =>
-                    {
-                        if (task.IsCompletedSuccessfully)
-                            LoggerUtil.Log(LoggerUtil.LogTag.PlayerService, $"✅ Hechizos cargada para {player.Name}.");
-                        else
-                            LoggerUtil.Log(LoggerUtil.LogTag.PlayerService, $"❌ Error al cargar los hechizos para {player.Name}: {task.Exception?.Message}");
-                    }));
+                tasks.Add(LoadModuleWithLogging(_playerSpellsService.LoadPlayerSpellsInModel(player), "Hechizos", player));
             }
+
             await Task.WhenAll(tasks);
         }
 
+        private async Task LoadModuleWithLogging(Task loadTask, string moduleName, PlayerModel player)
+        {
+            try
+            {
+                await loadTask;
+                LoggerUtil.Log(LoggerUtil.LogTag.PlayerService, $"✅ {moduleName} cargado correctamente para el jugador {player.Name}");
+            }
+            catch (Exception ex)
+            {
+                LoggerUtil.Log(LoggerUtil.LogTag.PlayerService, $"❌ Error al cargar {moduleName} para el jugador {player.Name}: {ex.Message}");
+            }
+        }
     }
 }

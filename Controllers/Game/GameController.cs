@@ -11,12 +11,12 @@ using VentusServer.Services;
 [JwtAuthRequired]
 public class GameController : ControllerBase
 {
-    private readonly AccountService _accountService;
+    private readonly IAccountService _IAccountService;
     private readonly PlayerService _playerService;
 
-    public GameController(AccountService accountService, PlayerService playerService)
+    public GameController(IAccountService IAccountService, PlayerService playerService)
     {
-        _accountService = accountService;
+        _IAccountService = IAccountService;
         _playerService = playerService;
     }
 
@@ -34,7 +34,7 @@ public class GameController : ControllerBase
 
         Console.ForegroundColor = ConsoleColor.Blue;
 
-        var account = await _accountService.GetOrCreateAccountInCacheAsync(accountId);
+        var account = await _IAccountService.GetOrCreateAccountInCacheAsync(accountId);
         if (account == null)
         {
             Console.ForegroundColor = ConsoleColor.Yellow;

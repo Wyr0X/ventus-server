@@ -9,14 +9,14 @@ public interface IGameServiceMediator
 public class GameServiceMediator : IGameServiceMediator
 {
     private readonly PlayerService _playerService;
-    private readonly AccountService _accountService;
+    private readonly IAccountService _IAccountService;
     private readonly WorldService _worldService;
 
-    public GameServiceMediator(PlayerService playerService, AccountService accountService,
+    public GameServiceMediator(PlayerService playerService, IAccountService IAccountService,
     WorldService worldService)
     {
         _playerService = playerService;
-        _accountService = accountService;
+        _IAccountService = IAccountService;
         _worldService = worldService;
     }
 

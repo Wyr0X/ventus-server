@@ -121,7 +121,7 @@ public class PlayerInventoryService
         return true;
     }
 
-    public async Task UpdateInventory(PlayerInventoryModel inventory)
+    public async Task SaveInventoryAsync(PlayerInventoryModel inventory)
     {
         if (inventory == null)
         {

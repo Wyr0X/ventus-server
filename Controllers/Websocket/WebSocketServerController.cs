@@ -15,11 +15,11 @@ public class WebSocketServerController
     public readonly OutgoingMessageQueue _outgoingQueue;
 
 
-    public WebSocketServerController(TaskScheduler taskScheduler, AccountService accountService)
+    public WebSocketServerController(TaskScheduler taskScheduler, IAccountService IAccountService)
     {
         _taskScheduler = taskScheduler;
         _messageQueue = new ConcurrentQueue<UserMessagePair>();
-        _authService = new WebSocketAuthenticationService(accountService);
+        _authService = new WebSocketAuthenticationService(IAccountService);
         _connectionManager = new WebSocketConnectionManager();
         _outgoingQueue = new OutgoingMessageQueue(); // Initialize the _outgoingQueue field
     }

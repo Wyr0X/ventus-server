@@ -1,12 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Threading.Tasks;
 using Dapper;
 using VentusServer.DataAccess.Interfaces;
-using VentusServer.Models;
 using VentusServer.DataAccess.Mappers;
-using static LoggerUtil;
 using VentusServer.DataAccess.Queries;
 
 namespace VentusServer.DataAccess.Dapper

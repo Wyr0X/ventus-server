@@ -60,7 +60,7 @@ namespace VentusServer.Services
             }
 
             inventory.Gold -= totalCost;
-            await _inventoryService.UpdateInventory(inventory);
+            await _inventoryService.SaveInventoryAsync(inventory);
 
             LoggerUtil.Log(LoggerUtil.LogTag.StoreService, $"Compra completada. Ítem {itemId} x{quantity} para jugador {player.Id}.", "BuyItemAsync");
             return BuyItemResult.SuccessBuild("Compra realizada correctamente.");
@@ -167,7 +167,7 @@ namespace VentusServer.Services
                 }
             }
 
-            var spellInventory = await _playerSpellInventoryService.GetPlayerSpellInventoryByPlayerIdAsync(player.Id);
+            var spellInventory = await _playerSpellInventoryService.GetPlayerSpellsByIdAsync(player.Id);
             if (spellInventory == null)
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.StoreService, $"Creando nuevo inventario de hechizos para jugador {player.Id}", "BuyCartAsync");
@@ -219,8 +219,8 @@ namespace VentusServer.Services
                 }
             }
 
-            await _inventoryService.UpdateInventory(inventory);
-            await _playerSpellInventoryService.UpsertInventoryAsync(spellInventory);
+            await _inventoryService.SaveInventoryAsync(inventory);
+            await _playerSpellInventoryService.UpsertSpellAsync(spellInventory);
 
             LoggerUtil.Log(LoggerUtil.LogTag.StoreService, $"Carrito comprado exitosamente para jugador {player.Id}", "BuyCartAsync");
             return BuyResult.CreateSuccess();

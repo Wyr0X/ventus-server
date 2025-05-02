@@ -40,13 +40,10 @@ namespace VentusServer
                 .AddSingleton<PostgresDbService>()
                 .AddSingleton<GameServer>()
                 .AddSingleton<DatabaseInitializer>()
-                .AddSingleton<ConcurrentDictionary<string, WebSocket>>()
-                .AddSingleton<MessageSender>()
                 .AddSingleton<TaskScheduler>()
                 .AddSingleton<SystemHandler>()
                 .AddSingleton<SessionTasks>()
                 .AddSingleton<GameServiceMediator>()
-                .AddSingleton(provider => new Lazy<MessageSender>(provider.GetRequiredService<MessageSender>))
                 .AddSingleton<IDbConnectionFactory>(sp =>
                     new NpgsqlConnectionFactory(
                         postgresConnectionString
@@ -119,7 +116,7 @@ namespace VentusServer
                 .AddSingleton<MapService>()
                 .AddSingleton<PlayerService>()
                 .AddSingleton<PlayerLocationService>()
-                .AddSingleton<AccountService>()
+                .AddSingleton<IAccountService, AccountService>()
                 .AddSingleton<ResponseService>()
                 .AddSingleton<RoleService>()
                 .AddSingleton<PermissionService>()

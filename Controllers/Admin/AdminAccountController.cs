@@ -14,12 +14,12 @@ namespace VentusServer.Controllers.Admin
     [RequirePermission]
     public class AdminAccountController : ControllerBase
     {
-        private readonly AccountService _accountService;
+        private readonly IAccountService _IAccountService;
         private readonly RoleService _roleService;
 
-        public AdminAccountController(AccountService accountService, RoleService roleService)
+        public AdminAccountController(IAccountService IAccountService, RoleService roleService)
         {
-            _accountService = accountService;
+            _IAccountService = IAccountService;
             _roleService = roleService;
         }
 
@@ -28,7 +28,7 @@ namespace VentusServer.Controllers.Admin
         {
             Log(LogTag.AdminAccountController, "Solicitando lista de todas las cuentas...");
 
-            var accounts = await _accountService.GetAllAccountsAsync();
+            var accounts = await _IAccountService.GetAllAccountsAsync();
 
             if (accounts == null || accounts.Count == 0)
             {
@@ -47,7 +47,7 @@ namespace VentusServer.Controllers.Admin
         {
             Log(LogTag.AdminAccountController, $"Intentando banear cuenta: {id}");
 
-            var account = await _accountService.GetOrCreateAccountInCacheAsync(id);
+            var account = await _IAccountService.GetOrCreateAccountInCacheAsync(id);
             if (account == null)
             {
                 Log(LogTag.AdminAccountController, $"Cuenta no encontrada: {id}", isError: true);
@@ -55,7 +55,7 @@ namespace VentusServer.Controllers.Admin
             }
 
             account.IsBanned = true;
-            await _accountService.SaveAccountAsync(account);
+            await _IAccountService.SaveAccountAsync(account);
 
             Log(LogTag.AdminAccountController, $"Cuenta baneada: {id}");
             return Ok("Cuenta baneada.");
@@ -66,7 +66,7 @@ namespace VentusServer.Controllers.Admin
         {
             Log(LogTag.AdminAccountController, $"Intentando desbanear cuenta: {id}");
 
-            var account = await _accountService.GetOrCreateAccountInCacheAsync(id);
+            var account = await _IAccountService.GetOrCreateAccountInCacheAsync(id);
             if (account == null)
             {
                 Log(LogTag.AdminAccountController, $"Cuenta no encontrada: {id}", isError: true);
@@ -74,7 +74,7 @@ namespace VentusServer.Controllers.Admin
             }
 
             account.IsBanned = false;
-            await _accountService.SaveAccountAsync(account);
+            await _IAccountService.SaveAccountAsync(account);
 
             Log(LogTag.AdminAccountController, $"Cuenta desbaneada: {id}");
             return Ok("Cuenta desbaneada.");
@@ -90,7 +90,7 @@ namespace VentusServer.Controllers.Admin
         {
             Log(LogTag.AdminAccountController, $"Intentando cambiar rol de cuenta {id} a '{request.RoleName}'");
 
-            var account = await _accountService.GetOrCreateAccountInCacheAsync(id);
+            var account = await _IAccountService.GetOrCreateAccountInCacheAsync(id);
             if (account == null)
             {
                 Log(LogTag.AdminAccountController, $"Cuenta no encontrada: {id}", isError: true);
@@ -105,7 +105,7 @@ namespace VentusServer.Controllers.Admin
             }
 
             account.RoleId = role.RoleId;
-            await _accountService.SaveAccountAsync(account);
+            await _IAccountService.SaveAccountAsync(account);
 
             Log(LogTag.AdminAccountController, $"Rol actualizado a '{role.DisplayName}' para cuenta {id}");
             return Ok($"Rol actualizado a '{role.DisplayName}'.");
@@ -129,7 +129,7 @@ namespace VentusServer.Controllers.Admin
             }
             Log(LogTag.AdminAccountController, $"Intentando actualizar cuenta {request.ToString()}...");
 
-            var account = await _accountService.GetOrCreateAccountInCacheAsync(id);
+            var account = await _IAccountService.GetOrCreateAccountInCacheAsync(id);
             if (account == null)
             {
                 Log(LogTag.AdminAccountController, $"Cuenta no encontrada: {id}", isError: true);
@@ -150,7 +150,7 @@ namespace VentusServer.Controllers.Admin
             Log(LogTag.AdminAccountController, $"Rol a cambiar ${role.RoleId}");
 
             account.RoleId = role.RoleId;
-            await _accountService.SaveAccountAsync(account);
+            await _IAccountService.SaveAccountAsync(account);
 
             Log(LogTag.AdminAccountController, $"Cuenta actualizada: {id}");
             return Ok("Cuenta actualizada correctamente.");

@@ -1,10 +1,6 @@
-using System;
 using System.Data;
-using System.Threading.Tasks;
 using Dapper;
 using VentusServer.DataAccess;
-using VentusServer.Models;
-using VentusServer.DataAccess.Interfaces;
 using VentusServer.DataAccess.Dapper;
 using VentusServer.DataAccess.Queries;
 using VentusServer.DataAccess.Mappers;
