@@ -42,7 +42,23 @@ namespace Game.Models
             }
             _maps.Add(map);
         }
+        /// <summary>
+        /// Añade múltiples mapas al mundo respetando el límite máximo.
+        /// </summary>
+        public void AddMaps(IEnumerable<MapModel> maps)
+        {
+            foreach (var map in maps)
+            {
+                if (_maps.Count >= MaxMaps)
+                    throw new InvalidOperationException("No se pueden agregar más mapas, se ha alcanzado el límite de mapas.");
 
+                if (map.WorldModel != null)
+                {
+                    map.WorldModel.Id = Id;
+                }
+                _maps.Add(map);
+            }
+        }
         /// <summary>
         /// Elimina un mapa del mundo por su ID.
         /// </summary>

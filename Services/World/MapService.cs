@@ -150,5 +150,27 @@ namespace VentusServer.Services
                 return null;
             }
         }
+        public async Task<IEnumerable<MapModel>> GetMapsByWorldIdAsync(int worldId)
+        {
+            try
+            {
+                LoggerUtil.Log(LoggerUtil.LogTag.MapService, $"Obteniendo mapas para el mundo con ID {worldId}...");
+                var maps = await _mapDAO.GetMapsByWorldIdAsync(worldId);
+
+                foreach (var map in maps)
+                {
+                    Set(map.Id, map); // Guarda cada mapa en la caché
+                }
+
+                LoggerUtil.Log(LoggerUtil.LogTag.MapService, $"Se obtuvieron {maps?.Count() ?? 0} mapas para el mundo con ID {worldId}.");
+                return maps;
+            }
+            catch (Exception ex)
+            {
+                LoggerUtil.Log(LoggerUtil.LogTag.MapService, $"Error al obtener mapas del mundo con ID {worldId}: {ex.Message}");
+                return new List<MapModel>();
+            }
+        }
+
     }
 }

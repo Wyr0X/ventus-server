@@ -40,8 +40,8 @@ namespace Game.Models
         /// </summary>
         public bool AddPlayer(int playerId, int playerLevel)
         {
-            if (playerLevel < MinLevel || !HasSpace())
-                return false;
+            // if (playerLevel < MinLevel || !HasSpace())
+            //     return false;
 
             return _playerIds.Add(playerId);
         }

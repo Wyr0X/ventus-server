@@ -37,5 +37,11 @@ namespace VentusServer.DataAccess.Queries
         public const string Delete = @"
             DELETE FROM maps
             WHERE id = @Id;";
+
+        public const string SelectByWorldId = @"
+            SELECT id, name, min_level, max_players, world_id
+            FROM maps
+            WHERE world_id = @WorldId;";
+
     }
 }

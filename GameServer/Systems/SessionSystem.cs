@@ -40,27 +40,29 @@ public class SessionSystem
         }
 
         // Intentar agregar al mundo y mapa
-        bool canSpawn = _gameServer.worldManager.AddPlayer(playerModel);
-        if (!canSpawn)
-        {
-            LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem,
-                $"Failed to spawn player {playerModel.Id} in world {loc.WorldId}, map {loc.MapId}");
-            return;
-        }
-        // Marcar estado y registrar en memoria
-        playerModel.isSpawned = true;
-        accountModel.ActivePlayerId = playerModel.Id;
-        _gameServer.PlayerModels[playerModel.Id] = playerModel;
+        _gameServer.worldManager.AddPlayer(playerModel, canSpawn =>
+     {
+         if (!canSpawn)
+         {
+             LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem,
+                 $"Failed to spawn player {playerModel.Id} in world {loc.WorldId}, map {loc.MapId}");
+             return;
+         }
 
-        PlayerSpawn playerJoin = new PlayerSpawn
-        {
-            PlayerId = playerModel.Id,
-        };
+         playerModel.isSpawned = true;
+         accountModel.ActivePlayerId = playerModel.Id;
+         _gameServer.PlayerModels[playerModel.Id] = playerModel;
 
-        _gameServer._webSocketServerController._outgoingQueue.Enqueue(accountModel.AccountId, playerJoin, ServerPacket.PlayerSpawn);
+         PlayerSpawn playerJoin = new PlayerSpawn
+         {
+             PlayerId = playerModel.Id,
+         };
 
-        LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem,
-            $"Player {playerModel.Id} spawned successfully in world {loc.WorldId}, map {loc.MapId}");
+         _gameServer._webSocketServerController._outgoingQueue.Enqueue(accountModel.AccountId, playerJoin, ServerPacket.PlayerSpawn);
+
+         LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem,
+             $"Player {playerModel.Id} spawned successfully in world {loc.WorldId}, map {loc.MapId}");
+     });
 
     }
 }

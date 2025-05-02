@@ -9,6 +9,6 @@ namespace VentusServer.DataAccess.Interfaces
         Task<MapModel?> CreateMapAsync(MapModel map);
         Task UpdateMapAsync(MapModel map);
         Task<bool> DeleteMapAsync(int id); // Cambiado a bool para indicar éxito o fracaso
-
+        Task<IEnumerable<MapModel>> GetMapsByWorldIdAsync(int worldId);
     }
 }

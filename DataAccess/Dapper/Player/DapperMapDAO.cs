@@ -102,5 +102,23 @@ namespace VentusServer.DataAccess.Dapper
 
             return rowsAffected > 0;
         }
+        public async Task<IEnumerable<MapModel>> GetMapsByWorldIdAsync(int worldId)
+        {
+            LoggerUtil.Log(LoggerUtil.LogTag.DapperMapDAO, $"Buscando mapas para WorldId: {worldId}");
+
+            using var connection = GetConnection();
+            var rows = await connection.QueryAsync(MapQueries.SelectByWorldId, new { WorldId = worldId });
+
+            var maps = MapMapper.MapRowsToMaps(rows);
+            var world = await _worldDAO.GetWorldByIdAsync(worldId);
+
+            foreach (var map in maps)
+            {
+                map.WorldModel = world;
+            }
+
+            LoggerUtil.Log(LoggerUtil.LogTag.DapperMapDAO, $"Total mapas encontrados para WorldId {worldId}: {maps.Count}");
+            return maps;
+        }
     }
 }

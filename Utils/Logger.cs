@@ -62,7 +62,7 @@ public static class LoggerUtil
         { LogTag.PlayerLocationService, (false, ConsoleColor.DarkBlue, false) },
         { LogTag.AccountService, (false, ConsoleColor.DarkBlue, false) },
         { LogTag.MapService, (false, ConsoleColor.DarkBlue, false) },
-        { LogTag.WorldService, (false, ConsoleColor.DarkBlue, false) },
+        { LogTag.WorldService, (true, ConsoleColor.DarkBlue, false) },
         { LogTag.AuthService, (false, ConsoleColor.DarkBlue, false) },
         { LogTag.RoleService, (false, ConsoleColor.DarkBlue, false) },
         { LogTag.StoreService, (false, ConsoleColor.DarkBlue, false) },

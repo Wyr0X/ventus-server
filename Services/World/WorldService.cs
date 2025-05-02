@@ -79,7 +79,13 @@ namespace VentusServer.Services
             try
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.WorldService, $"Obteniendo el mundo con ID {worldId}...");
-                return await _worldDAO.GetWorldByIdAsync(worldId);
+                List<MapModel> mapsOfWorld = (await _mapService.GetMapsByWorldIdAsync(worldId)).ToList();
+
+                WorldModel? worldModel = await _worldDAO.GetWorldByIdAsync(worldId);
+                if (worldModel == null) return null;
+                worldModel.AddMaps(mapsOfWorld);
+
+                return worldModel;
             }
             catch (Exception ex)
             {
