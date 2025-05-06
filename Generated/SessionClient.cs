@@ -24,7 +24,7 @@ public static partial class SessionClientReflection {
         string.Concat(
           "CiFnYW1lL3Nlc3Npb24vc2Vzc2lvbi5jbGllbnQucHJvdG8iHwoKUGxheWVy",
           "Sm9pbhIRCglwbGF5ZXJfaWQYASABKAUiHwoKUGxheWVyRXhpdBIRCglwbGF5",
-          "ZXJfaWQYASABKAliBnByb3RvMw=="));
+          "ZXJfaWQYASABKAViBnByb3RvMw=="));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
@@ -281,13 +281,13 @@ public sealed partial class PlayerExit : pb::IMessage<PlayerExit>
 
   /// <summary>Field number for the "player_id" field.</summary>
   public const int PlayerIdFieldNumber = 1;
-  private string playerId_ = "";
+  private int playerId_;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public string PlayerId {
+  public int PlayerId {
     get { return playerId_; }
     set {
-      playerId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      playerId_ = value;
     }
   }
 
@@ -314,7 +314,7 @@ public sealed partial class PlayerExit : pb::IMessage<PlayerExit>
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override int GetHashCode() {
     int hash = 1;
-    if (PlayerId.Length != 0) hash ^= PlayerId.GetHashCode();
+    if (PlayerId != 0) hash ^= PlayerId.GetHashCode();
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
     }
@@ -333,9 +333,9 @@ public sealed partial class PlayerExit : pb::IMessage<PlayerExit>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     output.WriteRawMessage(this);
   #else
-    if (PlayerId.Length != 0) {
-      output.WriteRawTag(10);
-      output.WriteString(PlayerId);
+    if (PlayerId != 0) {
+      output.WriteRawTag(8);
+      output.WriteInt32(PlayerId);
     }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
@@ -347,9 +347,9 @@ public sealed partial class PlayerExit : pb::IMessage<PlayerExit>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-    if (PlayerId.Length != 0) {
-      output.WriteRawTag(10);
-      output.WriteString(PlayerId);
+    if (PlayerId != 0) {
+      output.WriteRawTag(8);
+      output.WriteInt32(PlayerId);
     }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(ref output);
@@ -361,8 +361,8 @@ public sealed partial class PlayerExit : pb::IMessage<PlayerExit>
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public int CalculateSize() {
     int size = 0;
-    if (PlayerId.Length != 0) {
-      size += 1 + pb::CodedOutputStream.ComputeStringSize(PlayerId);
+    if (PlayerId != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeInt32Size(PlayerId);
     }
     if (_unknownFields != null) {
       size += _unknownFields.CalculateSize();
@@ -376,7 +376,7 @@ public sealed partial class PlayerExit : pb::IMessage<PlayerExit>
     if (other == null) {
       return;
     }
-    if (other.PlayerId.Length != 0) {
+    if (other.PlayerId != 0) {
       PlayerId = other.PlayerId;
     }
     _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
@@ -398,8 +398,8 @@ public sealed partial class PlayerExit : pb::IMessage<PlayerExit>
         default:
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
           break;
-        case 10: {
-          PlayerId = input.ReadString();
+        case 8: {
+          PlayerId = input.ReadInt32();
           break;
         }
       }
@@ -421,8 +421,8 @@ public sealed partial class PlayerExit : pb::IMessage<PlayerExit>
         default:
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
           break;
-        case 10: {
-          PlayerId = input.ReadString();
+        case 8: {
+          PlayerId = input.ReadInt32();
           break;
         }
       }

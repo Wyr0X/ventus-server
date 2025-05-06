@@ -41,7 +41,6 @@ namespace VentusServer
                 .AddSingleton<GameServer>()
                 .AddSingleton<DatabaseInitializer>()
                 .AddSingleton<TaskScheduler>()
-                .AddSingleton<SystemHandler>()
                 .AddSingleton<SessionTasks>()
                 .AddSingleton<GameServiceMediator>()
                 .AddSingleton<IDbConnectionFactory>(sp =>
@@ -68,7 +67,7 @@ namespace VentusServer
                     new DapperWorldDAO(sp.GetRequiredService<IDbConnectionFactory>())
                 )
                 .AddSingleton<IMapDAO>(sp =>
-                    new DapperMapDAO(sp.GetRequiredService<IDbConnectionFactory>(), sp.GetRequiredService<IWorldDAO>())
+                    new DapperMapDAO(sp.GetRequiredService<IDbConnectionFactory>())
                 )
 
                 .AddSingleton<IPlayerLocationDAO>(sp =>

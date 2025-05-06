@@ -9,11 +9,13 @@ public enum GameEventType
 public enum CustomGameEvent
 {
     PlayerSpawn,
+    PlayerExit,
     GetWorldData,
 }
 public class GameEvent
 {
-    public GameEventType Type { get; set; }
+    public GameEventType PacketType { get; set; }
+    public CustomGameEvent Type { get; set; }
     public object? Data { get; set; }
 }
 

@@ -20,10 +20,6 @@ namespace Game.Models
         private List<MapModel> _maps = new();
         public IReadOnlyList<MapModel> Maps => _maps;
 
-        // Jugadores que pueden aparecer en el mundo (históricos o conectados)
-        private readonly HashSet<int> _playerIds = new();
-        public IReadOnlyCollection<int> PlayerIds => _playerIds;
-
         // Jugadores activos/spawneados en el mundo
         private readonly HashSet<int> _spawnedPlayerIds = new();
         public IReadOnlyCollection<int> SpawnedPlayerIds => _spawnedPlayerIds;
@@ -36,10 +32,7 @@ namespace Game.Models
             if (_maps.Count >= MaxMaps)
                 throw new InvalidOperationException("No se pueden agregar más mapas, se ha alcanzado el límite de mapas.");
 
-            if (map.WorldModel != null)
-            {
-                map.WorldModel.Id = Id;
-            }
+
             _maps.Add(map);
         }
         /// <summary>
@@ -52,10 +45,7 @@ namespace Game.Models
                 if (_maps.Count >= MaxMaps)
                     throw new InvalidOperationException("No se pueden agregar más mapas, se ha alcanzado el límite de mapas.");
 
-                if (map.WorldModel != null)
-                {
-                    map.WorldModel.Id = Id;
-                }
+
                 _maps.Add(map);
             }
         }
@@ -79,7 +69,7 @@ namespace Game.Models
         /// <summary>
         /// Verifica si hay espacio disponible para nuevos jugadores en el mundo.
         /// </summary>
-        public bool HasSpace() => _playerIds.Count < MaxPlayers;
+        public bool HasSpace() => _spawnedPlayerIds.Count < MaxPlayers;
 
         /// <summary>
         /// Intenta añadir un jugador al mundo si cumple requisitos y hay espacio.
@@ -89,7 +79,7 @@ namespace Game.Models
             // if (!CanPlayerAccess(playerLevel) || !HasSpace())
             //     return false;
 
-            return _playerIds.Add(playerId);
+            return _spawnedPlayerIds.Add(playerId);
         }
 
         /// <summary>
@@ -97,8 +87,11 @@ namespace Game.Models
         /// </summary>
         public bool TrySpawnPlayer(int playerId)
         {
-            if (!_playerIds.Contains(playerId) || _spawnedPlayerIds.Count >= MaxPlayers)
+
+
+            if (_spawnedPlayerIds.Count >= MaxPlayers || _spawnedPlayerIds.Contains(playerId))
                 return false;
+
 
             return _spawnedPlayerIds.Add(playerId);
         }
@@ -108,9 +101,13 @@ namespace Game.Models
         /// </summary>
         public bool RemovePlayer(int playerId)
         {
-            bool removed = _playerIds.Remove(playerId);
             bool despawned = _spawnedPlayerIds.Remove(playerId);
-            return removed || despawned;
+            return despawned;
+        }
+        public bool unSpawnPlayer(int playerId)
+        {
+            bool despawned = _spawnedPlayerIds.Remove(playerId);
+            return despawned;
         }
 
         /// <summary>
@@ -119,13 +116,12 @@ namespace Game.Models
         public void ClearPlayers()
         {
             _spawnedPlayerIds.Clear();
-            _playerIds.Clear();
         }
 
         /// <summary>
         /// Número de players registrados en el mundo.
         /// </summary>
-        public int PlayerCount => _playerIds.Count;
+        public int PlayerCount => _spawnedPlayerIds.Count;
 
         /// <summary>
         /// Número de players spawneados actualmente.
@@ -134,5 +130,32 @@ namespace Game.Models
 
         public override string ToString()
             => $"World(Id={Id}, Name={Name}, Maps={_maps.Count}/{MaxMaps}, Players={PlayerCount}/{MaxPlayers}, Spawned={SpawnedCount}/{MaxPlayers})";
+        /// <summary>
+        /// Verifica si un jugador está registrado en este mundo.
+        /// </summary>
+        public bool ContainsPlayer(int playerId)
+        {
+            return _spawnedPlayerIds.Contains(playerId);
+        }
+        /// <summary>
+        /// Añade múltiples jugadores al mundo si cumplen los requisitos y hay espacio disponible.
+        /// </summary>
+        public bool AddPlayers(List<PlayerModel> players)
+        {
+            // Verifica si el mundo tiene espacio para los jugadores adicionales
+            if (_spawnedPlayerIds.Count + players.Count() > MaxPlayers)
+                return false;  // No hay espacio suficiente para todos los jugadores
+
+            // Verifica que cada jugador cumpla con los requisitos de nivel antes de agregarlo
+            foreach (var player in players)
+            {
+                if (player.Stats == null || !CanPlayerAccess(player.Stats.Level))
+                    return false;  // Si algún jugador no cumple el nivel o Stats es nulo, no se agrega ningún jugador
+
+                _spawnedPlayerIds.Add(player.Id);  // Agrega el jugador al mundo
+            }
+
+            return true;  // Todos los jugadores han sido añadidos exitosamente
+        }
     }
 }

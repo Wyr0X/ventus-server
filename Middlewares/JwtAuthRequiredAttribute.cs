@@ -10,7 +10,8 @@ namespace VentusServer.Auth
     {
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            Console.WriteLine("[JwtAuthRequired] Middleware iniciado.");
+            LoggerUtil.Log(LoggerUtil.LogTag.JwtAuthRequired, "Middleware JwtAuthRequired iniciado.");
+
 
 
             var authorizationHeader = context.HttpContext.Request.Headers["Authorization"].ToString();
@@ -19,20 +20,24 @@ namespace VentusServer.Auth
 
             if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer "))
             {
-                Console.WriteLine("[JwtAuthRequired] ERROR: No se encontró el token en el header.");
+                LoggerUtil.Log(LoggerUtil.LogTag.JwtAuthRequired, "ERROR: No se encontró el token en el header.", isError: true);
+
                 context.Result = new UnauthorizedObjectResult("Autenticación requerida.");
                 return;
             }
 
             var token = authorizationHeader.Replace("Bearer ", "").Trim();
-            Console.WriteLine($"[JwtAuthRequired] Token extraído: {token}");
+            LoggerUtil.Log(LoggerUtil.LogTag.JwtAuthRequired, $"Token extraído: {token}");
+
 
             var (accountId, sessionId) = JwtService.ValidateToken(token); // Verificamos el token
-            Console.WriteLine($"[JwtAuthRequired] UserId obtenido del token: {accountId}");
+            LoggerUtil.Log(LoggerUtil.LogTag.JwtAuthRequired, $"UserId obtenido del token: {accountId}");
+
 
             if (string.IsNullOrEmpty(accountId))
             {
-                Console.WriteLine("[JwtAuthRequired] ERROR: Token inválido o expirado.");
+                LoggerUtil.Log(LoggerUtil.LogTag.JwtAuthRequired, "ERROR: Token inválido o expirado.", isError: true);
+
                 context.Result = new UnauthorizedObjectResult("Token inválido o expirado.");
                 return;
             }
@@ -40,7 +45,8 @@ namespace VentusServer.Auth
             context.HttpContext.Items["AccountId"] = accountId;
             context.HttpContext.Items["SessionId"] = sessionId;
 
-            Console.WriteLine($"[JwtAuthRequired] AccountId almacenado en HttpContext: {accountId}");
+            LoggerUtil.Log(LoggerUtil.LogTag.JwtAuthRequired, $"AccountId almacenado en HttpContext: {accountId}");
+
 
             await next();
         }

@@ -16,9 +16,6 @@ namespace VentusServer.DataAccess.Mappers
                 MinLevel = row.min_level,
                 MaxPlayers = row.max_players,
                 WorldId = row.world_id,
-                // El WorldModel será asignado aparte en el DAO
-                WorldModel = null,
-                // Estas listas son lógicas y se mantienen en memoria
             };
         }
 
@@ -50,7 +47,6 @@ namespace VentusServer.DataAccess.Mappers
                 MinLevel = entity.MinLevel,
                 MaxPlayers = entity.MaxPlayers,
                 WorldId = entity.WorldId,
-                WorldModel = null,
             };
         }
     }

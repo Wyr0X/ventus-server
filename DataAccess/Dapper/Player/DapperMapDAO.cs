@@ -13,12 +13,10 @@ namespace VentusServer.DataAccess.Dapper
 {
     public class DapperMapDAO : BaseDAO, IMapDAO
     {
-        private readonly IWorldDAO _worldDAO;
 
-        public DapperMapDAO(IDbConnectionFactory connectionFactory, IWorldDAO worldDAO)
+        public DapperMapDAO(IDbConnectionFactory connectionFactory)
             : base(connectionFactory)
         {
-            _worldDAO = worldDAO;
         }
 
         public async Task InitializeMapsAsync()
@@ -45,7 +43,6 @@ namespace VentusServer.DataAccess.Dapper
             }
 
             var map = MapMapper.Map(row);
-            map.WorldModel = await _worldDAO.GetWorldByIdAsync(map.WorldId);
 
             LoggerUtil.Log(LoggerUtil.LogTag.DapperMapDAO, $"Mapa encontrado: {map.Name}");
             return map;
@@ -59,10 +56,7 @@ namespace VentusServer.DataAccess.Dapper
             var rows = await connection.QueryAsync(MapQueries.SelectAll);
 
             var maps = MapMapper.MapRowsToMaps(rows);
-            foreach (var map in maps)
-            {
-                map.WorldModel = await _worldDAO.GetWorldByIdAsync(map.WorldId);
-            }
+
 
             LoggerUtil.Log(LoggerUtil.LogTag.DapperMapDAO, $"Total mapas encontrados: {maps.Count}");
             return maps;
@@ -110,12 +104,8 @@ namespace VentusServer.DataAccess.Dapper
             var rows = await connection.QueryAsync(MapQueries.SelectByWorldId, new { WorldId = worldId });
 
             var maps = MapMapper.MapRowsToMaps(rows);
-            var world = await _worldDAO.GetWorldByIdAsync(worldId);
 
-            foreach (var map in maps)
-            {
-                map.WorldModel = world;
-            }
+
 
             LoggerUtil.Log(LoggerUtil.LogTag.DapperMapDAO, $"Total mapas encontrados para WorldId {worldId}: {maps.Count}");
             return maps;

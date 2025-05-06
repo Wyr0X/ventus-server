@@ -6,18 +6,23 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
+using VentusServer.DataAccess.Interfaces;
 
 namespace VentusServer.Tests.Services
 {
     public class AccountServiceTests
     {
         private readonly Mock<IAccountDAO> _mockAccountDao;
+        private readonly Mock<IRoleDAO> _moackRoleDAO;
         private readonly Mock<RoleService> _mockRoleService;
         private readonly AccountService _accountService;
 
         public AccountServiceTests()
         {
             _mockAccountDao = new Mock<IAccountDAO>();
+            _moackRoleDAO = new Mock<IRoleDAO>();
+
+            // Crear instancia de RoleService pasando las dependencias mockeadas
             _mockRoleService = new Mock<RoleService>();
             _accountService = new AccountService(_mockAccountDao.Object, _mockRoleService.Object);
         }

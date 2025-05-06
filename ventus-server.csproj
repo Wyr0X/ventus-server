@@ -9,44 +9,18 @@
         <OutputPath>bin\</OutputPath>
     </PropertyGroup>
 
-    <!-- 🔁 Ejecutar todo antes del build -->
-    <Target Name="UpdateAndGenerateProtobuf" BeforeTargets="BeforeBuild" DependsOnTargets="UpdateProtos;GenerateProtobuf" />
-
-    <!-- 📦 Ejecuta script Node para generar paquetes -->
-    <Target Name="GenerateMessageTypeMap">
-        <Exec Command="node generate_packets.js" />
-    </Target>
-
-    <!-- 🧬 Genera los archivos C# a partir de los protos -->
-    <Target Name="GenerateProtobuf" DependsOnTargets="GenerateMessageTypeMap">
-        <Exec Command="protoc --proto_path=protos --csharp_out=Generated %(Protos.Identity)" />
-    </Target>
-
-    <!-- 🔄 Actualiza el submódulo solo si no hay cambios locales -->
-    <Target Name="UpdateProtos">
-        <!-- Asegura que el submódulo está inicializado -->
+    <!-- 🔄 ACTUALIZAR SUBMÓDULO Y GENERAR PROTOS -->
+    <Target Name="UpdateAndGenerateProtobuf" BeforeTargets="BeforeBuild">
         <Exec Command="git submodule update --init --recursive" />
-
-        <!-- Windows: solo hace pull si no hay cambios -->
-        <Exec Condition="'$(OS)' == 'Windows_NT'" Command="cmd /c cd protos &amp;&amp; git diff-index --quiet HEAD -- || exit 0" />
-        <Exec Condition="'$(OS)' == 'Windows_NT'" Command="git -C protos pull origin main" />
-
-        <!-- Unix: lo mismo -->
-        <Exec Condition="'$(OS)' != 'Windows_NT'" Command="sh -c 'cd protos &amp;&amp; git diff-index --quiet HEAD -- || exit 0'" />
-        <Exec Condition="'$(OS)' != 'Windows_NT'" Command="git -C protos pull origin main" />
+        <Exec Command="git -C protos pull origin main" />
+        <Exec Command="protoc --proto_path=&quot;protos&quot; --csharp_out=&quot;Generated&quot; %(Protos.Identity)" />
     </Target>
 
-    <!-- Archivos .proto a compilar -->
+
     <ItemGroup>
         <Protos Include="protos\**\*.proto" />
     </ItemGroup>
 
-    <!-- Protobuf en C# (sin gRPC) -->
-    <ItemGroup>
-        <Protobuf Include="protos/**/*.proto" GrpcServices="None" />
-    </ItemGroup>
-
-    <!-- 📦 NuGet Packages -->
     <ItemGroup>
         <PackageReference Include="Dapper" Version="2.1.66" />
         <PackageReference Include="dotenv.net" Version="3.2.1" />
@@ -66,19 +40,22 @@
         <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.3.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.1" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.3" />
-        <PackageReference Include="xunit" Version="2.9.3" />
-        <PackageReference Include="xunit.runner.visualstudio" Version="3.0.2">
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-          <PrivateAssets>all</PrivateAssets>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.0" />
+        <PackageReference Include="xunit" Version="2.4.1" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
         </PackageReference>
     </ItemGroup>
 
-    <!-- Compatibilidad con ASP.NET Core 2.2 -->
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.App">
             <Version>2.2.8</Version>
         </PackageReference>
     </ItemGroup>
 
+    <ItemGroup>
+        <Protobuf Include="protos/**/*.proto" GrpcServices="None" />
+    </ItemGroup>
+
 </Project>
-  

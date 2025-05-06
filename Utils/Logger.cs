@@ -30,6 +30,7 @@ public static class LoggerUtil
         PlayerService,
         StoreService,
         RoleService,
+        PermissionService,
         IAccountService,
         MapService,
         WorldService,
@@ -42,7 +43,10 @@ public static class LoggerUtil
         SessionSystem,
         GameServer,
         SessionTasks,
-        TaskScheduler
+        TaskScheduler,
+        GameEventHandler,
+        //otros
+        JwtAuthRequired
     }
 
     // Configuración del tag: habilitado, color, guardar en archivo
@@ -64,6 +68,7 @@ public static class LoggerUtil
         { LogTag.MapService, (false, ConsoleColor.DarkBlue, false) },
         { LogTag.WorldService, (true, ConsoleColor.DarkBlue, false) },
         { LogTag.AuthService, (false, ConsoleColor.DarkBlue, false) },
+        { LogTag.PermissionService, (false, ConsoleColor.DarkBlue, false) },
         { LogTag.RoleService, (false, ConsoleColor.DarkBlue, false) },
         { LogTag.StoreService, (false, ConsoleColor.DarkBlue, false) },
         { LogTag.PlayerService, (false, ConsoleColor.DarkBlue, false) },
@@ -86,6 +91,8 @@ public static class LoggerUtil
         { LogTag.GameServer, (true, ConsoleColor.Blue, false) },
         { LogTag.TaskScheduler, (true, ConsoleColor.Blue, false) },
         { LogTag.SessionTasks, (true, ConsoleColor.Blue, false) },
+        { LogTag.GameEventHandler, (true, ConsoleColor.Blue, false) },
+        { LogTag.JwtAuthRequired, (false, ConsoleColor.Magenta, false) },
 
 
     };

@@ -66,5 +66,50 @@ namespace VentusServer.DataAccess.Dapper
             using var connection = GetConnection();
             await connection.ExecuteAsync(PlayerLocationQueries.Delete, new { PlayerId = playerId });
         }
+        public async Task<List<int>> GetPlayesrIdsByWorldIdAsync(int worldId)
+        {
+            using var connection = GetConnection();
+
+            // Ejecutar la consulta para obtener las ubicaciones de los jugadores en el mundo
+            var playerLocations = await connection.QueryAsync<PlayerLocationModel>(
+                PlayerLocationQueries.SelectPlayersByWorldId,
+                new { WorldId = worldId }
+            );
+
+            // Crear una lista de PlayerLocationModel con datos adicionales
+            var result = new List<int>();
+
+            foreach (var location in playerLocations)
+            {
+
+
+                result.Add(location.PlayerId);
+            }
+
+            return result;
+        }
+        public async Task<List<int>> GetPlayesrIdsByMapIdAsync(int mapId)
+        {
+            using var connection = GetConnection();
+
+            // Ejecutar la consulta para obtener las ubicaciones de los jugadores en el mundo
+            var playerLocations = await connection.QueryAsync<PlayerLocationModel>(
+                PlayerLocationQueries.SelectPlayersByMapId,
+                new { MapId = mapId }
+            );
+
+            // Crear una lista de PlayerLocationModel con datos adicionales
+            var result = new List<int>();
+
+            foreach (var location in playerLocations)
+            {
+
+
+                result.Add(location.PlayerId);
+            }
+
+            return result;
+        }
+
     }
 }

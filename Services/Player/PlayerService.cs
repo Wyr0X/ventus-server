@@ -1,9 +1,12 @@
+using Game.Models;
 using VentusServer.DataAccess.Interfaces;
 
 namespace VentusServer.Services
 {
     public class PlayerService : BaseCachedService<PlayerModel, int>
     {
+
+
         private readonly IPlayerDAO _playerDAO;
         private readonly PlayerStatsService _playerStatsService;
         private readonly PlayerInventoryService _playerInventoryService;
@@ -18,7 +21,8 @@ namespace VentusServer.Services
             PlayerStatsService playerStatsService,
             PlayerInventoryService playerInventoryService,
             IAccountService IAccountService,
-            PlayerSpellsService playerSpellsService)
+            PlayerSpellsService playerSpellsService
+            )
         {
             _playerDAO = playerDAO;
             _playerLocationService = playerLocationService;
@@ -154,7 +158,6 @@ namespace VentusServer.Services
                     LoggerUtil.Log(LoggerUtil.LogTag.PlayerService, $"⚠️ Ya existe un jugador con el nombre '{createPlayerDTO.Name}'.");
                     return null;
                 }
-
                 var player = await _playerDAO.CreatePlayerAsync(accountId, createPlayerDTO);
                 await InitializePlayerModules(player, createPlayerDTO);
 

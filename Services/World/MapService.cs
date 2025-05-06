@@ -10,6 +10,7 @@ namespace VentusServer.Services
     {
         private readonly IMapDAO _mapDAO;
 
+
         public MapService(IMapDAO mapDAO)
         {
             _mapDAO = mapDAO;
@@ -25,7 +26,11 @@ namespace VentusServer.Services
             {
                 // Primero intenta obtener el mapa de la caché
                 LoggerUtil.Log(LoggerUtil.LogTag.MapService, $"Intentando obtener el mapa con ID {mapId} desde la caché...");
-                return await GetOrLoadAsync(mapId);
+
+                MapModel? mapModel = await GetOrLoadAsync(mapId);
+
+
+                return mapModel;
             }
             catch (Exception ex)
             {
@@ -39,7 +44,12 @@ namespace VentusServer.Services
             try
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.MapService, "Obteniendo todos los mapas desde la base de datos...");
-                return await _mapDAO.GetAllMapsAsync();
+
+                List<MapModel> maps = (await _mapDAO.GetAllMapsAsync()).ToList();
+
+
+
+                return maps;
             }
             catch (Exception ex)
             {

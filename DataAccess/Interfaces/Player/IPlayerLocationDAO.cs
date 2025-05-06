@@ -8,5 +8,7 @@ namespace VentusServer.DataAccess.Interfaces
         Task SavePlayerLocationAsync(PlayerLocationModel location);
         Task DeletePlayerLocationAsync(int playerId);
         Task CreatePlayerLocationAsync(PlayerLocationModel location);
+        Task<List<int>> GetPlayesrIdsByWorldIdAsync(int worldId);
+        Task<List<int>> GetPlayesrIdsByMapIdAsync(int mapId);
     }
 }

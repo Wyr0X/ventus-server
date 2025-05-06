@@ -5,5 +5,5 @@ message PlayerJoin {
 }
 
 message PlayerExit {
-    string player_id = 1;
+  int32 player_id = 1;
 }

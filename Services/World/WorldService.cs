@@ -41,7 +41,6 @@ namespace VentusServer.Services
                         Name = "Mapa Predeterminado",
                         MinLevel = 1,
                         MaxPlayers = 10,
-                        WorldModel = defaultWorld,
                         WorldId = defaultWorld.Id
                     };
 
@@ -99,7 +98,20 @@ namespace VentusServer.Services
             try
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.WorldService, "Obteniendo todos los mundos...");
-                return await _worldDAO.GetAllWorldsAsync();
+
+                // Obtener todos los mundos
+                List<WorldModel> worlds = await _worldDAO.GetAllWorldsAsync();
+
+                // Iterar sobre cada mundo
+                foreach (var world in worlds)
+                {
+                    // Obtener los mapas asociados a cada mundo
+                    List<MapModel> mapsOfWorld = (await _mapService.GetMapsByWorldIdAsync(world.Id)).ToList();
+                    world.AddMaps(mapsOfWorld); // Agregar los mapas al mundo
+
+                }
+
+                return worlds;
             }
             catch (Exception ex)
             {

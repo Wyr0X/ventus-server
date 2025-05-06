@@ -6,4 +6,5 @@ public class CreatePlayerDTO
     public required Gender Gender { get; set; }
     public required Race Race { get; set; }
     public required CharacterClass Class { get; set; }
+
 }

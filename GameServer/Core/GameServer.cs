@@ -14,10 +14,9 @@ namespace Game.Server
     {
         private CancellationTokenSource? _loopCancellation;
 
-        private readonly SessionSystem _sessionSystem;
-        public readonly SystemHandler systemHandler;
+        public readonly SessionHandler _sessionHandler;
         public readonly TaskScheduler taskScheduler;
-        public readonly PacketHandler packetHandler;
+        public readonly GameEventHandler _gameEventHandler;
         public Dictionary<int, PlayerModel> PlayerModels { get; set; } = new Dictionary<int, PlayerModel>();
         public readonly GameServiceMediator _gameServiceMediator;
         public readonly WorldManager worldManager;
@@ -29,15 +28,15 @@ namespace Game.Server
             TaskScheduler taskScheduler,
             GameServiceMediator gameServiceMediator)
         {
+            LoggerUtil.Log(LoggerUtil.LogTag.GameServer, "Inicializando GameServer...");
             this.taskScheduler = taskScheduler;
-            this.systemHandler = new SystemHandler();
-            _sessionSystem = new SessionSystem(this, systemHandler);
-            this.packetHandler = new PacketHandler(this);
+            this._gameEventHandler = new GameEventHandler(this);
+            _sessionHandler = new SessionHandler(this, _gameEventHandler);
             _gameServiceMediator = gameServiceMediator;
             _webSocketServerController = webSocketServerController;
             worldManager = new WorldManager(this);
 
-            LoggerUtil.Log(LoggerUtil.LogTag.GameServer, "GameServer inicializado.");
+            LoggerUtil.Log(LoggerUtil.LogTag.GameServer, "GameServer inicializado correctamente.");
         }
 
         /// <summary>
@@ -45,20 +44,23 @@ namespace Game.Server
         /// </summary>
         public async Task Run(CancellationToken cancellationToken)
         {
-            LoggerUtil.Log(LoggerUtil.LogTag.GameServer, "Iniciando bucle principal.");
+            LoggerUtil.Log(LoggerUtil.LogTag.GameServer, "Iniciando bucle principal...");
             await Loop(cancellationToken);
         }
 
         private async Task Loop(CancellationToken cancellationToken)
         {
             int tickCount = 0;
+            LoggerUtil.Log(LoggerUtil.LogTag.GameServer, "Comenzando loop de actualizaciones...");
+
             while (!cancellationToken.IsCancellationRequested)
             {
                 Update();
                 tickCount++;
-                if (tickCount % 600 == 0) // cada 10 segundos aprox
+
+                if (tickCount % 600 == 0) // Cada 10 segundos aprox
                 {
-                    LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"Tick: {tickCount} - Loop en ejecución.");
+                    LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"Tick: {tickCount} - El bucle sigue en ejecución.");
                 }
 
                 await Task.Delay(16, cancellationToken); // Aproximadamente 60fps
@@ -72,8 +74,9 @@ namespace Game.Server
         /// </summary>
         public void Schedule(Action action)
         {
+            LoggerUtil.Log(LoggerUtil.LogTag.GameServer, "Agendando una nueva acción...");
             _scheduledActions.Enqueue(action);
-            LoggerUtil.Log(LoggerUtil.LogTag.GameServer, "Acción programada.");
+            LoggerUtil.Log(LoggerUtil.LogTag.GameServer, "Acción programada en la cola.");
         }
 
         /// <summary>
@@ -81,8 +84,9 @@ namespace Game.Server
         /// </summary>
         public void Stop()
         {
+            LoggerUtil.Log(LoggerUtil.LogTag.GameServer, "Deteniendo servidor manualmente...");
             _loopCancellation?.Cancel();
-            LoggerUtil.Log(LoggerUtil.LogTag.GameServer, "Servidor detenido manualmente.");
+            LoggerUtil.Log(LoggerUtil.LogTag.GameServer, "Servidor detenido.");
         }
 
         /// <summary>
@@ -96,8 +100,10 @@ namespace Game.Server
             {
                 try
                 {
+                    LoggerUtil.Log(LoggerUtil.LogTag.GameServer, "Ejecutando acción agendada...");
                     action();
                     processedActions++;
+                    LoggerUtil.Log(LoggerUtil.LogTag.GameServer, "Acción ejecutada con éxito.");
                 }
                 catch (Exception ex)
                 {
@@ -106,12 +112,12 @@ namespace Game.Server
             }
 
             if (processedActions > 0)
+            {
                 LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"Ejecutadas {processedActions} acciones agendadas.");
+            }
+
 
             HandleEvents();
-
-            // worldManager.Update(); // si se usa
-            // _syncSystem.Flush(); // si se usa
         }
 
         /// <summary>
@@ -122,33 +128,19 @@ namespace Game.Server
             int handledEvents = 0;
             GameEvent? gameEvent;
 
+
             while ((gameEvent = taskScheduler.eventBuffer.DequeueEvent()) != null)
             {
                 handledEvents++;
-                LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"Handle event: {gameEvent.Type}.");
-
-                switch (gameEvent.Type)
-                {
-                    case GameEventType.CustomGameEvent:
-                        LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"Handle event: {gameEvent.Type}.");
-
-                        if (gameEvent.Data != null)
-                        {
-                            LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"Handle event: {gameEvent.Type}.");
-
-                            systemHandler.HandlePacket(gameEvent.Data);
-                        }
-                        break;
-
-                    case GameEventType.ClientPacket:
-                        if (gameEvent.Data is UserMessagePair userMessagePair)
-                            packetHandler.HandlePacket(userMessagePair);
-                        break;
-                }
+                LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"Procesando evento: {gameEvent.Type}.");
+                _gameEventHandler.HandlePacket(gameEvent);
             }
 
             if (handledEvents > 0)
-                LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"Procesados {handledEvents} eventos del buffer.");
+            {
+                LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"Se procesaron {handledEvents} eventos del buffer.");
+            }
+
         }
     }
 }

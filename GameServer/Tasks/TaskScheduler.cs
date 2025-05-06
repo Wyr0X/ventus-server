@@ -60,12 +60,9 @@ public class TaskScheduler
         else
         {
             LoggerUtil.Log(LoggerUtil.LogTag.TaskScheduler, $"No handler found for packet {type}, adding to event buffer.");
-            eventBuffer.EnqueueEvent(new GameEvent { Type = GameEventType.ClientPacket, Data = message });
+            eventBuffer.EnqueueEvent(new GameEvent { PacketType = GameEventType.ClientPacket, Data = message });
         }
     }
 
-    public void GetWorldData()
-    {
-        LoggerUtil.Log(LoggerUtil.LogTag.TaskScheduler, "Called GetWorldData() - Not yet implemented.");
-    }
+
 }

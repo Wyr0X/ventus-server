@@ -22,18 +22,17 @@ public class SessionTasks
         _playerLocationService = playerLocationService;
         _IAccountService = IAccountService;
 
-        taskScheduler.Subscribe(ClientPacket.PlayerJoin, this.HandlePlayerJoin);
-        Log(LogTag.SessionTasks, "Subscribed to PlayerJoin message");
-    }
+        taskScheduler.Subscribe(ClientPacket.PlayerJoin, async (messagePair) => await HandlePlayerJoin(messagePair));
+        taskScheduler.Subscribe(ClientPacket.PlayerExit, async (messagePair) => await HandlePlayerExit(messagePair));
 
-    public async void HandlePlayerJoin(UserMessagePair messagePair)
+    }
+    private async Task<(AccountModel? Account, PlayerModel? Player)> LoadSessionContextAsync(UserMessagePair messagePair)
     {
-        Log(LogTag.SessionTasks, $"Handling PlayerJoin for AccountId={messagePair.AccountId}");
+        Log(LogTag.SessionTasks, $"Fetching Account and PlayerModel for AccountId={messagePair.AccountId}");
 
         PlayerJoin playerJoinMessage = (PlayerJoin)messagePair.ClientMessage;
-        Log(LogTag.SessionTasks, $"Received PlayerJoin for PlayerId={playerJoinMessage.PlayerId}");
 
-        PlayerModel? playerModel = await _playerService.GetPlayerByIdAsync(
+        var playerModel = await _playerService.GetPlayerByIdAsync(
             playerJoinMessage.PlayerId,
             new PlayerModuleOptions
             {
@@ -41,51 +40,95 @@ public class SessionTasks
                 IncludeLocation = true,
                 IncludeStats = true,
                 IncludeSpells = true,
-            }
-        );
-        AccountModel? accountModel = await _IAccountService.GetOrCreateAccountInCacheAsync(messagePair.AccountId);
+            });
+
+        var accountModel = await _IAccountService.GetOrCreateAccountInCacheAsync(messagePair.AccountId);
 
         if (accountModel == null)
         {
             Log(LogTag.SessionTasks, "AccountModel is null", isError: true);
-            return;
         }
+
         if (playerModel == null)
         {
             Log(LogTag.SessionTasks, "PlayerModel is null", isError: true);
+        }
+
+        if (playerModel?.Location == null)
+        {
+            Log(LogTag.SessionTasks, "PlayerLocation is null", isError: true);
+        }
+
+        return (accountModel, playerModel);
+    }
+
+    public async Task HandlePlayerJoin(UserMessagePair messagePair)
+    {
+        Log(LogTag.SessionTasks, $"Handling PlayerJoin for AccountId={messagePair.AccountId}");
+
+        var (accountModel, playerModel) = await LoadSessionContextAsync(messagePair);
+        if (accountModel == null || playerModel == null)
+        {
+            Log(LogTag.SessionTasks, "AccountModel or PlayerModel is null", isError: true);
             return;
         }
+
         if (playerModel.Location == null)
         {
             Log(LogTag.SessionTasks, "PlayerLocation is null", isError: true);
             return;
         }
 
-        if (playerModel.isSpawned)
-        {
-            Log(LogTag.SessionTasks, $"Player {playerModel.Id} is already spawned", isError: true);
-            return;
-        }
-
         Log(LogTag.SessionTasks, $"Spawning player {playerModel.Id} for account {accountModel.AccountId}");
-
 
         _taskScheduler.eventBuffer.EnqueueEvent(
             new GameEvent
             {
-                Type = GameEventType.CustomGameEvent,
-                Data = new
+                PacketType = GameEventType.CustomGameEvent,
+                Type = CustomGameEvent.PlayerSpawn,
+                Data = new SpawnPlayerData
                 {
-                    AccountModel = accountModel,
-                    Type = CustomGameEvent.PlayerSpawn,
                     PlayerModel = playerModel,
+                    AccountModel = accountModel
                 },
             }
         );
 
         Log(LogTag.SessionTasks, $"Enqueued PlayerSpawn event for player {playerModel.Id}");
-
-
         accountModel.PrintInfo();
     }
+
+    public async Task HandlePlayerExit(UserMessagePair messagePair)
+    {
+        Log(LogTag.SessionTasks, $"Handling PlayerExit for AccountId={messagePair.AccountId}");
+        var (accountModel, playerModel) = await LoadSessionContextAsync(messagePair);
+        if (accountModel == null || playerModel == null)
+        {
+            Log(LogTag.SessionTasks, "AccountModel or PlayerModel is null", isError: true);
+            return;
+        }
+
+        if (playerModel.Location == null)
+        {
+            Log(LogTag.SessionTasks, "PlayerLocation is null", isError: true);
+            return;
+        }
+
+        _taskScheduler.eventBuffer.EnqueueEvent(
+            new GameEvent
+            {
+                PacketType = GameEventType.CustomGameEvent,
+                Type = CustomGameEvent.PlayerExit,
+                Data = new SpawnPlayerData
+                {
+                    PlayerModel = playerModel,
+                    AccountModel = accountModel
+                },
+            }
+        );
+
+        Log(LogTag.SessionTasks, $"Enqueued PlayerExit event for player {playerModel.Id}");
+    }
+
+
 }

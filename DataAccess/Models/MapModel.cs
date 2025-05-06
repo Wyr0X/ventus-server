@@ -15,11 +15,6 @@ namespace Game.Models
         public int MaxPlayers { get; set; }
         public int WorldId { get; set; } // Relación con el mundo al que pertenece
 
-        public WorldModel? WorldModel { get; set; }
-
-        // Jugadores actualmente en el mapa
-        private readonly HashSet<int> _playerIds = new();
-        public IReadOnlyCollection<int> PlayersIds => _playerIds;
 
         // Jugadores spawneados (activos) en el mapa
         private readonly HashSet<int> _spawnedPlayerIds = new();
@@ -28,7 +23,7 @@ namespace Game.Models
         /// <summary>
         /// Verifica si hay espacio para más jugadores.
         /// </summary>
-        public bool HasSpace() => _playerIds.Count < MaxPlayers;
+        public bool HasSpace() => SpawnedPlayerIds.Count < MaxPlayers;
 
         /// <summary>
         /// Verifica si hay espacio para spawnear jugadores activos.
@@ -43,34 +38,26 @@ namespace Game.Models
             // if (playerLevel < MinLevel || !HasSpace())
             //     return false;
 
-            return _playerIds.Add(playerId);
-        }
-
-        /// <summary>
-        /// Spawnea (activa) un jugador en el mapa si ya está presente y hay espacio.
-        /// </summary>
-        public bool SpawnPlayer(int playerId)
-        {
-            if (!_playerIds.Contains(playerId) || !HasSpawnSpace())
+            if (_spawnedPlayerIds.Contains(playerId) || !HasSpawnSpace())
                 return false;
 
             return _spawnedPlayerIds.Add(playerId);
         }
+
 
         /// <summary>
         /// Remueve un jugador del mapa (tanto de la lista de presentes como de spawneados).
         /// </summary>
         public bool RemovePlayer(int playerId)
         {
-            bool removed = _playerIds.Remove(playerId);
             bool despawned = _spawnedPlayerIds.Remove(playerId);
-            return removed || despawned;
+            return despawned;
         }
 
         /// <summary>
         /// Número actual de jugadores en el mapa.
         /// </summary>
-        public int PlayerCount => _playerIds.Count;
+        public int PlayerCount => SpawnedPlayerIds.Count;
 
         /// <summary>
         /// Número actual de jugadores spawneados en el mapa.
@@ -79,5 +66,35 @@ namespace Game.Models
 
         public override string ToString()
             => $"Map(Id={Id}, Name={Name}, Players={PlayerCount}/{MaxPlayers}, Spawned={SpawnedCount}/{MaxPlayers})";
+
+        /// <summary>
+        /// Verifica si un jugador está registrado en este mundo.
+        /// </summary>
+        public bool ContainsPlayer(int playerId)
+        {
+            return SpawnedPlayerIds.Contains(playerId);
+        }
+        /// <summary>
+        /// Verifica si un jugador cumple los requisitos de nivel para acceder al mundo.
+        /// </summary>
+        public bool CanPlayerAccess(int playerLevel) => playerLevel >= MinLevel;
+
+        public bool AddPlayers(List<PlayerModel> players)
+        {
+            // Verifica si el mundo tiene espacio para los jugadores adicionales
+            if (SpawnedPlayerIds.Count + players.Count() > MaxPlayers)
+                return false;  // No hay espacio suficiente para todos los jugadores
+
+            // Verifica que cada jugador cumpla con los requisitos de nivel antes de agregarlo
+            foreach (var player in players)
+            {
+                if (player.Stats == null || !CanPlayerAccess(player.Stats.Level))
+                    return false;  // Si algún jugador no cumple el nivel o Stats es nulo, no se agrega ningún jugador
+
+                _spawnedPlayerIds.Add(player.Id);  // Agrega el jugador al mundo
+            }
+
+            return true;  // Todos los jugadores han sido añadidos exitosamente
+        }
     }
 }
