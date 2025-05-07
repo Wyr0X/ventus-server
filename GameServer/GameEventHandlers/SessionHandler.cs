@@ -3,6 +3,7 @@ using Ventus.Network.Packets;
 public class SpawnPlayerData
 {
     public required PlayerModel PlayerModel { get; set; }
+    public required PlayerModel? PlayerSpawnedModel { get; set; }
     public required AccountModel AccountModel { get; set; }
 
     public override string ToString()
@@ -27,7 +28,6 @@ public class SessionHandler
         LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem, $"[HandleSpawnPlayer] Incoming event: {gameDataPacket.ToString()}");
 
 
-
         var data = gameDataPacket as SpawnPlayerData;
         if (data == null)
         {
@@ -36,11 +36,14 @@ public class SessionHandler
         }
         // Validar que los datos del evento sean correctos
         if (!(data.PlayerModel is PlayerModel playerModel) ||
+        !(data.PlayerSpawnedModel is PlayerModel playerSpawnedModel) ||
             !(data.AccountModel is AccountModel accountModel))
         {
             LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem, "Invalid event data for PlayerSpawn");
             return;
         }
+        LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem, $"[HandleSpawnPlayer] PlayerModel: {playerModel.ToString()}");
+
 
         // Evitar doble spawn
         if (playerModel.isSpawned)
@@ -49,6 +52,14 @@ public class SessionHandler
                 $"[HandleSpawnPlayer] Player {playerModel.Id} is already spawned, removing from world...");
             _gameServer.worldManager.RemovePlayerFromWorld(playerModel, false);
             playerModel.isSpawned = false;
+            accountModel.ActivePlayerId = null;
+        }
+        if (playerSpawnedModel != null)
+        {
+            LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem,
+                $"[HandleSpawnPlayer] Player {accountModel.ActivePlayerId} is already spawned, removing from world...");
+            _gameServer.worldManager.RemovePlayerFromWorld(playerSpawnedModel, false);
+            playerSpawnedModel.isSpawned = false;
             accountModel.ActivePlayerId = null;
         }
 
@@ -67,6 +78,13 @@ public class SessionHandler
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem,
                     $"[HandleSpawnPlayer] Failed to spawn player {playerModel.Id} in world {loc.WorldId}, map {loc.MapId}");
+
+                PlayerSpawnError playerSpawnError = new PlayerSpawnError
+                {
+                    PlayerId = playerModel.Id,
+                };
+                _gameServer._webSocketServerController._outgoingQueue.Enqueue(accountModel.AccountId, playerSpawnError, ServerPacket.PlayerSpawnError);
+
                 return;
             }
 

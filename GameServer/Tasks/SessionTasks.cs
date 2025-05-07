@@ -80,6 +80,21 @@ public class SessionTasks
         }
 
         Log(LogTag.SessionTasks, $"Spawning player {playerModel.Id} for account {accountModel.AccountId}");
+        PlayerModel? playerSpawnedModel = null;
+        if (accountModel.ActivePlayerId != null)
+        {
+            Log(LogTag.SessionTasks, $"Account {accountModel.AccountId} already has an active player {accountModel.ActivePlayerId}");
+
+            playerSpawnedModel = await _playerService.GetPlayerByIdAsync(
+                accountModel.ActivePlayerId ?? 0,
+                new PlayerModuleOptions
+                {
+                    IncludeInventory = true,
+                    IncludeLocation = true,
+                    IncludeStats = true,
+                    IncludeSpells = true,
+                });
+        }
 
         _taskScheduler.eventBuffer.EnqueueEvent(
             new GameEvent
@@ -89,10 +104,13 @@ public class SessionTasks
                 Data = new SpawnPlayerData
                 {
                     PlayerModel = playerModel,
-                    AccountModel = accountModel
+                    AccountModel = accountModel,
+                    PlayerSpawnedModel = playerSpawnedModel
                 },
             }
         );
+
+
 
         Log(LogTag.SessionTasks, $"Enqueued PlayerSpawn event for player {playerModel.Id}");
         accountModel.PrintInfo();
@@ -122,7 +140,8 @@ public class SessionTasks
                 Data = new SpawnPlayerData
                 {
                     PlayerModel = playerModel,
-                    AccountModel = accountModel
+                    AccountModel = accountModel,
+                    PlayerSpawnedModel = null,
                 },
             }
         );
