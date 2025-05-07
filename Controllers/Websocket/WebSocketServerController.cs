@@ -81,6 +81,8 @@ public class WebSocketServerController
             {
                 continue;
             }
+            using var ms = new MemoryStream();
+
             LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"🆔Prepared to send {accountId}");
 
             var packetsToSend = new List<Packet>();
@@ -93,15 +95,11 @@ public class WebSocketServerController
                     Type = (uint)outgoingPacket.PacketType,
                     Payload = ByteString.CopyFrom(outgoingPacket.Message.ToByteArray())
                 };
+                packet.WriteDelimitedTo(ms);
                 packetsToSend.Add(packet);
+
             }
 
-            using var ms = new MemoryStream();
-            foreach (var packet in packetsToSend)
-            {
-                var bytes = packet.ToByteArray();
-                ms.Write(bytes, 0, bytes.Length);
-            }
             LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $" Send ${packetsToSend.Count} packets to {accountId}");
 
             await socket.SendAsync(
@@ -123,6 +121,8 @@ public class WebSocketServerController
         {
 
             var serverPackert = new Packet { Type = (uint)serverPacket, Payload = Google.Protobuf.ByteString.CopyFrom(message.ToByteArray()) };
+            LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"🆔Packet type to send {(uint)serverPacket}");
+
             await socket.SendAsync(new ArraySegment<byte>(serverPackert.ToByteArray()), WebSocketMessageType.Binary, true, CancellationToken.None);
         }
         else

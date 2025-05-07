@@ -88,7 +88,10 @@ namespace Game.Models
         public bool TrySpawnPlayer(int playerId)
         {
 
-
+            Console.WriteLine(_spawnedPlayerIds.Count);
+            Console.WriteLine(MaxPlayers);
+            LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem,
+              $"[SpawnedPlayerIds] Current list: {string.Join(", ", _spawnedPlayerIds)}");
             if (_spawnedPlayerIds.Count >= MaxPlayers || _spawnedPlayerIds.Contains(playerId))
                 return false;
 

@@ -77,6 +77,9 @@ public class SessionHandler
             PlayerSpawn playerJoin = new PlayerSpawn
             {
                 PlayerId = playerModel.Id,
+                X = loc.PosX,
+                Y = loc.PosY,
+                Name = playerModel.Name
             };
 
             _gameServer._webSocketServerController._outgoingQueue.Enqueue(accountModel.AccountId, playerJoin, ServerPacket.PlayerSpawn);

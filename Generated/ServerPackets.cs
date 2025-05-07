@@ -11,7 +11,8 @@ namespace Ventus.Network.Packets
         OutgoingChatMessage = 4,
         SystemMessage = 5,
         PlayerPosition = 6,
-        PlayerSpawn = 7,
+        PlayerSpell = 7,
+        PlayerSpawn = 8,
     }
 
     public static class ServerPacketDecoder
@@ -24,6 +25,7 @@ namespace Ventus.Network.Packets
             { ServerPacket.OutgoingChatMessage, OutgoingChatMessage.Descriptor.Parser },
             { ServerPacket.SystemMessage, SystemMessage.Descriptor.Parser },
             { ServerPacket.PlayerPosition, PlayerPosition.Descriptor.Parser },
+            { ServerPacket.PlayerSpell, PlayerSpell.Descriptor.Parser },
             { ServerPacket.PlayerSpawn, PlayerSpawn.Descriptor.Parser },
         };
     }

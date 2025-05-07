@@ -22,19 +22,257 @@ public static partial class SessionServerReflection {
   static SessionServerReflection() {
     byte[] descriptorData = global::System.Convert.FromBase64String(
         string.Concat(
-          "CiFnYW1lL3Nlc3Npb24vc2Vzc2lvbi5zZXJ2ZXIucHJvdG8iNgoLUGxheWVy",
-          "U3Bhd24SEQoJcGxheWVyX2lkGAEgASgFEgkKAXgYAiABKAISCQoBeRgDIAEo",
-          "AmIGcHJvdG8z"));
+          "CiFnYW1lL3Nlc3Npb24vc2Vzc2lvbi5zZXJ2ZXIucHJvdG8iLAoLUGxheWVy",
+          "U3BlbGwSDwoHc3BlbGxJZBgBIAEoCRIMCgRzbG90GAIgASgFImIKC1BsYXll",
+          "clNwYXduEhEKCXBsYXllcl9pZBgBIAEoBRIJCgF4GAIgASgCEgkKAXkYAyAB",
+          "KAISDAoEbmFtZRgEIAEoCRIcCgZzcGVsbHMYBSADKAsyDC5QbGF5ZXJTcGVs",
+          "bGIGcHJvdG8z"));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-          new pbr::GeneratedClrTypeInfo(typeof(global::PlayerSpawn), global::PlayerSpawn.Parser, new[]{ "PlayerId", "X", "Y" }, null, null, null, null)
+          new pbr::GeneratedClrTypeInfo(typeof(global::PlayerSpell), global::PlayerSpell.Parser, new[]{ "SpellId", "Slot" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::PlayerSpawn), global::PlayerSpawn.Parser, new[]{ "PlayerId", "X", "Y", "Name", "Spells" }, null, null, null, null)
         }));
   }
   #endregion
 
 }
 #region Messages
+[global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
+public sealed partial class PlayerSpell : pb::IMessage<PlayerSpell>
+#if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    , pb::IBufferMessage
+#endif
+{
+  private static readonly pb::MessageParser<PlayerSpell> _parser = new pb::MessageParser<PlayerSpell>(() => new PlayerSpell());
+  private pb::UnknownFieldSet _unknownFields;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public static pb::MessageParser<PlayerSpell> Parser { get { return _parser; } }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public static pbr::MessageDescriptor Descriptor {
+    get { return global::SessionServerReflection.Descriptor.MessageTypes[0]; }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  pbr::MessageDescriptor pb::IMessage.Descriptor {
+    get { return Descriptor; }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public PlayerSpell() {
+    OnConstruction();
+  }
+
+  partial void OnConstruction();
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public PlayerSpell(PlayerSpell other) : this() {
+    spellId_ = other.spellId_;
+    slot_ = other.slot_;
+    _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public PlayerSpell Clone() {
+    return new PlayerSpell(this);
+  }
+
+  /// <summary>Field number for the "spellId" field.</summary>
+  public const int SpellIdFieldNumber = 1;
+  private string spellId_ = "";
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public string SpellId {
+    get { return spellId_; }
+    set {
+      spellId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+    }
+  }
+
+  /// <summary>Field number for the "slot" field.</summary>
+  public const int SlotFieldNumber = 2;
+  private int slot_;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public int Slot {
+    get { return slot_; }
+    set {
+      slot_ = value;
+    }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public override bool Equals(object other) {
+    return Equals(other as PlayerSpell);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public bool Equals(PlayerSpell other) {
+    if (ReferenceEquals(other, null)) {
+      return false;
+    }
+    if (ReferenceEquals(other, this)) {
+      return true;
+    }
+    if (SpellId != other.SpellId) return false;
+    if (Slot != other.Slot) return false;
+    return Equals(_unknownFields, other._unknownFields);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public override int GetHashCode() {
+    int hash = 1;
+    if (SpellId.Length != 0) hash ^= SpellId.GetHashCode();
+    if (Slot != 0) hash ^= Slot.GetHashCode();
+    if (_unknownFields != null) {
+      hash ^= _unknownFields.GetHashCode();
+    }
+    return hash;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public override string ToString() {
+    return pb::JsonFormatter.ToDiagnosticString(this);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void WriteTo(pb::CodedOutputStream output) {
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    output.WriteRawMessage(this);
+  #else
+    if (SpellId.Length != 0) {
+      output.WriteRawTag(10);
+      output.WriteString(SpellId);
+    }
+    if (Slot != 0) {
+      output.WriteRawTag(16);
+      output.WriteInt32(Slot);
+    }
+    if (_unknownFields != null) {
+      _unknownFields.WriteTo(output);
+    }
+  #endif
+  }
+
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+    if (SpellId.Length != 0) {
+      output.WriteRawTag(10);
+      output.WriteString(SpellId);
+    }
+    if (Slot != 0) {
+      output.WriteRawTag(16);
+      output.WriteInt32(Slot);
+    }
+    if (_unknownFields != null) {
+      _unknownFields.WriteTo(ref output);
+    }
+  }
+  #endif
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public int CalculateSize() {
+    int size = 0;
+    if (SpellId.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(SpellId);
+    }
+    if (Slot != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeInt32Size(Slot);
+    }
+    if (_unknownFields != null) {
+      size += _unknownFields.CalculateSize();
+    }
+    return size;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void MergeFrom(PlayerSpell other) {
+    if (other == null) {
+      return;
+    }
+    if (other.SpellId.Length != 0) {
+      SpellId = other.SpellId;
+    }
+    if (other.Slot != 0) {
+      Slot = other.Slot;
+    }
+    _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void MergeFrom(pb::CodedInputStream input) {
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    input.ReadRawMessage(this);
+  #else
+    uint tag;
+    while ((tag = input.ReadTag()) != 0) {
+    if ((tag & 7) == 4) {
+      // Abort on any end group tag.
+      return;
+    }
+    switch(tag) {
+        default:
+          _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+          break;
+        case 10: {
+          SpellId = input.ReadString();
+          break;
+        }
+        case 16: {
+          Slot = input.ReadInt32();
+          break;
+        }
+      }
+    }
+  #endif
+  }
+
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+    uint tag;
+    while ((tag = input.ReadTag()) != 0) {
+    if ((tag & 7) == 4) {
+      // Abort on any end group tag.
+      return;
+    }
+    switch(tag) {
+        default:
+          _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+          break;
+        case 10: {
+          SpellId = input.ReadString();
+          break;
+        }
+        case 16: {
+          Slot = input.ReadInt32();
+          break;
+        }
+      }
+    }
+  }
+  #endif
+
+}
+
 [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
 public sealed partial class PlayerSpawn : pb::IMessage<PlayerSpawn>
 #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
@@ -50,7 +288,7 @@ public sealed partial class PlayerSpawn : pb::IMessage<PlayerSpawn>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public static pbr::MessageDescriptor Descriptor {
-    get { return global::SessionServerReflection.Descriptor.MessageTypes[0]; }
+    get { return global::SessionServerReflection.Descriptor.MessageTypes[1]; }
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -73,6 +311,8 @@ public sealed partial class PlayerSpawn : pb::IMessage<PlayerSpawn>
     playerId_ = other.playerId_;
     x_ = other.x_;
     y_ = other.y_;
+    name_ = other.name_;
+    spells_ = other.spells_.Clone();
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
   }
 
@@ -124,6 +364,29 @@ public sealed partial class PlayerSpawn : pb::IMessage<PlayerSpawn>
     }
   }
 
+  /// <summary>Field number for the "name" field.</summary>
+  public const int NameFieldNumber = 4;
+  private string name_ = "";
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public string Name {
+    get { return name_; }
+    set {
+      name_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+    }
+  }
+
+  /// <summary>Field number for the "spells" field.</summary>
+  public const int SpellsFieldNumber = 5;
+  private static readonly pb::FieldCodec<global::PlayerSpell> _repeated_spells_codec
+      = pb::FieldCodec.ForMessage(42, global::PlayerSpell.Parser);
+  private readonly pbc::RepeatedField<global::PlayerSpell> spells_ = new pbc::RepeatedField<global::PlayerSpell>();
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public pbc::RepeatedField<global::PlayerSpell> Spells {
+    get { return spells_; }
+  }
+
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override bool Equals(object other) {
@@ -142,6 +405,8 @@ public sealed partial class PlayerSpawn : pb::IMessage<PlayerSpawn>
     if (PlayerId != other.PlayerId) return false;
     if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(X, other.X)) return false;
     if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Y, other.Y)) return false;
+    if (Name != other.Name) return false;
+    if(!spells_.Equals(other.spells_)) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
 
@@ -152,6 +417,8 @@ public sealed partial class PlayerSpawn : pb::IMessage<PlayerSpawn>
     if (PlayerId != 0) hash ^= PlayerId.GetHashCode();
     if (X != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(X);
     if (Y != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Y);
+    if (Name.Length != 0) hash ^= Name.GetHashCode();
+    hash ^= spells_.GetHashCode();
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
     }
@@ -182,6 +449,11 @@ public sealed partial class PlayerSpawn : pb::IMessage<PlayerSpawn>
       output.WriteRawTag(29);
       output.WriteFloat(Y);
     }
+    if (Name.Length != 0) {
+      output.WriteRawTag(34);
+      output.WriteString(Name);
+    }
+    spells_.WriteTo(output, _repeated_spells_codec);
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
     }
@@ -204,6 +476,11 @@ public sealed partial class PlayerSpawn : pb::IMessage<PlayerSpawn>
       output.WriteRawTag(29);
       output.WriteFloat(Y);
     }
+    if (Name.Length != 0) {
+      output.WriteRawTag(34);
+      output.WriteString(Name);
+    }
+    spells_.WriteTo(ref output, _repeated_spells_codec);
     if (_unknownFields != null) {
       _unknownFields.WriteTo(ref output);
     }
@@ -223,6 +500,10 @@ public sealed partial class PlayerSpawn : pb::IMessage<PlayerSpawn>
     if (Y != 0F) {
       size += 1 + 4;
     }
+    if (Name.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(Name);
+    }
+    size += spells_.CalculateSize(_repeated_spells_codec);
     if (_unknownFields != null) {
       size += _unknownFields.CalculateSize();
     }
@@ -244,6 +525,10 @@ public sealed partial class PlayerSpawn : pb::IMessage<PlayerSpawn>
     if (other.Y != 0F) {
       Y = other.Y;
     }
+    if (other.Name.Length != 0) {
+      Name = other.Name;
+    }
+    spells_.Add(other.spells_);
     _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
   }
 
@@ -275,6 +560,14 @@ public sealed partial class PlayerSpawn : pb::IMessage<PlayerSpawn>
           Y = input.ReadFloat();
           break;
         }
+        case 34: {
+          Name = input.ReadString();
+          break;
+        }
+        case 42: {
+          spells_.AddEntriesFrom(input, _repeated_spells_codec);
+          break;
+        }
       }
     }
   #endif
@@ -304,6 +597,14 @@ public sealed partial class PlayerSpawn : pb::IMessage<PlayerSpawn>
         }
         case 29: {
           Y = input.ReadFloat();
+          break;
+        }
+        case 34: {
+          Name = input.ReadString();
+          break;
+        }
+        case 42: {
+          spells_.AddEntriesFrom(ref input, _repeated_spells_codec);
           break;
         }
       }
