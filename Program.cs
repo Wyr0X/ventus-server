@@ -58,7 +58,7 @@ try
     var gameEngineTask = Task.Run(() =>
     {
         LoggerUtil.Log(LoggerUtil.LogTag.Init, "🧠 GameEngine iniciando...");
-        return gameEngine.Run(cancellationToken);
+        return gameEngine.RunAsync(cancellationToken);
     }, cancellationToken);
 
     LoggerUtil.Log(LoggerUtil.LogTag.Init, "🌍 Inicializando servidor HTTP...");

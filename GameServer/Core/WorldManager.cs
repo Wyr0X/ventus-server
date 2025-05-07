@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Game.Models;
+using Ventus.Network.Packets;
 
 namespace Game.Server
 {
@@ -12,10 +13,11 @@ namespace Game.Server
     /// </summary>
     public class WorldManager
     {
-        private readonly Dictionary<int, WorldModel> _worlds = new();
-        private readonly Dictionary<int, PlayerModel> _playersInTheWorld = new();
-        private readonly GameServer _gameServer;
+        private readonly ConcurrentDictionary<int, WorldModel> _worlds = new();
+        private readonly ConcurrentDictionary<int, ConcurrentBag<PlayerModel>> _playersByWorldId = new();
         private readonly ConcurrentDictionary<int, Task<WorldModel?>> _loadingWorlds = new();
+
+        private readonly GameServer _gameServer;
 
         public WorldManager(GameServer gameServer)
         {
@@ -23,225 +25,238 @@ namespace Game.Server
         }
 
         /// <summary>
-        /// Intenta añadir y spawnear un jugador en el mundo y mapa.
-        /// Si el mundo no está cargado, lo carga en segundo plano y reintenta.
+        /// Versión asincrónica de AddPlayerToWorld, con async/await.
         /// </summary>
-        public void AddPlayerToWorld(PlayerModel player, Action<bool> onFinished)
+        public async Task AddPlayerToWorldAsync(PlayerModel player, Action<bool> onFinished)
         {
             var loc = player.Location;
             if (loc == null)
             {
-                LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[AddPlayer] Player {player.Id} has null location.");
+                LoggerUtil.Log(LoggerUtil.LogTag.WorldManager,
+                    $"[AddPlayerAsync] Player {player.Id} has null location.");
                 onFinished(false);
                 return;
             }
 
             int worldId = loc.WorldId;
-            LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[AddPlayer] Player {player.Id} requests World {worldId}. Location: MapId={loc.MapId}");
+            LoggerUtil.Log(LoggerUtil.LogTag.WorldManager,
+                $"[AddPlayerAsync] Player {player.Id} requests World {worldId}, MapId={loc.MapId}");
 
-            if (_worlds.TryGetValue(worldId, out var world))
+            // Intentamos sacar el mundo de la caché
+            if (!_worlds.TryGetValue(worldId, out var world))
             {
-                LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[AddPlayer] World {worldId} already loaded. Proceeding to add player...");
-                _gameServer.Schedule(() =>
+                // Si no está, esperamos la carga (o reutilizamos la existente)
+                var loadTask = _loadingWorlds.GetOrAdd(worldId, id =>
                 {
-                    bool result = AddPlayerToLoadedWorld(player, world);
-                    LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[AddPlayer] Add to loaded world result for player {player.Id}: {result}"); // NUEVO LOG
-                    onFinished(result);
+                    LoggerUtil.Log(LoggerUtil.LogTag.WorldManager,
+                        $"[AddPlayerAsync] Starting async load for world {id}...");
+                    return _gameServer._gameServiceMediator.GetWorldInfo(id);
                 });
-                return;
+
+                WorldModel? loaded;
+                try
+                {
+                    loaded = await loadTask;
+                }
+                catch (Exception ex)
+                {
+                    LoggerUtil.Log(LoggerUtil.LogTag.WorldManager,
+                        $"[AddPlayerAsync] Exception loading world {worldId}: {ex.Message}");
+                    _loadingWorlds.TryRemove(worldId, out _);
+                    onFinished(false);
+                    return;
+                }
+
+                _loadingWorlds.TryRemove(worldId, out _);
+
+                if (loaded == null)
+                {
+                    LoggerUtil.Log(LoggerUtil.LogTag.WorldManager,
+                        $"[AddPlayerAsync] Failed to load world {worldId}.");
+                    onFinished(false);
+                    return;
+                }
+
+                // Cacheamos el mundo cargado
+                _worlds[worldId] = loaded;
+                world = loaded;
+                LoggerUtil.Log(LoggerUtil.LogTag.WorldManager,
+                    $"[AddPlayerAsync] World {worldId} loaded and cached.");
             }
 
-            LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[AddPlayer] World {worldId} not loaded. Requesting load...");
-
-            var loadingTask = _loadingWorlds.GetOrAdd(worldId, id =>
-            {
-                LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[AddPlayer] Starting async load for world {id}..."); // NUEVO LOG
-                return _gameServer._gameServiceMediator.GetWorldInfo(id);
-            });
-
-            loadingTask.ContinueWith(task =>
-            {
-                LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[AddPlayer] Finished loading task for world {worldId}. Success: {task.Result != null}"); // NUEVO LOG
-                var loaded = task.Result;
-                _gameServer.Schedule(() =>
-                {
-                    if (loaded != null)
-                    {
-                        LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[AddPlayer] World {worldId} loaded successfully. Caching and adding player...");
-                        _worlds[worldId] = loaded;
-                        _loadingWorlds.TryRemove(worldId, out _);
-                        bool result = AddPlayerToLoadedWorld(player, loaded);
-                        LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[AddPlayer] Add to newly loaded world result for player {player.Id}: {result}"); // NUEVO LOG
-                        if (result)
-                        {
-                            _playersInTheWorld[player.Id] = player;
-                        }
-                        onFinished(result);
-                    }
-                    else
-                    {
-                        LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[AddPlayer] Failed to load world {worldId}.");
-                        _loadingWorlds.TryRemove(worldId, out _);
-                        onFinished(false);
-                    }
-                });
-            });
+            // Ya tenemos el mundo, delegamos al método sincrónico
+            AddPlayerToLoadedWorld(player, world, onFinished);
         }
+
+        /// <summary>
+        /// Elimina un jugador del mundo, y si queda vacío también quita el mundo.
+        /// </summary>
         public bool RemovePlayerFromWorld(PlayerModel player, bool fullExit = true)
         {
             var loc = player.Location;
             if (loc == null)
             {
-                LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[RemovePlayerFromWorld] Player {player.Id} has null location.");
+                LoggerUtil.Log(LoggerUtil.LogTag.WorldManager,
+                    $"[RemovePlayer] Player {player.Id} has null location.");
                 return false;
             }
 
             int worldId = loc.WorldId;
             if (!_worlds.TryGetValue(worldId, out var world))
             {
-                LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[RemovePlayerFromWorld] World {worldId} not found.");
+                LoggerUtil.Log(LoggerUtil.LogTag.WorldManager,
+                    $"[RemovePlayer] World {worldId} not found.");
                 return false;
             }
 
             lock (world)
             {
-                LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[RemovePlayerFromWorld] Attempting to remove player {player.Id} from world {worldId}.");
-
+                // Des-spawn
                 var map = world.Maps.FirstOrDefault(m => m.Id == loc.MapId);
                 if (map != null)
                 {
-                    if (!fullExit)
-                    {
-                        LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[RemovePlayerFromWorld] Unspawning player {player.Id} from world {loc.WorldId}, map {loc.MapId}.");
-                        map?.RemovePlayer(player.Id);
-                        world.RemovePlayer(player.Id);
-                    }
-                    else
-                    {
-                        LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[RemovePlayerFromWorld] Fully removing player {player.Id} from world {loc.WorldId}, map {loc.MapId}.");
-                        map?.RemovePlayer(player.Id);
-
-                        world.RemovePlayer(player.Id);
-                    }
+                    map.RemovePlayer(player.Id);
+                    world.RemovePlayer(player.Id);
+                    LoggerUtil.Log(LoggerUtil.LogTag.WorldManager,
+                        $"[RemovePlayer] Player {player.Id} removed from World {worldId}, Map {loc.MapId}.");
                 }
-                else
+
+                // Quitar de la bolsa
+                if (_playersByWorldId.TryGetValue(worldId, out var bag))
                 {
-                    LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[RemovePlayerFromWorld] Map {loc.MapId} not found in world {worldId}.");
+                    var filtered = new ConcurrentBag<PlayerModel>(bag.Where(p => p.Id != player.Id));
+                    _playersByWorldId[worldId] = filtered;
+
+                    // Si ya no quedan jugadores, limpiamos todo
+                    if (filtered.IsEmpty)
+                    {
+                        _worlds.TryRemove(worldId, out _);
+                        _playersByWorldId.TryRemove(worldId, out _);
+                        LoggerUtil.Log(LoggerUtil.LogTag.WorldManager,
+                            $"[RemovePlayer] World {worldId} is now empty—removed from cache.");
+                    }
                 }
-
-                world.RemovePlayer(player.Id);
-
-                LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[RemovePlayerFromWorld] Player {player.Id} removed and despawned from world {worldId}.");
             }
+
 
             return true;
         }
 
-        public void RemovePlayer(PlayerModel player)
+        /// <summary>
+        /// Lógica común de spawn + registro de jugador en estructuras hilo‐seguras.
+        /// </summary>
+        private void AddPlayerToLoadedWorld(PlayerModel player, WorldModel world, Action<bool> onFinished)
         {
+            int worldId = world.Id;
 
-        }
-        private bool AddPlayerToLoadedWorld(PlayerModel player, WorldModel world)
-        {
-            var loc = player.Location!;
-            LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[AddPlayerToLoadedWorld] Trying to add player {player.Id} to world {loc.WorldId} (MapId={loc.MapId})...");
+            // Aseguramos que esté cacheado
+            _worlds.AddOrUpdate(worldId, world, (_, __) => world);
 
-            lock (world)
+            bool spawned;
+            try
             {
-                LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[AddPlayerToLoadedWorld] Lock acquired. Maps in world {loc.WorldId}: {world.Maps.Count}.");
-
-
-                if (!TrySpawnPlayerInWorldAndMap(player, world))
+                lock (world)
                 {
-                    LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[AddPlayerToLoadedWorld] Failed to spawn player {player.Id} in world {loc.WorldId} or map {loc.MapId}.");
-                    return false;
+                    spawned = TrySpawnPlayerInWorldAndMap(player, world);
                 }
-
-                LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[AddPlayerToLoadedWorld] Player {player.Id} successfully added and spawned in world {loc.WorldId}, map {loc.MapId}.");
-                return true;
             }
-        }
+            catch (Exception ex)
+            {
+                LoggerUtil.Log(LoggerUtil.LogTag.WorldManager,
+                    $"[AddPlayerToLoadedWorld] Exception: {ex.Message}");
+                onFinished(false);
+                return;
+            }
 
+            if (!spawned)
+            {
+                LoggerUtil.Log(LoggerUtil.LogTag.WorldManager,
+                    $"[AddPlayer] Failed to spawn Player {player.Id} in World {worldId}.");
+                onFinished(false);
+                return;
+            }
+
+            // Registro en playersInTheGame
+            _gameServer.playersInTheGame[player.Id] = player;
+
+            // Añadir al bag
+            var bag = _playersByWorldId.GetOrAdd(worldId, _ => new ConcurrentBag<PlayerModel>());
+            if (!bag.Any(p => p.Id == player.Id))
+                bag.Add(player);
+
+            LoggerUtil.Log(LoggerUtil.LogTag.WorldManager,
+                $"[AddPlayer] Player {player.Id} registered in World {worldId}. Total now: {bag.Count}");
+
+            onFinished(true);
+        }
 
         private bool TrySpawnPlayerInWorldAndMap(PlayerModel player, WorldModel world)
         {
             var loc = player.Location!;
-            LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[TrySpawnPlayer] Spawning player {player.Id} in world {loc.WorldId}, map {loc.MapId}"); // NUEVO LOG
-
             var map = world.Maps.FirstOrDefault(m => m.Id == loc.MapId);
-            if (map == null)
-            {
-                LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[TrySpawnPlayer] Map {loc.MapId} not found."); // NUEVO LOG
+            if (map == null || player.Stats == null)
                 return false;
-            }
-
-            if (player.Stats == null)
-            {
-                LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[TrySpawnPlayer] Player {player.Id} has null stats."); // NUEVO LOG
-                return false;
-            }
 
             if (!world.TrySpawnPlayer(player.Id))
-            {
-                LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[TrySpawnPlayer] World failed to spawn player {player.Id}."); // NUEVO LOG
                 return false;
-            }
 
             if (!map.AddPlayer(player.Id, player.Stats.Level))
             {
-                LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[TrySpawnPlayer] Map {loc.MapId} failed to add player {player.Id}."); // NUEVO LOG
                 world.RemovePlayer(player.Id);
                 return false;
             }
 
-            LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[TrySpawnPlayer] Player {player.Id} successfully spawned."); // NUEVO LOG
             return true;
         }
+
         public List<PlayerModel> GetPlayersInArea(int worldId, int mapId, float centerX, float centerY, float radius)
         {
-            LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[GetPlayersInArea] Called with WorldId={worldId}, MapId={mapId}, Center=({centerX},{centerY}), Radius={radius}");
-
             if (!_worlds.TryGetValue(worldId, out var world))
-            {
-                LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[GetPlayersInArea] World {worldId} not found.");
                 return new List<PlayerModel>();
-            }
 
             var map = world.Maps.FirstOrDefault(m => m.Id == mapId);
             if (map == null)
-            {
-                LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[GetPlayersInArea] Map {mapId} not found in World {worldId}.");
                 return new List<PlayerModel>();
-            }
 
-            var playersInArea = new List<PlayerModel>();
-            float radiusSquared = radius * radius;
-
-            foreach (var playerId in map.SpawnedPlayerIds)
+            float r2 = radius * radius;
+            var result = new List<PlayerModel>();
+            foreach (var pid in map.SpawnedPlayerIds)
             {
-                if (!_gameServer.PlayerModels.TryGetValue(playerId, out var otherPlayer))
-                {
-                    LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[GetPlayersInArea] Player {playerId} not found in PlayerModels.");
-                    continue;
-                }
+                if (!_gameServer.PlayerModels.TryGetValue(pid, out var other)) continue;
+                var ol = other.Location;
+                if (ol == null || ol.MapId != mapId) continue;
 
-                var otherLoc = otherPlayer.Location;
-                if (otherLoc == null || otherLoc.MapId != mapId)
-                    continue;
-
-                float dx = otherLoc.PosX - centerX;
-                float dy = otherLoc.PosY - centerY;
-                float distanceSquared = dx * dx + dy * dy;
-
-                if (distanceSquared <= radiusSquared)
-                {
-                    playersInArea.Add(otherPlayer);
-                }
+                float dx = ol.PosX - centerX, dy = ol.PosY - centerY;
+                if (dx * dx + dy * dy <= r2)
+                    result.Add(other);
             }
-
-            LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[GetPlayersInArea] Found {playersInArea.Count} players in area.");
-            return playersInArea;
+            return result;
         }
 
+        public Task UpdateWorlds()
+        {
+            foreach (var kv in _worlds)
+            {
+                int worldId = kv.Key;
+                if (!_playersByWorldId.TryGetValue(worldId, out var bag)) continue;
+
+                var players = bag.ToArray();
+                var pkt = new UpdateWorld();
+                pkt.Players.AddRange(players.Select(p => new PlayerUpdateData
+                {
+                    PlayerId = p.Id,
+                    X = p.Location!.PosX,
+                    Y = p.Location!.PosY,
+                    Name = p.Name
+                }));
+
+                foreach (var p in players)
+                {
+                    _gameServer._webSocketServerController
+                        ._outgoingQueue.Enqueue(p.AccountId, pkt, ServerPacket.UpdateWorld);
+                }
+            }
+            return Task.CompletedTask;
+        }
     }
 }

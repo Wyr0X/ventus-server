@@ -83,7 +83,6 @@ public class WebSocketServerController
             }
             using var ms = new MemoryStream();
 
-            LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"🆔Prepared to send {accountId}");
 
             var packetsToSend = new List<Packet>();
 
@@ -100,7 +99,6 @@ public class WebSocketServerController
 
             }
 
-            LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $" Send ${packetsToSend.Count} packets to {accountId}");
 
             await socket.SendAsync(
                 new ArraySegment<byte>(ms.GetBuffer(), 0, (int)ms.Length),

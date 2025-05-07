@@ -13,10 +13,13 @@ namespace Ventus.Network.Packets
         PlayerPosition = 6,
         PlayerSpell = 7,
         PlayerSpawn = 8,
-        PlayerSpawnError = 9,
-        Player = 10,
-        SelfSpawn = 11,
-        UpdateWorld = 12,
+        PlayerFinishToLoadGame = 9,
+        PlayerSpawnError = 10,
+        PlayerUpdateData = 11,
+        SelfSpawn = 12,
+        UpdateWorld = 13,
+        PingPlayerGame = 14,
+        PongPlayerGame = 15,
     }
 
     public static class ServerPacketDecoder
@@ -31,10 +34,13 @@ namespace Ventus.Network.Packets
             { ServerPacket.PlayerPosition, PlayerPosition.Descriptor.Parser },
             { ServerPacket.PlayerSpell, PlayerSpell.Descriptor.Parser },
             { ServerPacket.PlayerSpawn, PlayerSpawn.Descriptor.Parser },
+            { ServerPacket.PlayerFinishToLoadGame, PlayerFinishToLoadGame.Descriptor.Parser },
             { ServerPacket.PlayerSpawnError, PlayerSpawnError.Descriptor.Parser },
-            { ServerPacket.Player, Player.Descriptor.Parser },
+            { ServerPacket.PlayerUpdateData, PlayerUpdateData.Descriptor.Parser },
             { ServerPacket.SelfSpawn, SelfSpawn.Descriptor.Parser },
             { ServerPacket.UpdateWorld, UpdateWorld.Descriptor.Parser },
+            { ServerPacket.PingPlayerGame, PingPlayerGame.Descriptor.Parser },
+            { ServerPacket.PongPlayerGame, PongPlayerGame.Descriptor.Parser },
         };
     }
 }

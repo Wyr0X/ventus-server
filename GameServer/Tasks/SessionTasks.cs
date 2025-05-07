@@ -79,7 +79,7 @@ public class SessionTasks
             return;
         }
 
-        Log(LogTag.SessionTasks, $"Spawning player {playerModel.Id} for account {accountModel.AccountId}");
+        Log(LogTag.SessionTasks, $"Spawning player {playerModel.Id} for account {accountModel.AccountId} current player active {accountModel.ActivePlayerId}");
         PlayerModel? playerSpawnedModel = null;
         if (accountModel.ActivePlayerId != null)
         {

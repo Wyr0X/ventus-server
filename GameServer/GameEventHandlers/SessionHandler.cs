@@ -1,4 +1,5 @@
 using Game.Server;
+using Google.Protobuf;
 using Ventus.Network.Packets;
 public class SpawnPlayerData
 {
@@ -73,14 +74,14 @@ public class SessionHandler
         }
 
         // Intentar agregar al mundo y mapa
-        _gameServer.worldManager.AddPlayerToWorld(playerModel, canSpawn =>
+        _ = _gameServer.worldManager.AddPlayerToWorldAsync(playerModel, canSpawn =>
         {
             if (!canSpawn)
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem,
                     $"[HandleSpawnPlayer] Failed to spawn player {playerModel.Id} in world {loc.WorldId}, map {loc.MapId}");
 
-                PlayerSpawnError playerSpawnError = new PlayerSpawnError
+                PlayerSpawnError playerSpawnError = new()
                 {
                     PlayerId = playerModel.Id,
                 };
@@ -92,34 +93,41 @@ public class SessionHandler
             playerModel.isSpawned = true;
             accountModel.ActivePlayerId = playerModel.Id;
             _gameServer.PlayerModels[playerModel.Id] = playerModel;
+            var _playersInTheWorld = _gameServer.worldManager.GetPlayersInArea(loc.WorldId, loc.MapId, loc.PosX, loc.PosY, 1000);
 
-            PlayerSpawn playerJoin = new PlayerSpawn
+            SelfSpawn selfSpawnPacket = new()
             {
                 PlayerId = playerModel.Id,
                 X = loc.PosX,
                 Y = loc.PosY,
                 Name = playerModel.Name
             };
+            selfSpawnPacket.Players.AddRange(_playersInTheWorld.Select(p => new PlayerUpdateData
+            {
+                PlayerId = p.Id,
+                X = p.Location!.PosX,
+                Y = p.Location!.PosY,
+                Name = p.Name
+            }));
 
-            _gameServer._webSocketServerController._outgoingQueue.Enqueue(accountModel.AccountId, playerJoin, ServerPacket.PlayerSpawn);
-            var _playersInTheWorld = _gameServer.worldManager.GetPlayersInArea(loc.WorldId, loc.MapId, loc.PosX, loc.PosY, 1000);
+            _gameServer._webSocketServerController._outgoingQueue.Enqueue(accountModel.AccountId, selfSpawnPacket, ServerPacket.SelfSpawn);
 
             foreach (var player in _playersInTheWorld)
             {
                 if (player.Id != playerModel.Id)
                 {
-                    PlayerSpawn playerSpawn = new PlayerSpawn
+                    PlayerSpawn playerSpawn = new()
                     {
-                        PlayerId = playerJoin.PlayerId,
+                        PlayerId = playerModel.Id,
                         X = loc.PosX,
                         Y = loc.PosY,
-                        Name = playerJoin.Name
+                        Name = playerModel.Name
                     };
                     _gameServer._webSocketServerController._outgoingQueue.Enqueue(player.AccountId, playerSpawn, ServerPacket.PlayerSpawn);
                 }
             }
             LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem,
-                $"[HandleSpawnPlayer] Player {playerModel.Id} spawned successfully in world {loc.WorldId}, map {loc.MapId}");
+                $"[HandleSpawnPlayer] Player {playerModel.Id} spawned successfully in world {loc.WorldId}, map {loc.MapId}, current player active {accountModel.ActivePlayerId}");
         });
     }
 
@@ -159,5 +167,20 @@ public class SessionHandler
         // Notificar que el jugador fue des-spawneado correctamente
         LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem,
             $"[HandleUnspawnPlayer] Player {playerModel.Id} unspawned successfully from world {loc.WorldId}, map {loc.MapId}");
+    }
+    public Task CheckPlayerConnections()
+    {
+        foreach (var kvp in _gameServer.playersInTheGame)
+        {
+            var id = kvp.Key;
+            var player = kvp.Value;
+            PingPlayerGame pingPlayerGamePacket = new()
+            {
+                PlayerId = player.Id,
+
+            };
+            // _gameServer._webSocketServerController._outgoingQueue.Enqueue(player.AccountId, playerSpawn, ServerPacket.PlayerSpawn);
+        }
+        return Task.CompletedTask;
     }
 }
