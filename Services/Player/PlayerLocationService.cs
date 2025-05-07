@@ -8,9 +8,9 @@ namespace VentusServer.Services
 {
     public class PlayerLocationService : BaseCachedService<PlayerLocationModel, int>
     {
-        private const int INITIAL_WORLD = 0;
+        private const int INITIAL_WORLD = 1;
 
-        private const int INITIAL_MAP = 0;
+        private const int INITIAL_MAP = 1;
         private readonly IPlayerLocationDAO _playerLocationDAO;
         private readonly MapService _mapService;
         private readonly WorldService _worldService;

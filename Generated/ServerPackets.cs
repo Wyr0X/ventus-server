@@ -14,6 +14,9 @@ namespace Ventus.Network.Packets
         PlayerSpell = 7,
         PlayerSpawn = 8,
         PlayerSpawnError = 9,
+        Player = 10,
+        SelfSpawn = 11,
+        UpdateWorld = 12,
     }
 
     public static class ServerPacketDecoder
@@ -29,6 +32,9 @@ namespace Ventus.Network.Packets
             { ServerPacket.PlayerSpell, PlayerSpell.Descriptor.Parser },
             { ServerPacket.PlayerSpawn, PlayerSpawn.Descriptor.Parser },
             { ServerPacket.PlayerSpawnError, PlayerSpawnError.Descriptor.Parser },
+            { ServerPacket.Player, Player.Descriptor.Parser },
+            { ServerPacket.SelfSpawn, SelfSpawn.Descriptor.Parser },
+            { ServerPacket.UpdateWorld, UpdateWorld.Descriptor.Parser },
         };
     }
 }

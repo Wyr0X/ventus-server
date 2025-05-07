@@ -35,8 +35,9 @@ public class SessionHandler
             return;
         }
         // Validar que los datos del evento sean correctos
+        PlayerModel? playerSpawnedModel = null;
         if (!(data.PlayerModel is PlayerModel playerModel) ||
-        !(data.PlayerSpawnedModel is PlayerModel playerSpawnedModel) ||
+        (data.PlayerSpawnedModel != null && data.PlayerSpawnedModel is not PlayerModel) ||
             !(data.AccountModel is AccountModel accountModel))
         {
             LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem, "Invalid event data for PlayerSpawn");
@@ -101,7 +102,22 @@ public class SessionHandler
             };
 
             _gameServer._webSocketServerController._outgoingQueue.Enqueue(accountModel.AccountId, playerJoin, ServerPacket.PlayerSpawn);
+            var _playersInTheWorld = _gameServer.worldManager.GetPlayersInArea(loc.WorldId, loc.MapId, loc.PosX, loc.PosY, 1000);
 
+            foreach (var player in _playersInTheWorld)
+            {
+                if (player.Id != playerModel.Id)
+                {
+                    PlayerSpawn playerSpawn = new PlayerSpawn
+                    {
+                        PlayerId = playerJoin.PlayerId,
+                        X = loc.PosX,
+                        Y = loc.PosY,
+                        Name = playerJoin.Name
+                    };
+                    _gameServer._webSocketServerController._outgoingQueue.Enqueue(player.AccountId, playerSpawn, ServerPacket.PlayerSpawn);
+                }
+            }
             LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem,
                 $"[HandleSpawnPlayer] Player {playerModel.Id} spawned successfully in world {loc.WorldId}, map {loc.MapId}");
         });

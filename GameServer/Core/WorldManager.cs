@@ -13,6 +13,7 @@ namespace Game.Server
     public class WorldManager
     {
         private readonly Dictionary<int, WorldModel> _worlds = new();
+        private readonly Dictionary<int, PlayerModel> _playersInTheWorld = new();
         private readonly GameServer _gameServer;
         private readonly ConcurrentDictionary<int, Task<WorldModel?>> _loadingWorlds = new();
 
@@ -71,6 +72,10 @@ namespace Game.Server
                         _loadingWorlds.TryRemove(worldId, out _);
                         bool result = AddPlayerToLoadedWorld(player, loaded);
                         LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[AddPlayer] Add to newly loaded world result for player {player.Id}: {result}"); // NUEVO LOG
+                        if (result)
+                        {
+                            _playersInTheWorld[player.Id] = player;
+                        }
                         onFinished(result);
                     }
                     else
@@ -192,5 +197,51 @@ namespace Game.Server
             LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[TrySpawnPlayer] Player {player.Id} successfully spawned."); // NUEVO LOG
             return true;
         }
+        public List<PlayerModel> GetPlayersInArea(int worldId, int mapId, float centerX, float centerY, float radius)
+        {
+            LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[GetPlayersInArea] Called with WorldId={worldId}, MapId={mapId}, Center=({centerX},{centerY}), Radius={radius}");
+
+            if (!_worlds.TryGetValue(worldId, out var world))
+            {
+                LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[GetPlayersInArea] World {worldId} not found.");
+                return new List<PlayerModel>();
+            }
+
+            var map = world.Maps.FirstOrDefault(m => m.Id == mapId);
+            if (map == null)
+            {
+                LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[GetPlayersInArea] Map {mapId} not found in World {worldId}.");
+                return new List<PlayerModel>();
+            }
+
+            var playersInArea = new List<PlayerModel>();
+            float radiusSquared = radius * radius;
+
+            foreach (var playerId in map.SpawnedPlayerIds)
+            {
+                if (!_gameServer.PlayerModels.TryGetValue(playerId, out var otherPlayer))
+                {
+                    LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[GetPlayersInArea] Player {playerId} not found in PlayerModels.");
+                    continue;
+                }
+
+                var otherLoc = otherPlayer.Location;
+                if (otherLoc == null || otherLoc.MapId != mapId)
+                    continue;
+
+                float dx = otherLoc.PosX - centerX;
+                float dy = otherLoc.PosY - centerY;
+                float distanceSquared = dx * dx + dy * dy;
+
+                if (distanceSquared <= radiusSquared)
+                {
+                    playersInArea.Add(otherPlayer);
+                }
+            }
+
+            LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[GetPlayersInArea] Found {playersInArea.Count} players in area.");
+            return playersInArea;
+        }
+
     }
 }

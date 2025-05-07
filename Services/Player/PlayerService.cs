@@ -178,6 +178,8 @@ namespace VentusServer.Services
             var inventory = await _playerInventoryService.CreateDefaultInventory(player);
             var spells = await _playerSpellsService.CreateDefaultSpells(player);
 
+            Console.WriteLine($"Ubicación: {location}");
+
             player.Location = location;
             player.Stats = stats;
             player.PlayerSpells = spells;

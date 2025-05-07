@@ -63,7 +63,7 @@ public static class LoggerUtil
         { LogTag.MapModel, (false, ConsoleColor.DarkGreen, false) },
         { LogTag.BaseCachedService, (false, ConsoleColor.DarkBlue, false) },
         { LogTag.SystemChatService, (false, ConsoleColor.DarkBlue, false) },
-        { LogTag.PlayerLocationService, (false, ConsoleColor.DarkBlue, false) },
+        { LogTag.PlayerLocationService, (true, ConsoleColor.DarkBlue, false) },
         { LogTag.IAccountService, (false, ConsoleColor.DarkBlue, false) },
         { LogTag.MapService, (false, ConsoleColor.DarkBlue, false) },
         { LogTag.WorldService, (true, ConsoleColor.DarkBlue, false) },
