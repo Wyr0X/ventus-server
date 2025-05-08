@@ -28,39 +28,50 @@ public class SessionTasks
     }
     private async Task<(AccountModel? Account, PlayerModel? Player)> LoadSessionContextAsync(UserMessagePair messagePair)
     {
-        Log(LogTag.SessionTasks, $"Fetching Account and PlayerModel for AccountId={messagePair.AccountId}");
+        try
+        {
+            Log(LogTag.SessionTasks, $"Fetching Account and PlayerModel for AccountId={messagePair.AccountId}");
 
-        PlayerJoin playerJoinMessage = (PlayerJoin)messagePair.ClientMessage;
+            var playerJoinMessage = (PlayerJoin)messagePair.ClientMessage;
 
-        var playerModel = await _playerService.GetPlayerByIdAsync(
-            playerJoinMessage.PlayerId,
-            new PlayerModuleOptions
+            var playerModel = await _playerService.GetPlayerByIdAsync(
+                playerJoinMessage.PlayerId,
+                new PlayerModuleOptions
+                {
+                    IncludeInventory = true,
+                    IncludeLocation = true,
+                    IncludeStats = true,
+                    IncludeSpells = true,
+                });
+
+            var accountModel = await _IAccountService.GetOrCreateAccountInCacheAsync(messagePair.AccountId);
+
+            if (accountModel == null)
             {
-                IncludeInventory = true,
-                IncludeLocation = true,
-                IncludeStats = true,
-                IncludeSpells = true,
-            });
+                Log(LogTag.SessionTasks, "AccountModel is null", isError: true);
+            }
 
-        var accountModel = await _IAccountService.GetOrCreateAccountInCacheAsync(messagePair.AccountId);
+            if (playerModel == null)
+            {
+                Log(LogTag.SessionTasks, "PlayerModel is null", isError: true);
+            }
 
-        if (accountModel == null)
-        {
-            Log(LogTag.SessionTasks, "AccountModel is null", isError: true);
+            if (playerModel?.Location == null)
+            {
+                Log(LogTag.SessionTasks, "PlayerLocation is null", isError: true);
+            }
+
+            return (accountModel, playerModel);
         }
-
-        if (playerModel == null)
+        catch (Exception ex)
         {
-            Log(LogTag.SessionTasks, "PlayerModel is null", isError: true);
+            Log(LogTag.SessionTasks, $"❌ Error loading session context for {messagePair.AccountId}: {ex.Message}", isError: true);
+            // Opcionalmente, si quieres ver la pila:
+            Log(LogTag.SessionTasks, ex.StackTrace ?? string.Empty, isError: true);
+            return (null, null);
         }
-
-        if (playerModel?.Location == null)
-        {
-            Log(LogTag.SessionTasks, "PlayerLocation is null", isError: true);
-        }
-
-        return (accountModel, playerModel);
     }
+
 
     public async Task HandlePlayerJoin(UserMessagePair messagePair)
     {

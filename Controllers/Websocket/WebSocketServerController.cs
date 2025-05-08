@@ -12,7 +12,14 @@ public class WebSocketServerController
     private readonly WebSocketConnectionManager _connectionManager;
     private readonly ConcurrentQueue<UserMessagePair> _messageQueue;
     private readonly TaskScheduler _taskScheduler;
+    public readonly IAccountService _accountService;
     public readonly OutgoingMessageQueue _outgoingQueue;
+
+    private static readonly HashSet<ClientPacket> _silentPackets = new HashSet<ClientPacket>
+    {
+        ClientPacket.PlayerInput
+        // añade aquí más packets que quieras silenciar...
+    };
 
 
     public WebSocketServerController(TaskScheduler taskScheduler, IAccountService IAccountService)
@@ -22,6 +29,7 @@ public class WebSocketServerController
         _authService = new WebSocketAuthenticationService(IAccountService);
         _connectionManager = new WebSocketConnectionManager();
         _outgoingQueue = new OutgoingMessageQueue(); // Initialize the _outgoingQueue field
+        _accountService = IAccountService;
     }
 
     public async Task StartServerAsync(CancellationToken cancellationToken)
@@ -62,7 +70,6 @@ public class WebSocketServerController
             cancellationToken.ThrowIfCancellationRequested();
             if (_messageQueue.TryDequeue(out var pair))
             {
-                LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"Dequeue packet: {pair.PacketType}");
 
                 _taskScheduler.Dispatch(pair);
             }
@@ -73,8 +80,8 @@ public class WebSocketServerController
     public async Task SendOutgoingPackets(CancellationToken cancellationToken)
     {
 
-        var accountIds = _outgoingQueue.GetAccountIdsWithMessages();
 
+        var accountIds = _outgoingQueue.GetAccountIdsWithMessages();
         foreach (var accountId in accountIds)
         {
             if (!_connectionManager.TryGetSocket(accountId, out var socket) || socket.State != WebSocketState.Open)
@@ -88,12 +95,16 @@ public class WebSocketServerController
 
             while (_outgoingQueue.TryDequeue(accountId, out var outgoingPacket))
             {
+                if (socket.State != WebSocketState.Open)
+                    break; // o continue= ByteString.CopyFrom(outgoingPacket.Message.ToByteArray())
+
                 if (outgoingPacket == null) return;
                 var packet = new Packet
                 {
                     Type = (uint)outgoingPacket.PacketType,
                     Payload = ByteString.CopyFrom(outgoingPacket.Message.ToByteArray())
                 };
+
                 packet.WriteDelimitedTo(ms);
                 packetsToSend.Add(packet);
 
@@ -111,7 +122,15 @@ public class WebSocketServerController
         await Task.Delay(30); // Ajustá esto según la frecuencia de envío deseada
     }
 
-    public async void SendServerPacketByAccountId(Guid accountId, IMessage message, ServerPacket serverPacket)
+    /*************  ✨ Windsurf Command ⭐  *************/
+    /// <summary>
+    /// Envía un paquete al cliente conectado con el accountId especificado.
+    /// </summary>
+    /// <param name="accountId">Id del cuenta del cliente que se le enviará el paquete.</param>
+    /// <param name="message">Mensaje que se serializará y enviará en el paquete.</param>
+
+    /*******  58de4cea-744b-4f12-96f0-affe70fcf2e2  *******/
+    public async Task SendServerPacketByAccountId(Guid accountId, IMessage message, ServerPacket serverPacket)
     {
 
 
@@ -140,98 +159,175 @@ public class WebSocketServerController
 
     private async Task HandleWebSocket(WebSocket socket, string connectionId)
     {
-        var buffer = new byte[1024];
+        // Buffer más generoso y ArraySegment reutilizable
+        var buffer = new byte[4096];
+        var bufferSegment = new ArraySegment<byte>(buffer);
         Guid accountId = Guid.Empty;
 
         try
         {
-            using var ms = new MemoryStream();
-            var result = await socket.ReceiveAsync(new(buffer), CancellationToken.None);
-            ms.Write(buffer, 0, result.Count);
-            if (result.MessageType != WebSocketMessageType.Binary)
+            // 1) Primer paquete: LOGIN
+            var loginPkt = await ReceivePacket(socket, bufferSegment);
+            if (loginPkt == null || loginPkt.Type != (uint)ClientPacket.LoginRequest)
             {
-                LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"❌ Mensaje no binario recibido de {connectionId}");
+                LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController,
+                    $"❌ Se esperaba LoginRequest, llegó tipo={(loginPkt?.Type.ToString() ?? "null")}");
+                await CloseAndCleanupSocketAsync(socket, connectionId, accountId,
+                    "Login no recibido", WebSocketCloseStatus.PolicyViolation);
                 return;
             }
 
-            var packet = Packet.Parser.ParseFrom(ms.ToArray());
-            var packetType = (ClientPacket)packet.Type;
-            IMessage clientPacket = ClientPacketDecoder.Parsers[packetType].ParseFrom(packet.Payload);
-
-            LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"Bytes :{ms.ToArray()}");
-
-            LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"Paquete recibido - Tipo :{packetType}");
-            if (packetType == ClientPacket.LoginRequest)
+            // Parsear y autenticar
+            var loginParser = ClientPacketDecoder.Parsers[ClientPacket.LoginRequest];
+            var loginRequest = (LoginRequest)loginParser.ParseFrom(loginPkt.Payload);
+            if (!_authService.TryAuthenticate(loginRequest.Token, out accountId))
             {
-                var loginPacket = (LoginRequest)clientPacket;
-                if (!_authService.TryAuthenticate(loginPacket.Token, out accountId))
-                {
-                    LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"❌ Token inválido recibido de {connectionId}");
-                    await socket.CloseAsync(WebSocketCloseStatus.PolicyViolation, "Token inválido", CancellationToken.None);
-                    return;
-                }
-                await _connectionManager.RemoveConnectionByAccountId(accountId);
-
-                if (!_connectionManager.TryAuthenticateConnection(connectionId, accountId, loginPacket.Token, out socket))
-                {
-                    LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"❌ Fallo al autenticar conexión {connectionId}");
-                    await socket.CloseAsync(WebSocketCloseStatus.InternalServerError, "No se pudo autenticar", CancellationToken.None);
-                    return;
-                }
-                LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"🔓 Usuario autenticado: {accountId}");
+                LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController,
+                    $"❌ Token inválido para {connectionId}");
+                await CloseAndCleanupSocketAsync(socket, connectionId, accountId,
+                    "Token inválido", WebSocketCloseStatus.NormalClosure);
+                return;
             }
 
+            // Registrar conexión autenticada
+            await _connectionManager.RemoveConnectionByAccountId(accountId);
+            if (!_connectionManager.TryAuthenticateConnection(connectionId, accountId,
+                    loginRequest.Token, out socket))
+            {
+                LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController,
+                    $"❌ Falló TryAuthenticateConnection {connectionId}");
+                await CloseAndCleanupSocketAsync(socket, connectionId, accountId,
+                    "Auth connection fail", WebSocketCloseStatus.NormalClosure);
+                return;
+            }
+            LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController,
+                $"🔓 Usuario autenticado: {accountId}");
+
+            // 2) Bucle principal de recepción y despacho
             while (socket.State == WebSocketState.Open)
             {
-                ms.SetLength(0);
-                result = await socket.ReceiveAsync(new(buffer), CancellationToken.None);
-                ms.Write(buffer, 0, result.Count);
-                packet = Packet.Parser.ParseFrom(ms.ToArray());
-                packetType = (ClientPacket)packet.Type;
-                clientPacket = ClientPacketDecoder.Parsers[packetType].ParseFrom(packet.Payload);
-
-
-                if (!_connectionManager.TryGetAccountId(connectionId, out accountId))
+                var pkt = await ReceivePacket(socket, bufferSegment);
+                if (pkt == null)
+                    break; // Close frame o error de lectura
+                var packetType = (ClientPacket)pkt.Type;
+                var clientPacket = ClientPacketDecoder.Parsers[packetType].ParseFrom(pkt.Payload);
+                var typeEnum = (ClientPacket)pkt.Type;
+                if (!ClientPacketDecoder.Parsers.TryGetValue(typeEnum, out var parser))
                 {
-                    LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"❌ Usuario no autenticado para {connectionId}");
-                    await socket.CloseAsync(WebSocketCloseStatus.PolicyViolation, "Usuario no autenticado", CancellationToken.None);
-                    return;
+                    LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController,
+                        $"❌ Paquete desconocido: {pkt.Type}");
+                    continue;
                 }
-                LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"Paquete recibido - Tipo :{packetType}");
 
-                if (packetType == ClientPacket.MessagePing)
+                if (!_silentPackets.Contains(typeEnum))
                 {
-                    LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"📥 Ping recibido de {accountId}");
+                    LoggerUtil.Log(
+                        LoggerUtil.LogTag.WebSocketServerController,
+                        $"📥 Paquete recibido – Tipo: {typeEnum}"
+                    );
+                }
+                // Caso Ping
+                if (typeEnum == ClientPacket.MessagePing)
+                {
+                    LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController,
+                        $"📥 Ping de {accountId}");
                     var pong = new MessagePong { Message = "Pong" };
-                    var pongPacket = new Packet { Payload = Google.Protobuf.ByteString.CopyFrom(pong.ToByteArray()), Type = (uint)ServerPacket.MessagePong };
-                    await socket.SendAsync(new(pongPacket.ToByteArray()), WebSocketMessageType.Binary, true, CancellationToken.None);
+                    var pongPacket = new Packet
+                    {
+                        Type = (uint)ServerPacket.MessagePong,
+                        Payload = ByteString.CopyFrom(pong.ToByteArray())
+                    };
+                    _outgoingQueue.Enqueue(accountId, pongPacket, ServerPacket.MessagePong);
                 }
-
                 else
                 {
-                    LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"📥 Mensaje recibido de {accountId}: {packetType}");
-                    _messageQueue.Enqueue(new UserMessagePair(accountId, clientPacket, packetType));
+                    // Encolar para el dispatcher
+                    _messageQueue.Enqueue(new UserMessagePair(accountId, clientPacket, typeEnum));
                 }
             }
         }
         catch (Exception ex)
         {
-            LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"❌ Error en WebSocket {connectionId}: {ex.Message}");
+            LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController,
+                $"❌ Error en WebSocket {connectionId}: {ex.Message}");
         }
         finally
         {
+            // Limpieza final
             if (accountId != Guid.Empty)
             {
                 _connectionManager.RemoveConnection(connectionId, accountId);
-                LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"🔌 Conexión cerrada para {accountId}");
+                LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController,
+                    $"🔌 Conexión cerrada para {accountId}");
             }
-            await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Cerrado", CancellationToken.None);
-            socket.Dispose();
+            await CloseAndCleanupSocketAsync(socket, connectionId, accountId,
+                "Conexión finalizada", WebSocketCloseStatus.NormalClosure);
         }
     }
+
+    // Helper que lee hasta EndOfMessage y filtra control-frames.
+    // Devuelve null si llegó un Close o un frame no-binario.
+    private async Task<Packet?> ReceivePacket(WebSocket socket, ArraySegment<byte> bufferSegment)
+    {
+        using var ms = new MemoryStream();
+        WebSocketReceiveResult result;
+
+        do
+        {
+            result = await socket.ReceiveAsync(bufferSegment, CancellationToken.None);
+
+            if (result.MessageType == WebSocketMessageType.Close)
+                return null;
+
+            if (result.MessageType != WebSocketMessageType.Binary)
+                return null;  // Ignora Ping/Pong en texto o control
+
+            ms.Write(bufferSegment.Array!, 0, result.Count);
+        }
+        while (!result.EndOfMessage);
+
+        var raw = ms.ToArray();
+        return Packet.Parser.ParseFrom(raw);
+    }
+
 
     public async Task RemoveConnectionByAccountId(Guid accountId)
     {
         await _connectionManager.RemoveConnectionByAccountId(accountId);
     }
+    private async Task CloseAndCleanupSocketAsync(WebSocket socket, string connectionId, Guid accountId, string reason, WebSocketCloseStatus status)
+    {
+        try
+        {
+            if (socket?.State == WebSocketState.Open || socket?.State == WebSocketState.CloseReceived)
+            {
+                await socket.CloseAsync(status, reason, CancellationToken.None);
+            }
+        }
+        catch (Exception ex)
+        {
+            LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"⚠️ Error al cerrar socket de {accountId}: {ex.Message}");
+        }
+        finally
+        {
+            socket?.Dispose();
+
+            if (accountId != Guid.Empty)
+            {
+                await _connectionManager.RemoveConnectionByAccountId(accountId);
+                UserMessagePair userMessagePair = new(accountId, new TryToDespawnPlayer(), ClientPacket.TryToDespawnPlayer);
+                _taskScheduler.Dispatch(userMessagePair);
+                LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"🔌 Conexión cerrada para {accountId}");
+            }
+            else if (!string.IsNullOrEmpty(connectionId))
+            {
+                _connectionManager.RemoveConnection(connectionId, accountId);
+                UserMessagePair userMessagePair = new(accountId, new TryToDespawnPlayer(), ClientPacket.TryToDespawnPlayer);
+                _taskScheduler.Dispatch(userMessagePair);
+                LoggerUtil.Log(LoggerUtil.LogTag.WebSocketServerController, $"🔌 Conexión pendiente cerrada: {connectionId}");
+            }
+        }
+    }
+
+
 }

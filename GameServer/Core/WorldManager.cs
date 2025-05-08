@@ -97,9 +97,16 @@ namespace Game.Server
         /// <summary>
         /// Elimina un jugador del mundo, y si queda vacío también quita el mundo.
         /// </summary>
-        public bool RemovePlayerFromWorld(PlayerModel player, bool fullExit = true)
+        public bool RemovePlayerFromWorld(int playerId, bool fullExit = true)
         {
-            var loc = player.Location;
+            var player = _gameServer.playersInTheGame.GetValueOrDefault(playerId);
+            if (player == null)
+            {
+                LoggerUtil.Log(LoggerUtil.LogTag.WorldManager,
+                    $"[RemovePlayer] Player {playerId} not found in playersInTheGame.");
+                return false;
+            }
+            var loc = player.PlayerModel.Location;
             if (loc == null)
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.WorldManager,

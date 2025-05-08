@@ -14,6 +14,7 @@ namespace Ventus.Network.Packets
         PlayerExit = 7,
         TimeSyncRequest = 8,
         PlayerFinishToLoadGame = 9,
+        TryToDespawnPlayer = 10,
     }
 
     public static class ClientPacketDecoder
@@ -29,6 +30,7 @@ namespace Ventus.Network.Packets
             { ClientPacket.PlayerExit, PlayerExit.Descriptor.Parser },
             { ClientPacket.TimeSyncRequest, TimeSyncRequest.Descriptor.Parser },
             { ClientPacket.PlayerFinishToLoadGame, PlayerFinishToLoadGame.Descriptor.Parser },
+            { ClientPacket.TryToDespawnPlayer, TryToDespawnPlayer.Descriptor.Parser },
         };
     }
 }

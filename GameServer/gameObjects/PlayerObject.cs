@@ -94,7 +94,7 @@ public class PlayerObject : Character
 
         // Calcular desplazamiento
         Vec2 directionVec = Vec2.DirectionToVector(input.Direction);
-        Vec2 move = Vec2.Scale(directionVec, this.Speed * deltaTime);
+        Vec2 move = Vec2.Scale(directionVec, this.Speed);
 
         this.Position.Add(move);
 

@@ -11,6 +11,7 @@ public enum CustomGameEvent
     PlayerSpawn,
     PlayerExit,
     GetWorldData,
+    TryToDespawnPlayer,
 }
 public class GameEvent
 {

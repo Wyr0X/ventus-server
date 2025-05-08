@@ -154,6 +154,35 @@ namespace Game.Server
         }
 
 
+        public void RemovePlayerFromGame(int playerId)
+        {
+            if (playersInTheGame.TryRemove(playerId, out var player))
+            {
+                LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"Jugador {playerId} eliminado de playersInTheGame.");
+
+                // Eliminar de playersByAccountId si está mapeado
+                var accountId = player.PlayerModel.AccountId; // Asumo que existe esta propiedad en PlayerObject
+                if (accountId != Guid.Empty && playersByAccountId.TryRemove(accountId, out _))
+                {
+                    LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"Jugador con accountId {accountId} eliminado de playersByAccountId.");
+                }
+
+                // Eliminar también el modelo si aplica
+                if (PlayerModels.TryRemove(playerId, out _))
+                {
+                    LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"Modelo del jugador {playerId} eliminado de PlayerModels.");
+                }
+
+                // Limpieza adicional si se requiere
+                worldManager.RemovePlayerFromWorld(playerId); // Asumiendo que tienes un método para esto
+
+                player = null;
+            }
+            else
+            {
+                LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"No se encontró al jugador {playerId} en playersInTheGame.", isError: true);
+            }
+        }
 
 
     }

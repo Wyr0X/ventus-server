@@ -6572,3 +6572,13 @@
 [12:11:48] [SessionTasks/HandlePlayerInput] Invalid input received for accountId: 6c09abda-0090-4b71-86be-30fd53d67222
 [13:15:00] [SessionTasks] PlayerLocation is null
 [13:15:00] [SessionTasks] PlayerLocation is null
+[17:22:06] [SessionTasks] PlayerLocation is null
+[17:22:06] [SessionTasks] PlayerLocation is null
+[17:43:30] [SessionTasks] ❌ Error loading session context for 6c09abda-0090-4b71-86be-30fd53d67222: Unable to cast object of type 'Packet' to type 'PlayerJoin'.
+[17:43:30] [SessionTasks]    at SessionTasks.LoadSessionContextAsync(UserMessagePair messagePair) in C:\Users\pedro\Desktop\Ventus AO Project\ventus-server\GameServer\Tasks\SessionTasks.cs:line 35
+[17:43:30] [SessionTasks] AccountModel or PlayerModel is null
+[17:49:03] [SessionTasks] ❌ Error loading session context for 6c09abda-0090-4b71-86be-30fd53d67222: Unable to cast object of type 'Packet' to type 'PlayerJoin'.
+[17:49:03] [SessionTasks]    at SessionTasks.LoadSessionContextAsync(UserMessagePair messagePair) in C:\Users\pedro\Desktop\Ventus AO Project\ventus-server\GameServer\Tasks\SessionTasks.cs:line 35
+[17:49:03] [SessionTasks] AccountModel or PlayerModel is null
+[17:50:26] [SessionTasks] PlayerLocation is null
+[17:50:26] [SessionTasks] PlayerLocation is null

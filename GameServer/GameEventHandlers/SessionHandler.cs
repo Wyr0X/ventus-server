@@ -21,7 +21,8 @@ public class SessionHandler
     {
         _gameServer = gameServer;
         gameEventHandler.Subscribe(CustomGameEvent.PlayerSpawn, async (customGamEvent) => await HandleSpawnPlayer(customGamEvent));
-        gameEventHandler.Subscribe(CustomGameEvent.PlayerExit, async (customGamEvent) => await HandleUnspawnPlayer(customGamEvent));
+        gameEventHandler.Subscribe(ClientPacket.TryToDespawnPlayer, HandleTryToDespawnPlayer);
+
 
     }
 
@@ -53,7 +54,7 @@ public class SessionHandler
         {
             LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem,
                 $"[HandleSpawnPlayer] Player {playerModel.Id} is already spawned, removing from world...");
-            _gameServer.worldManager.RemovePlayerFromWorld(playerModel, false);
+            _gameServer.RemovePlayerFromGame(playerModel.Id);
             playerModel.isSpawned = false;
             accountModel.ActivePlayerId = null;
         }
@@ -61,7 +62,8 @@ public class SessionHandler
         {
             LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem,
                 $"[HandleSpawnPlayer] Player {accountModel.ActivePlayerId} is already spawned, removing from world...");
-            _gameServer.worldManager.RemovePlayerFromWorld(playerSpawnedModel, false);
+            _gameServer.RemovePlayerFromGame(playerSpawnedModel.Id);
+
             playerSpawnedModel.isSpawned = false;
             accountModel.ActivePlayerId = null;
         }
@@ -132,43 +134,37 @@ public class SessionHandler
         });
     }
 
-    public async Task HandleUnspawnPlayer(dynamic gameEvent)
+    public Task HandleTryToDespawnPlayer(UserMessagePair userMessagePair)
     {
-        LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem, $"[HandleUnspawnPlayer] Incoming event: {gameEvent}");
-
-        // Validar los datos del evento
-        if (!(gameEvent.PlayerModel is PlayerModel playerModel) ||
-            !(gameEvent.AccountModel is AccountModel accountModel))
+        try
         {
-            LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem, "Invalid event data for PlayerUnspawn");
-            return;
-        }
+            var despawnPlayerPacket = userMessagePair.ClientMessage as TryToDespawnPlayer;
+            if (despawnPlayerPacket == null)
+            {
+                LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem, "Invalid event data type (expected TryToDespawnPlayer)");
+                return Task.CompletedTask;
+            }
+            var playerObject = _gameServer.playersByAccountId[userMessagePair.AccountId];
 
-        // Verificar ubicación del jugador
-        var loc = playerModel.Location;
-        if (loc == null)
-        {
-            LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem, "[HandleUnspawnPlayer] PlayerLocation is null");
-            return;
-        }
+            if (playerObject == null)
+            {
+                LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem, $"[HandleUnspawnPlayer] Player not found for ID {userMessagePair.AccountId}");
+                return Task.CompletedTask;
+            }
+            _gameServer.RemovePlayerFromGame(playerObject.Id); // Eliminar el jugador del juego
 
-        // Intentar remover al jugador del mundo
-        bool removed = _gameServer.worldManager.RemovePlayerFromWorld(playerModel, fullExit: false);
-        if (!removed)
+            return Task.CompletedTask;
+
+        }
+        catch (Exception ex)
         {
             LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem,
-                $"[HandleUnspawnPlayer] Failed to unspawn player {playerModel.Id} from world {loc.WorldId}, map {loc.MapId}");
-            return;
+                $"[HandleUnspawnPlayer] Exception occurred: {ex.Message}\n{ex.StackTrace}");
+            return Task.CompletedTask;
+
         }
-
-        // Actualizar el estado del jugador y de la cuenta
-        playerModel.isSpawned = false;
-        accountModel.ActivePlayerId = null;
-
-        // Notificar que el jugador fue des-spawneado correctamente
-        LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem,
-            $"[HandleUnspawnPlayer] Player {playerModel.Id} unspawned successfully from world {loc.WorldId}, map {loc.MapId}");
     }
+
 
     public void HandleTimeSyncRequest(UserMessagePair userMessagePair)
     {
