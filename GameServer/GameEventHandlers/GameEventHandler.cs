@@ -1,12 +1,15 @@
 using Game.Server;
 using Ventus.Network.Packets;
 using static LoggerUtil;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 public class GameEventHandler
 {
     private readonly GameServer _gameServer;
-    private readonly Dictionary<ClientPacket, List<Action<UserMessagePair>>> _clientPacketHandlers = new();
-    private readonly Dictionary<CustomGameEvent, List<Action<dynamic>>> _customGameEventHandlers = new();
+
+    private readonly Dictionary<ClientPacket, List<Func<UserMessagePair, Task>>> _clientPacketHandlers = new();
+    private readonly Dictionary<CustomGameEvent, List<Func<dynamic, Task>>> _customGameEventHandlers = new();
 
     public GameEventHandler(GameServer gameServer)
     {
@@ -14,11 +17,11 @@ public class GameEventHandler
         Log(LogTag.GameEventHandler, "GameEventHandler initialized");
     }
 
-    public void Subscribe(ClientPacket type, Action<UserMessagePair> handler)
+    public void Subscribe(ClientPacket type, Func<UserMessagePair, Task> handler)
     {
         if (!_clientPacketHandlers.ContainsKey(type))
         {
-            _clientPacketHandlers[type] = new List<Action<UserMessagePair>>();
+            _clientPacketHandlers[type] = new List<Func<UserMessagePair, Task>>();
             Log(LogTag.GameEventHandler, $"Subscribed first handler for packet type: {type}", "Subscribe");
         }
 
@@ -26,11 +29,11 @@ public class GameEventHandler
         Log(LogTag.GameEventHandler, $"Added handler for packet type: {type}", "Subscribe");
     }
 
-    public void Subscribe(CustomGameEvent type, Action<dynamic> handler)
+    public void Subscribe(CustomGameEvent type, Func<dynamic, Task> handler)
     {
         if (!_customGameEventHandlers.ContainsKey(type))
         {
-            _customGameEventHandlers[type] = new List<Action<dynamic>>();
+            _customGameEventHandlers[type] = new List<Func<dynamic, Task>>();
             Log(LogTag.GameEventHandler, $"Subscribed first handler for custom game event type: {type}", "SubscribeCustom");
         }
 
@@ -38,7 +41,7 @@ public class GameEventHandler
         Log(LogTag.GameEventHandler, $"Added handler for custom game event type: {type}", "SubscribeCustom");
     }
 
-    public void HandlePacket(UserMessagePair userMessagePair)
+    public async Task HandlePacket(UserMessagePair userMessagePair)
     {
         var type = userMessagePair.PacketType;
         if (_clientPacketHandlers.TryGetValue(type, out var handlerList))
@@ -46,7 +49,7 @@ public class GameEventHandler
             Log(LogTag.GameEventHandler, $"Handling packet type: {type} with {handlerList.Count} handler(s)", "HandlePacket");
             foreach (var handler in handlerList)
             {
-                handler(userMessagePair);
+                await handler(userMessagePair);
             }
         }
         else
@@ -55,8 +58,10 @@ public class GameEventHandler
         }
     }
 
-    public void HandlePacket(GameEvent gameEvent)
+    public async Task HandlePacket(GameEvent gameEvent)
     {
+        Log(LogTag.GameEventHandler, $"Handling GameEvent of type: {gameEvent.Type} - {gameEvent} - {gameEvent.PacketType}");
+
         switch (gameEvent.PacketType)
         {
             case GameEventType.ClientPacket:
@@ -68,7 +73,7 @@ public class GameEventHandler
                         Log(LogTag.GameEventHandler, $"Dispatching ClientPacket of type: {type} to {userHandlers.Count} handler(s)", "HandleGameEvent");
                         foreach (var handler in userHandlers)
                         {
-                            handler(userMessagePair);
+                            await handler(userMessagePair);
                         }
                     }
                     else
@@ -92,7 +97,7 @@ public class GameEventHandler
                     {
                         if (gameEvent.Data != null)
                         {
-                            handler(gameEvent.Data);
+                            await handler(gameEvent.Data);
                         }
                         else
                         {

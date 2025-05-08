@@ -22,17 +22,31 @@ public static partial class MovementClientReflection {
   static MovementClientReflection() {
     byte[] descriptorData = global::System.Convert.FromBase64String(
         string.Concat(
-          "CiNnYW1lL21vdmVtZW50L21vdmVtZW50LmNsaWVudC5wcm90byIbCgtQbGF5",
-          "ZXJJbnB1dBIMCgRrZXlzGAEgAygNYgZwcm90bzM="));
+          "CiNnYW1lL21vdmVtZW50L21vdmVtZW50LmNsaWVudC5wcm90byJXCgtQbGF5",
+          "ZXJJbnB1dBIdCglkaXJlY3Rpb24YASABKA4yCi5EaXJlY3Rpb24SEQoJdGlt",
+          "ZXN0YW1wGAIgASgDEhYKDnNlcXVlbmNlTnVtYmVyGAMgASgFKjwKCURpcmVj",
+          "dGlvbhIICgREb3duEAASCAoETGVmdBABEgYKAlVwEAISCQoFUmlnaHQQAxII",
+          "CgROb25lEARiBnByb3RvMw=="));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { },
-        new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-          new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInput), global::PlayerInput.Parser, new[]{ "Keys" }, null, null, null, null)
+        new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Direction), }, null, new pbr::GeneratedClrTypeInfo[] {
+          new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInput), global::PlayerInput.Parser, new[]{ "Direction", "Timestamp", "SequenceNumber" }, null, null, null, null)
         }));
   }
   #endregion
 
 }
+#region Enums
+public enum Direction {
+  [pbr::OriginalName("Down")] Down = 0,
+  [pbr::OriginalName("Left")] Left = 1,
+  [pbr::OriginalName("Up")] Up = 2,
+  [pbr::OriginalName("Right")] Right = 3,
+  [pbr::OriginalName("None")] None = 4,
+}
+
+#endregion
+
 #region Messages
 [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
 public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
@@ -69,7 +83,9 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public PlayerInput(PlayerInput other) : this() {
-    keys_ = other.keys_.Clone();
+    direction_ = other.direction_;
+    timestamp_ = other.timestamp_;
+    sequenceNumber_ = other.sequenceNumber_;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
   }
 
@@ -79,15 +95,49 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
     return new PlayerInput(this);
   }
 
-  /// <summary>Field number for the "keys" field.</summary>
-  public const int KeysFieldNumber = 1;
-  private static readonly pb::FieldCodec<uint> _repeated_keys_codec
-      = pb::FieldCodec.ForUInt32(10);
-  private readonly pbc::RepeatedField<uint> keys_ = new pbc::RepeatedField<uint>();
+  /// <summary>Field number for the "direction" field.</summary>
+  public const int DirectionFieldNumber = 1;
+  private global::Direction direction_ = global::Direction.Down;
+  /// <summary>
+  /// Dirección en la que el jugador está moviendo
+  /// </summary>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public pbc::RepeatedField<uint> Keys {
-    get { return keys_; }
+  public global::Direction Direction {
+    get { return direction_; }
+    set {
+      direction_ = value;
+    }
+  }
+
+  /// <summary>Field number for the "timestamp" field.</summary>
+  public const int TimestampFieldNumber = 2;
+  private long timestamp_;
+  /// <summary>
+  /// Tiempo del input (en milisegundos desde el inicio del juego o el cliente)
+  /// </summary>
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public long Timestamp {
+    get { return timestamp_; }
+    set {
+      timestamp_ = value;
+    }
+  }
+
+  /// <summary>Field number for the "sequenceNumber" field.</summary>
+  public const int SequenceNumberFieldNumber = 3;
+  private int sequenceNumber_;
+  /// <summary>
+  /// Número de secuencia del input (para reconciliación)
+  /// </summary>
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public int SequenceNumber {
+    get { return sequenceNumber_; }
+    set {
+      sequenceNumber_ = value;
+    }
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -105,7 +155,9 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
     if (ReferenceEquals(other, this)) {
       return true;
     }
-    if(!keys_.Equals(other.keys_)) return false;
+    if (Direction != other.Direction) return false;
+    if (Timestamp != other.Timestamp) return false;
+    if (SequenceNumber != other.SequenceNumber) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
 
@@ -113,7 +165,9 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override int GetHashCode() {
     int hash = 1;
-    hash ^= keys_.GetHashCode();
+    if (Direction != global::Direction.Down) hash ^= Direction.GetHashCode();
+    if (Timestamp != 0L) hash ^= Timestamp.GetHashCode();
+    if (SequenceNumber != 0) hash ^= SequenceNumber.GetHashCode();
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
     }
@@ -132,7 +186,18 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     output.WriteRawMessage(this);
   #else
-    keys_.WriteTo(output, _repeated_keys_codec);
+    if (Direction != global::Direction.Down) {
+      output.WriteRawTag(8);
+      output.WriteEnum((int) Direction);
+    }
+    if (Timestamp != 0L) {
+      output.WriteRawTag(16);
+      output.WriteInt64(Timestamp);
+    }
+    if (SequenceNumber != 0) {
+      output.WriteRawTag(24);
+      output.WriteInt32(SequenceNumber);
+    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
     }
@@ -143,7 +208,18 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-    keys_.WriteTo(ref output, _repeated_keys_codec);
+    if (Direction != global::Direction.Down) {
+      output.WriteRawTag(8);
+      output.WriteEnum((int) Direction);
+    }
+    if (Timestamp != 0L) {
+      output.WriteRawTag(16);
+      output.WriteInt64(Timestamp);
+    }
+    if (SequenceNumber != 0) {
+      output.WriteRawTag(24);
+      output.WriteInt32(SequenceNumber);
+    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(ref output);
     }
@@ -154,7 +230,15 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public int CalculateSize() {
     int size = 0;
-    size += keys_.CalculateSize(_repeated_keys_codec);
+    if (Direction != global::Direction.Down) {
+      size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Direction);
+    }
+    if (Timestamp != 0L) {
+      size += 1 + pb::CodedOutputStream.ComputeInt64Size(Timestamp);
+    }
+    if (SequenceNumber != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeInt32Size(SequenceNumber);
+    }
     if (_unknownFields != null) {
       size += _unknownFields.CalculateSize();
     }
@@ -167,7 +251,15 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
     if (other == null) {
       return;
     }
-    keys_.Add(other.keys_);
+    if (other.Direction != global::Direction.Down) {
+      Direction = other.Direction;
+    }
+    if (other.Timestamp != 0L) {
+      Timestamp = other.Timestamp;
+    }
+    if (other.SequenceNumber != 0) {
+      SequenceNumber = other.SequenceNumber;
+    }
     _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
   }
 
@@ -187,9 +279,16 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
         default:
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
           break;
-        case 10:
         case 8: {
-          keys_.AddEntriesFrom(input, _repeated_keys_codec);
+          Direction = (global::Direction) input.ReadEnum();
+          break;
+        }
+        case 16: {
+          Timestamp = input.ReadInt64();
+          break;
+        }
+        case 24: {
+          SequenceNumber = input.ReadInt32();
           break;
         }
       }
@@ -211,9 +310,16 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
         default:
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
           break;
-        case 10:
         case 8: {
-          keys_.AddEntriesFrom(ref input, _repeated_keys_codec);
+          Direction = (global::Direction) input.ReadEnum();
+          break;
+        }
+        case 16: {
+          Timestamp = input.ReadInt64();
+          break;
+        }
+        case 24: {
+          SequenceNumber = input.ReadInt32();
           break;
         }
       }

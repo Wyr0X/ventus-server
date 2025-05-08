@@ -3,10 +3,10 @@ using Ventus.Network.Packets;
 
 public class TaskScheduler
 {
-    private readonly ConcurrentDictionary<ClientPacket, List<Action<UserMessagePair>>> _handlers = new();
+    private readonly ConcurrentDictionary<ClientPacket, List<Func<UserMessagePair, Task>>> _handlers = new();
     public readonly EventBuffer eventBuffer = new();
 
-    public void Subscribe(ClientPacket type, Action<UserMessagePair> handler)
+    public void Subscribe(ClientPacket type, Func<UserMessagePair, Task> handler)
     {
         LoggerUtil.Log(LoggerUtil.LogTag.TaskScheduler, $"Subscribing handler to packet: {type}");
 
@@ -15,7 +15,7 @@ public class TaskScheduler
             (_) =>
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem, $"Created new handler list for packet: {type}");
-                return new List<Action<UserMessagePair>> { handler };
+                return new List<Func<UserMessagePair, Task>> { handler };
             },
             (_, existingList) =>
             {
@@ -34,9 +34,12 @@ public class TaskScheduler
 
         if (_handlers.TryGetValue(type, out var handlerList))
         {
-            LoggerUtil.Log(LoggerUtil.LogTag.TaskScheduler, $"Dispatching packet of type: {type} to {handlerList.Count} handler(s)");
+            if (type != ClientPacket.PlayerInput)
+            {
+                LoggerUtil.Log(LoggerUtil.LogTag.TaskScheduler, $"Dispatching packet {type} to {handlerList.Count} handler(s)");
+            }
 
-            List<Action<UserMessagePair>> snapshot;
+            List<Func<UserMessagePair, Task>> snapshot;
             lock (handlerList)
             {
                 snapshot = handlerList.ToList();
@@ -44,11 +47,11 @@ public class TaskScheduler
 
             foreach (var handler in snapshot)
             {
-                _ = Task.Run(() =>
+                _ = Task.Run(async () =>
                 {
                     try
                     {
-                        handler(message);
+                        await handler(message);
                     }
                     catch (Exception ex)
                     {
@@ -63,6 +66,4 @@ public class TaskScheduler
             eventBuffer.EnqueueEvent(new GameEvent { PacketType = GameEventType.ClientPacket, Data = message });
         }
     }
-
-
 }

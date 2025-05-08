@@ -85,13 +85,11 @@ namespace VentusServer.DataAccess.Dapper
             {
                 try
                 {
-                    Console.WriteLine($"[SpellController] Procesando spell ID: {spell.id}, effects: {spell.effects}");
                     var mapped = SpellMapper.Map(spell);
                     spells.Add(mapped);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"[SpellController] Error al procesar spell ID: {spell.id}. Error: {ex.Message}");
                 }
             }
 

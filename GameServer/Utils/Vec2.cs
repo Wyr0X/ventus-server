@@ -120,4 +120,23 @@ public class Vec2
     public static readonly Vec2 Up = new Vec2(0, -1);
     public static readonly Vec2 Right = new Vec2(1, 0);
     public static readonly Vec2 Down = new Vec2(0, 1);
+
+    public static Vec2 DirectionToVector(Direction direction)
+    {
+        switch (direction)
+        {
+            case Direction.Up:
+                return new Vec2(0, -1); // Movimiento hacia arriba
+            case Direction.Down:
+                return new Vec2(0, 1); // Movimiento hacia abajo
+            case Direction.Left:
+                return new Vec2(-1, 0); // Movimiento hacia la izquierda
+            case Direction.Right:
+                return new Vec2(1, 0); // Movimiento hacia la derecha
+            default:
+                return new Vec2(0, 0); // Ningún movimiento
+        }
+
+    }
 }
+

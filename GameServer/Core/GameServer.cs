@@ -23,7 +23,8 @@ namespace Game.Server
         public readonly GameServiceMediator _gameServiceMediator;
         public readonly WorldManager worldManager;
         public readonly WebSocketServerController _webSocketServerController;
-        public ConcurrentDictionary<int, PlayerModel> playersInTheGame { get; } = new();
+        public ConcurrentDictionary<int, PlayerObject> playersInTheGame { get; } = new();
+        public ConcurrentDictionary<Guid, PlayerObject> playersByAccountId { get; } = new();
 
         public GameServer(
             WebSocketServerController webSocketServerController,
@@ -56,7 +57,10 @@ namespace Game.Server
 
                     await ProcessScheduledActionsAsync();
                     ProcessEvents();
-                    worldManager.UpdateWorlds();
+                    _ = ProcessPlayerInputs();
+                    _ = worldManager.UpdateWorlds();
+
+                    // El tiempo 0 , 60 , 120, 
 
                     var elapsed = sw.ElapsedMilliseconds - tickStart;
                     var delay = Math.Max(0, 16 - (int)elapsed);
@@ -90,7 +94,7 @@ namespace Game.Server
             }
         }
 
-        private async Task ProcessScheduledActionsAsync()
+        private Task ProcessScheduledActionsAsync()
         {
             int count = 0;
             while (_actionChannel.Reader.TryRead(out var action))
@@ -111,6 +115,8 @@ namespace Game.Server
                 LoggerUtil.Log(LoggerUtil.LogTag.GameServer,
                     $"Ejecutadas {count} acciones agendadas.");
             }
+
+            return Task.CompletedTask;
         }
 
         private void ProcessEvents()
@@ -137,6 +143,17 @@ namespace Game.Server
                     $"Se procesaron {handled} eventos del buffer.");
             }
         }
+        private Task ProcessPlayerInputs()
+        {
+            foreach (var player in playersInTheGame.Values)
+            {
+                player.ProcessInputs();
+            }
+
+            return Task.CompletedTask;
+        }
+
+
 
 
     }

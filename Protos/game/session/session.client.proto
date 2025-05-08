@@ -7,3 +7,10 @@ message PlayerJoin {
 message PlayerExit {
   int32 player_id = 1;
 }
+
+message TimeSyncRequest {
+  int64 client_send_time = 1; // Timestamp local del cliente en ms (performance.now())
+}
+message PlayerFinishToLoadGame {
+  int32 player_id = 1;
+}

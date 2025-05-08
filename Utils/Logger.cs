@@ -45,6 +45,9 @@ public static class LoggerUtil
         SessionTasks,
         TaskScheduler,
         GameEventHandler,
+
+        //Entitys
+        PlayerEntity,
         //otros
         JwtAuthRequired
     }
@@ -55,18 +58,18 @@ public static class LoggerUtil
         { LogTag.AuthController, (false, ConsoleColor.Cyan, false) },
         { LogTag.AdminAccountController, (false, ConsoleColor.Cyan, false) },
         { LogTag.SpellController, (false, ConsoleColor.Cyan, false) },
-        { LogTag.StoreController, (true, ConsoleColor.Cyan, false) },
+        { LogTag.StoreController, (false, ConsoleColor.Cyan, false) },
         { LogTag.AdminRolesController, (false, ConsoleColor.Cyan, false) },
-        { LogTag.WebSocketAuthentificationService, (true, ConsoleColor.DarkMagenta, false) },
-        { LogTag.WebSocketServerController, (true, ConsoleColor.DarkMagenta, false) },
-        { LogTag.WebSocketConnectionManager, (true, ConsoleColor.DarkMagenta, false) },
+        { LogTag.WebSocketAuthentificationService, (false, ConsoleColor.DarkMagenta, false) },
+        { LogTag.WebSocketServerController, (false, ConsoleColor.DarkMagenta, false) },
+        { LogTag.WebSocketConnectionManager, (false, ConsoleColor.DarkMagenta, false) },
         { LogTag.MapModel, (false, ConsoleColor.DarkGreen, false) },
-        { LogTag.BaseCachedService, (true, ConsoleColor.DarkBlue, false) },
+        { LogTag.BaseCachedService, (false, ConsoleColor.DarkBlue, false) },
         { LogTag.SystemChatService, (false, ConsoleColor.DarkBlue, false) },
-        { LogTag.PlayerLocationService, (true, ConsoleColor.DarkBlue, false) },
-        { LogTag.IAccountService, (true, ConsoleColor.DarkBlue, false) },
+        { LogTag.PlayerLocationService, (false, ConsoleColor.DarkBlue, false) },
+        { LogTag.IAccountService, (false, ConsoleColor.DarkBlue, false) },
         { LogTag.MapService, (false, ConsoleColor.DarkBlue, false) },
-        { LogTag.WorldService, (true, ConsoleColor.DarkBlue, false) },
+        { LogTag.WorldService, (false, ConsoleColor.DarkBlue, false) },
         { LogTag.AuthService, (false, ConsoleColor.DarkBlue, false) },
         { LogTag.PermissionService, (false, ConsoleColor.DarkBlue, false) },
         { LogTag.RoleService, (false, ConsoleColor.DarkBlue, false) },
@@ -80,24 +83,25 @@ public static class LoggerUtil
         { LogTag.DapperPlayerDAO, (false, ConsoleColor.Green, false) },
         { LogTag.DapperPlayerStatsDAO, (false, ConsoleColor.Green, false) },
         { LogTag.DapperRoleDAO, (false, ConsoleColor.Green, false) },
-        { LogTag.DapperAccountDAO, (true, ConsoleColor.Green, false) },
+        { LogTag.DapperAccountDAO, (false, ConsoleColor.Green, false) },
         { LogTag.DapperWorldDAO, (false, ConsoleColor.Green, false) },
         { LogTag.DapperItemDAO, (false, ConsoleColor.Green, false) },
         { LogTag.DapperPlayerInventoryDAO, (false, ConsoleColor.Green, false) },
         { LogTag.DapperPlayerSpellsDAO, (false, ConsoleColor.Green, false) },
         { LogTag.RequirePermissionAttribute, (false, ConsoleColor.Blue, false) },
-        { LogTag.SessionSystem, (true, ConsoleColor.Blue, false) },
-        { LogTag.WorldManager, (true, ConsoleColor.Blue, false) },
-        { LogTag.GameServer, (true, ConsoleColor.Blue, false) },
-        { LogTag.TaskScheduler, (true, ConsoleColor.Blue, false) },
-        { LogTag.SessionTasks, (true, ConsoleColor.Blue, false) },
-        { LogTag.GameEventHandler, (true, ConsoleColor.Blue, false) },
+        { LogTag.SessionSystem, (false, ConsoleColor.Blue, false) },
+        { LogTag.WorldManager, (false, ConsoleColor.Blue, false) },
+        { LogTag.GameServer, (false, ConsoleColor.Blue, false) },
+        { LogTag.TaskScheduler, (false, ConsoleColor.Blue, false) },
+        { LogTag.SessionTasks, (false, ConsoleColor.Blue, false) },
+        { LogTag.GameEventHandler, (false, ConsoleColor.Blue, false) },
         { LogTag.JwtAuthRequired, (false, ConsoleColor.Magenta, false) },
+        { LogTag.PlayerEntity, (false, ConsoleColor.Magenta, false) },
 
 
     };
 
-    public static void EnableTag(LogTag tag) => SetTagEnabled(tag, true);
+    public static void EnableTag(LogTag tag) => SetTagEnabled(tag, false);
     public static void DisableTag(LogTag tag) => SetTagEnabled(tag, false);
 
     public static void SetTagEnabled(LogTag tag, bool enabled)
@@ -109,7 +113,7 @@ public static class LoggerUtil
         }
     }
 
-    public static void EnableFileLogging(LogTag tag) => SetFileLogging(tag, true);
+    public static void EnableFileLogging(LogTag tag) => SetFileLogging(tag, false);
     public static void DisableFileLogging(LogTag tag) => SetFileLogging(tag, false);
 
     private static void SetFileLogging(LogTag tag, bool saveToFile)

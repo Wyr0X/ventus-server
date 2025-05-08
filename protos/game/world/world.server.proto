@@ -1,0 +1,14 @@
+syntax = "proto3";
+import "game/movement/movement.client.proto";
+message PlayerState {
+    int32 id = 1;
+    float x = 2;
+    float y = 3;
+    Direction direction = 4;
+    int32 lastSequenceNumberProcessed = 5; // Para reconciliación
+}
+  
+  message UpdateWorld {
+    repeated PlayerState players = 1;
+    uint64 serverTime = 2; // Para sincronización de tiempos si querés
+}

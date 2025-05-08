@@ -14,7 +14,7 @@ namespace Game.Server
     public class WorldManager
     {
         private readonly ConcurrentDictionary<int, WorldModel> _worlds = new();
-        private readonly ConcurrentDictionary<int, ConcurrentBag<PlayerModel>> _playersByWorldId = new();
+        private readonly ConcurrentDictionary<int, ConcurrentBag<PlayerObject>> _playersByWorldId = new();
         private readonly ConcurrentDictionary<int, Task<WorldModel?>> _loadingWorlds = new();
 
         private readonly GameServer _gameServer;
@@ -80,8 +80,14 @@ namespace Game.Server
                 // Cacheamos el mundo cargado
                 _worlds[worldId] = loaded;
                 world = loaded;
-                LoggerUtil.Log(LoggerUtil.LogTag.WorldManager,
-                    $"[AddPlayerAsync] World {worldId} loaded and cached.");
+                LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[AddPlayerAsync] World {worldId} loaded and cached.");
+                _gameServer.Schedule(() =>
+                {
+                    AddPlayerToLoadedWorld(player, world, onFinished);
+
+                });
+                return;
+
             }
 
             // Ya tenemos el mundo, delegamos al método sincrónico
@@ -124,7 +130,7 @@ namespace Game.Server
                 // Quitar de la bolsa
                 if (_playersByWorldId.TryGetValue(worldId, out var bag))
                 {
-                    var filtered = new ConcurrentBag<PlayerModel>(bag.Where(p => p.Id != player.Id));
+                    var filtered = new ConcurrentBag<PlayerObject>(bag.Where(p => p.Id != player.Id));
                     _playersByWorldId[worldId] = filtered;
 
                     // Si ya no quedan jugadores, limpiamos todo
@@ -177,12 +183,14 @@ namespace Game.Server
             }
 
             // Registro en playersInTheGame
-            _gameServer.playersInTheGame[player.Id] = player;
+            var playerEntity = new PlayerObject(player.Id, new Vec2(player.Location!.PosX, player.Location!.PosY), player.Name, player);
+            _gameServer.playersInTheGame[player.Id] = playerEntity;
+            _gameServer.playersByAccountId[player.AccountId] = playerEntity;
 
             // Añadir al bag
-            var bag = _playersByWorldId.GetOrAdd(worldId, _ => new ConcurrentBag<PlayerModel>());
+            var bag = _playersByWorldId.GetOrAdd(worldId, _ => new ConcurrentBag<PlayerObject>());
             if (!bag.Any(p => p.Id == player.Id))
-                bag.Add(player);
+                bag.Add(playerEntity);
 
             LoggerUtil.Log(LoggerUtil.LogTag.WorldManager,
                 $"[AddPlayer] Player {player.Id} registered in World {worldId}. Total now: {bag.Count}");
@@ -194,6 +202,15 @@ namespace Game.Server
         {
             var loc = player.Location!;
             var map = world.Maps.FirstOrDefault(m => m.Id == loc.MapId);
+
+            //Borrar codigo este
+
+            if (world.ContainsPlayer(player.Id))
+            {
+                LoggerUtil.Log(LoggerUtil.LogTag.WorldManager,
+                    $"[TrySpawnPlayer] Player {player.Id} already in World {world.Id}.");
+                world.RemovePlayer(player.Id);
+            }
             if (map == null || player.Stats == null)
                 return false;
 
@@ -242,21 +259,23 @@ namespace Game.Server
 
                 var players = bag.ToArray();
                 var pkt = new UpdateWorld();
-                pkt.Players.AddRange(players.Select(p => new PlayerUpdateData
+                pkt.Players.AddRange(players.Select(p => new PlayerState
                 {
-                    PlayerId = p.Id,
-                    X = p.Location!.PosX,
-                    Y = p.Location!.PosY,
-                    Name = p.Name
+                    Id = p.Id,
+                    X = p.Position.X,
+                    Y = p.Position.Y,
+                    Direction = p.CurrentDirection,
+                    LastSequenceNumberProcessed = p.LastSequenceNumberProcessed,
                 }));
 
                 foreach (var p in players)
                 {
                     _gameServer._webSocketServerController
-                        ._outgoingQueue.Enqueue(p.AccountId, pkt, ServerPacket.UpdateWorld);
+                        ._outgoingQueue.Enqueue(p.PlayerModel.AccountId, pkt, ServerPacket.UpdateWorld);
                 }
             }
             return Task.CompletedTask;
         }
+
     }
 }

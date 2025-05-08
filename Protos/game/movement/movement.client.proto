@@ -1,5 +1,16 @@
 syntax = "proto3";
 
+enum Direction {
+  Down = 0;
+  Left = 1;
+  Up = 2;
+  Right = 3;
+  None = 4;
+
+}
+
 message PlayerInput {
-    repeated uint32 keys = 1;  
+  Direction direction = 1;      // Dirección en la que el jugador está moviendo
+  int64 timestamp = 2;         // Tiempo del input (en milisegundos desde el inicio del juego o el cliente)
+  int32 sequenceNumber = 3; // Número de secuencia del input (para reconciliación)
 }

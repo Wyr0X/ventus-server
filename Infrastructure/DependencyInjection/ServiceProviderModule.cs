@@ -30,6 +30,7 @@ namespace VentusServer
             RegisterControllers(services);
             var provider = services.BuildServiceProvider();
             provider.GetRequiredService<SessionTasks>();
+            provider.GetRequiredService<WorldTasks>();
             return new ServiceProviderContainer(services, provider);
         }
 
@@ -42,6 +43,7 @@ namespace VentusServer
                 .AddSingleton<DatabaseInitializer>()
                 .AddSingleton<TaskScheduler>()
                 .AddSingleton<SessionTasks>()
+                .AddSingleton<WorldTasks>()
                 .AddSingleton<GameServiceMediator>()
                 .AddSingleton<IDbConnectionFactory>(sp =>
                     new NpgsqlConnectionFactory(

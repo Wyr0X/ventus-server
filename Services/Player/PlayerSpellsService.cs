@@ -15,12 +15,10 @@ namespace VentusServer.Services
 
         protected override async Task<PlayerSpellsModel?> LoadModelAsync(int playerId)
         {
-            Console.WriteLine($"[PlayerSpellsService] LoadModelAsync: Cargando inventario de hechizos del jugador desde la base de datos. PlayerId: {playerId}");
             return await _playerSpellsDAO.GetByPlayerId(playerId);
         }
         public async Task<PlayerSpellsModel?> GetPlayerSpellsByIdAsync(int id)
         {
-            Console.WriteLine($"[PlayerSpellsService] GetPlayerSpellsByIdAsync: Cargando inventario de hechizos con ID: {id}");
             return await _playerSpellsDAO.GetByIdAsync(id);
         }
         public async Task<PlayerSpellsModel> CreateDefaultSpells(PlayerModel playerModel)
@@ -47,21 +45,18 @@ namespace VentusServer.Services
 
         public async Task CreateSpellsAsync(PlayerSpellsModel spellsModel)
         {
-            Console.WriteLine($"[PlayerSpellsService] CreateInventoryAsync: Creando hechizos del jugador: {spellsModel.PlayerId}");
             await _playerSpellsDAO.CreateAsync(spellsModel);
             Set(spellsModel.PlayerId, spellsModel); //agregar al cache
         }
 
         public async Task UpsertSpellAsync(PlayerSpellsModel spellsModel)
         {
-            Console.WriteLine($"[PlayerSpellsService] UpsertInventoryAsync: Guardando/Actualizando hechizos del jugador: {spellsModel.PlayerId}");
             await _playerSpellsDAO.UpsertAsync(spellsModel);
             Set(spellsModel.PlayerId, spellsModel);
         }
 
         public async Task DeleteSpellsByPlayerIdAsync(int playerId)
         {
-            Console.WriteLine($"[PlayerSpellsService] DeleteInventoryByPlayerIdAsync: Eliminando hechizos del jugador con ID de jugador: {playerId}");
             await _playerSpellsDAO.DeleteByPlayerId(playerId);
             Invalidate(playerId); // Invalida la entrada de caché
         }
@@ -101,7 +96,6 @@ namespace VentusServer.Services
             var spells = await GetOrLoadAsync(playerId); //obtener del cache
             if (spells == null)
             {
-                Console.WriteLine($"⚠️ No se encontró el inventario de hechizos para el jugador {playerId}.");
                 return;
             }
 
@@ -111,11 +105,9 @@ namespace VentusServer.Services
                 spells.Spells.Remove(spellToRemove);
                 spells.UpdatedAt = DateTime.UtcNow;
                 await UpsertSpellAsync(spells);
-                Console.WriteLine($"✅ Hechizo {spellId} eliminado del inventario del jugador {playerId}.");
             }
             else
             {
-                Console.WriteLine($"⚠️ El hechizo {spellId} no se encontró en el inventario del jugador {playerId}.");
             }
         }
         public async Task<PlayerSpellsModel?> LoadPlayerSpellsInModel(PlayerModel playerModel)

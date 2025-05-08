@@ -20,11 +20,12 @@ public class SessionHandler
     public SessionHandler(GameServer gameServer, GameEventHandler gameEventHandler)
     {
         _gameServer = gameServer;
-        gameEventHandler.Subscribe(CustomGameEvent.PlayerSpawn, HandleSpawnPlayer);
-        gameEventHandler.Subscribe(CustomGameEvent.PlayerExit, HandleUnspawnPlayer);
+        gameEventHandler.Subscribe(CustomGameEvent.PlayerSpawn, async (customGamEvent) => await HandleSpawnPlayer(customGamEvent));
+        gameEventHandler.Subscribe(CustomGameEvent.PlayerExit, async (customGamEvent) => await HandleUnspawnPlayer(customGamEvent));
+
     }
 
-    public void HandleSpawnPlayer(dynamic gameDataPacket)
+    public async Task HandleSpawnPlayer(dynamic gameDataPacket)
     {
         LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem, $"[HandleSpawnPlayer] Incoming event: {gameDataPacket.ToString()}");
 
@@ -131,7 +132,7 @@ public class SessionHandler
         });
     }
 
-    public void HandleUnspawnPlayer(dynamic gameEvent)
+    public async Task HandleUnspawnPlayer(dynamic gameEvent)
     {
         LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem, $"[HandleUnspawnPlayer] Incoming event: {gameEvent}");
 
@@ -168,19 +169,25 @@ public class SessionHandler
         LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem,
             $"[HandleUnspawnPlayer] Player {playerModel.Id} unspawned successfully from world {loc.WorldId}, map {loc.MapId}");
     }
-    public Task CheckPlayerConnections()
-    {
-        foreach (var kvp in _gameServer.playersInTheGame)
-        {
-            var id = kvp.Key;
-            var player = kvp.Value;
-            PingPlayerGame pingPlayerGamePacket = new()
-            {
-                PlayerId = player.Id,
 
-            };
-            // _gameServer._webSocketServerController._outgoingQueue.Enqueue(player.AccountId, playerSpawn, ServerPacket.PlayerSpawn);
+    public void HandleTimeSyncRequest(UserMessagePair userMessagePair)
+    {
+        TimeSyncRequest? request = userMessagePair.ClientMessage as TimeSyncRequest;
+        if (request == null)
+        {
+            LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem, "Invalid TimeSyncRequest packet received.");
+            return;
         }
-        return Task.CompletedTask;
+        var clientSendTime = request.ClientSendTime;
+        var serverTime = DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond; // Tiempo del servidor en ms
+
+        var timeSyncResponse = new TimeSyncResponse
+        {
+            ClientSendTime = clientSendTime,
+            ServerTime = serverTime,
+        };
+
+        _gameServer._webSocketServerController._outgoingQueue.Enqueue(userMessagePair.AccountId, request, ServerPacket.TimeSyncResponse);
     }
+
 }
