@@ -175,20 +175,7 @@ public class SessionHandler
 
             _gameServer._webSocketServerController._outgoingQueue.Enqueue(accountModel.AccountId, selfSpawnPacket, ServerPacket.SelfSpawn);
 
-            foreach (var player in _playersInTheWorld)
-            {
-                if (player.Id != playerModel.Id)
-                {
-                    PlayerSpawn playerSpawn = new()
-                    {
-                        PlayerId = playerModel.Id,
-                        X = loc.PosX,
-                        Y = loc.PosY,
-                        Name = playerModel.Name
-                    };
-                    _gameServer._webSocketServerController._outgoingQueue.Enqueue(player.AccountId, playerSpawn, ServerPacket.PlayerSpawn);
-                }
-            }
+
             LoggerUtil.Log(LoggerUtil.LogTag.SessionHandler,
                 $"[HandleSpawnPlayer] Player {playerModel.Id} spawned successfully in world {loc.WorldId}, map {loc.MapId}, current player active {accountModel.ActivePlayerId}");
         });

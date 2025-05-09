@@ -24,9 +24,12 @@ public class SessionTasks
         _playerService = playerService;
         _playerLocationService = playerLocationService;
         _IAccountService = IAccountService;
+        _gameServer = gameServer;
 
         taskScheduler.Subscribe(ClientPacket.PlayerJoin, async (messagePair) => await HandlePlayerJoin(messagePair));
         taskScheduler.Subscribe(ClientPacket.PlayerExit, async (messagePair) => await HandlePlayerExit(messagePair));
+        taskScheduler.Subscribe(ClientPacket.ClientAlive, async (messagePair) => await HandleClienAlive(messagePair));
+        taskScheduler.Subscribe(ClientPacket.ClientLoaded, async (messagePair) => await HandleClientLoaded(messagePair));
 
     }
 
@@ -76,6 +79,44 @@ public class SessionTasks
         }
     }
 
+    private Task HandleClientLoaded(UserMessagePair userMessagePair)
+    {
+        if (!_gameServer.playersByAccountId.TryGetValue(userMessagePair.AccountId, out var playerObject))
+        {
+            LoggerUtil.Log(LoggerUtil.LogTag.SessionHandler, $"[HandleUnspawnPlayer] Player not found for account ID {userMessagePair.AccountId}");
+            return Task.CompletedTask;
+        }
+        if (playerObject == null)
+        {
+            LoggerUtil.Log(LoggerUtil.LogTag.SessionHandler, $"[HandleUnspawnPlayer] Player not found for ID {userMessagePair.AccountId}");
+            return Task.CompletedTask;
+        }
+
+        playerObject.isReady = true;
+        var loc = playerObject.PlayerModel.Location;
+        if (loc == null)
+        {
+            LoggerUtil.Log(LoggerUtil.LogTag.SessionHandler, "[HandleSpawnPlayer] PlayerLocation is null");
+            return Task.CompletedTask;
+        }
+
+        var _playersInTheWorld = _gameServer.worldManager.GetPlayersInArea(loc.WorldId, loc.MapId, loc.PosX, loc.PosY, 1000);
+        foreach (var player in _playersInTheWorld)
+        {
+            if (player.Id != playerObject.Id)
+            {
+                PlayerSpawn playerSpawn = new()
+                {
+                    PlayerId = playerObject.Id,
+                    X = loc.PosX,
+                    Y = loc.PosY,
+                    Name = playerObject.Name
+                };
+                _gameServer._webSocketServerController._outgoingQueue.Enqueue(player.AccountId, playerSpawn, ServerPacket.PlayerSpawn);
+            }
+        }
+        return Task.CompletedTask;
+    }
     private Task HandleClienAlive(UserMessagePair userMessagePair)
     {
         if (!_gameServer.playersByAccountId.TryGetValue(userMessagePair.AccountId, out var playerObject))

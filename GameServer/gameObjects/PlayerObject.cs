@@ -15,6 +15,8 @@ public class PlayerObject : Character
     public PlayerModel PlayerModel { get; set; }
     public bool IsActiviyConfirmed { get; set; } = false;
 
+    public bool isReady { get; set; } = false; //Indica si el cliente termino de cargar el juego
+
     public int LastSequenceNumberProcessed = 0;
     private Queue<MovementPlayerInput> inputsToProcess = new Queue<MovementPlayerInput>();
     private readonly object _inputLock = new object();
