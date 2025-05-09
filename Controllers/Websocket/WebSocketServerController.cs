@@ -63,20 +63,42 @@ public class WebSocketServerController
         }
     }
 
+    private readonly SemaphoreSlim _sendSemaphore = new(5); // máximo 5 tareas en paralelo
     public void StartLoop(CancellationToken cancellationToken)
     {
-        while (true)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            if (_messageQueue.TryDequeue(out var pair))
-            {
-
-                _taskScheduler.Dispatch(pair);
-            }
-            _ = SendOutgoingPackets(cancellationToken);
-        }
+        Task.Run(() => StartIncomingLoop(cancellationToken), cancellationToken);
+        Task.Run(() => StartOutgoingLoop(cancellationToken), cancellationToken);
     }
 
+    private async Task StartIncomingLoop(CancellationToken cancellationToken)
+    {
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            if (_messageQueue.TryDequeue(out var pair))
+            {
+                _taskScheduler.Dispatch(pair);
+            }
+
+            await Task.Delay(1, cancellationToken); // Micro descanso para evitar CPU 100%
+        }
+    }
+    private async Task StartOutgoingLoop(CancellationToken cancellationToken)
+    {
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            await _sendSemaphore.WaitAsync(cancellationToken);
+            try
+            {
+                await SendOutgoingPackets(cancellationToken);
+            }
+            finally
+            {
+                _sendSemaphore.Release();
+            }
+
+            await Task.Delay(30, cancellationToken); // Ritmo constante de envío
+        }
+    }
     public async Task SendOutgoingPackets(CancellationToken cancellationToken)
     {
 

@@ -27,7 +27,7 @@ namespace VentusServer.Services
                 // Primero intenta obtener el mapa de la caché
                 LoggerUtil.Log(LoggerUtil.LogTag.MapService, $"Intentando obtener el mapa con ID {mapId} desde la caché...");
 
-                MapModel? mapModel = await GetOrLoadAsync(mapId);
+                MapModel? mapModel = await GetOrLoadAsync(mapId).ConfigureAwait(false);
 
 
                 return mapModel;
@@ -45,7 +45,7 @@ namespace VentusServer.Services
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.MapService, "Obteniendo todos los mapas desde la base de datos...");
 
-                List<MapModel> maps = (await _mapDAO.GetAllMapsAsync()).ToList();
+                List<MapModel> maps = (await _mapDAO.GetAllMapsAsync().ConfigureAwait(false)).ToList();
 
 
 
@@ -65,7 +65,7 @@ namespace VentusServer.Services
                 // Crear el mapa en la base de datos
                 LoggerUtil.Log(LoggerUtil.LogTag.MapService, $"Creando el mapa con ID {map.Id} en la base de datos...");
 
-                await _mapDAO.CreateMapAsync(map);
+                await _mapDAO.CreateMapAsync(map).ConfigureAwait(false);
 
                 // Después de crearlo, lo agregamos a la caché
                 LoggerUtil.Log(LoggerUtil.LogTag.MapService, $"Agregando el mapa con ID {map.Id} a la caché...");
@@ -86,7 +86,7 @@ namespace VentusServer.Services
             {
                 // Actualizar el mapa en la base de datos
                 LoggerUtil.Log(LoggerUtil.LogTag.MapService, $"Actualizando el mapa con ID {map.Id} en la base de datos...");
-                await _mapDAO.UpdateMapAsync(map);
+                await _mapDAO.UpdateMapAsync(map).ConfigureAwait(false);
 
                 // Actualizar la caché después de la actualización
                 LoggerUtil.Log(LoggerUtil.LogTag.MapService, $"Actualizando la caché con el mapa ID {map.Id}...");
@@ -104,7 +104,7 @@ namespace VentusServer.Services
             try
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.MapService, $"Eliminando el mapa con ID {mapId} de la base de datos...");
-                var deleted = await _mapDAO.DeleteMapAsync(mapId);
+                var deleted = await _mapDAO.DeleteMapAsync(mapId).ConfigureAwait(false);
                 if (deleted)
                 {
                     // Invalidar la caché después de eliminar el mapa
@@ -127,12 +127,12 @@ namespace VentusServer.Services
         {
             try
             {
-                var map = await GetMapByIdAsync(mapId);
+                var map = await GetMapByIdAsync(mapId).ConfigureAwait(false);
                 if (map != null)
                 {
                     LoggerUtil.Log(LoggerUtil.LogTag.MapService, $"Removiendo al jugador con ID {playerId} del mapa con ID {mapId}...");
                     map.RemovePlayer(playerId);
-                    await _mapDAO.UpdateMapAsync(map); // Actualizar mapa después de modificar
+                    await _mapDAO.UpdateMapAsync(map).ConfigureAwait(false); // Actualizar mapa después de modificar
                     Set(map.Id, map); // Actualizar caché
                     LoggerUtil.Log(LoggerUtil.LogTag.MapService, $"Jugador con ID {playerId} removido del mapa con ID {mapId}.");
                 }
@@ -152,7 +152,7 @@ namespace VentusServer.Services
             try
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.MapService, $"Cargando el mapa con ID {mapId} desde la base de datos...");
-                return await _mapDAO.GetMapByIdAsync(mapId);
+                return await _mapDAO.GetMapByIdAsync(mapId).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -165,7 +165,7 @@ namespace VentusServer.Services
             try
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.MapService, $"Obteniendo mapas para el mundo con ID {worldId}...");
-                var maps = await _mapDAO.GetMapsByWorldIdAsync(worldId);
+                var maps = await _mapDAO.GetMapsByWorldIdAsync(worldId).ConfigureAwait(false);
 
                 foreach (var map in maps)
                 {

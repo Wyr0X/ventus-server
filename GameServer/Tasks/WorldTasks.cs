@@ -49,11 +49,11 @@ public class WorldTasks
             Log(LogTag.SessionTasks, $"Invalid input received for accountId: {messagePair.AccountId}", "HandlePlayerInput", isError: true);
             return;
         }
-        if (input.Direction != Direction.None)
-        {
-            Log(LogTag.SessionTasks, $"Received input for accountId: {input} in direction: {input.Direction} and timestamp: {input.Timestamp} and sequence number: {input.SequenceNumber}", "HandlePlayerInput");
+        // if (input.Direction != Direction.None)
+        // {
+        //     Log(LogTag.SessionTasks, $"Received input for accountId: {input} in direction: {input.Direction} and timestamp: {input.Timestamp} and sequence number: {input.SequenceNumber}", "HandlePlayerInput");
 
-        }
+        // }
         await playerObject.EnqueueInput(input);
     }
 

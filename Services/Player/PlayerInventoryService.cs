@@ -35,9 +35,11 @@ public class PlayerInventoryService
 
     public async Task<PlayerInventoryModel> CreateDefaultInventory(PlayerModel playerModel)
     {
+        var now = TimeProvider.UtcNow(); // Almacenar TimeProvider.now() en una variable local
+
         PlayerInventoryModel inventoryModel = new PlayerInventoryModel
         {
-            CreatedAt = DateTime.Now,
+            CreatedAt = now,
             Gold = 0,
             Items = [],
             PlayerId = playerModel.Id,
@@ -55,25 +57,24 @@ public class PlayerInventoryService
 
     public async Task DeleteInventoryByPlayerId(int playerId)
     {
-        await _inventoryDAO.DeleteByPlayerId(playerId);
+        await _inventoryDAO.DeleteByPlayerId(playerId); ;
     }
 
     public async Task<bool> BuyItemAsync(PlayerModel player, ItemModel itemToBuy)
     {
-        // Verificar que el ítem sea comprable
         if (itemToBuy.Price <= 0)
             throw new InvalidOperationException("Este ítem no se puede comprar.");
 
-        var inventory = await GetInventoryByPlayerId(player.Id);
+        var inventory = await GetInventoryByPlayerId(player.Id).ConfigureAwait(false);
         if (inventory == null)
             throw new InvalidOperationException("Inventario no encontrado.");
 
         if (inventory.Gold < itemToBuy.Price)
-            return false; // No tiene suficiente oro
+            return false;
 
-        // Verificar si ya tiene el ítem (si es stackeable)
+        var now = TimeProvider.UtcNow(); // Almacenar TimeProvider.now() en una variable local
+
         var existingItem = inventory.Items.FirstOrDefault(i => i.ItemId == itemToBuy.Id);
-
         if (existingItem != null)
         {
             if (itemToBuy.MaxStack != null && existingItem.Quantity + 1 <= itemToBuy.MaxStack)
@@ -89,12 +90,11 @@ public class PlayerInventoryService
                 return false;
             }
 
-            existingItem.UpdatedAt = DateTime.Now;
-            await _inventoryDAO.UpsertAsync(inventory);
+            existingItem.UpdatedAt = now;
+            await _inventoryDAO.UpsertAsync(inventory).ConfigureAwait(false);
         }
         else
         {
-            // Buscar slot libre (esto podría ser manejado por la base de datos)
             int nextSlot = inventory.Items.Count;
 
             var newItem = new PlayerInventoryItemModel
@@ -103,20 +103,19 @@ public class PlayerInventoryService
                 Quantity = 1,
                 Slot = nextSlot,
                 isEquipped = false,
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now,
+                CreatedAt = now,
+                UpdatedAt = now,
                 Name = itemToBuy.Name.Es,
                 Icon = itemToBuy.IconPath,
             };
 
             inventory.Items.Add(newItem);
-            await _inventoryDAO.UpsertAsync(inventory);
+            await _inventoryDAO.UpsertAsync(inventory).ConfigureAwait(false);
         }
 
-        // Restar el oro
         inventory.Gold -= itemToBuy.Price;
-        inventory.UpdatedAt = DateTime.Now;
-        await _inventoryDAO.UpdateGold(inventory.PlayerId, inventory.Gold);
+        inventory.UpdatedAt = now;
+        await _inventoryDAO.UpdateGold(inventory.PlayerId, inventory.Gold).ConfigureAwait(false);
 
         return true;
     }
@@ -127,11 +126,12 @@ public class PlayerInventoryService
         {
             throw new ArgumentNullException(nameof(inventory), "El inventario no puede ser nulo.");
         }
-        await _inventoryDAO.UpsertAsync(inventory);
+        await _inventoryDAO.UpsertAsync(inventory).ConfigureAwait(false);
     }
+
     public async Task<bool> MoveItemAsync(int playerId, int fromSlot, int toSlot)
     {
-        var inventory = await _inventoryDAO.GetByPlayerId(playerId);
+        var inventory = await _inventoryDAO.GetByPlayerId(playerId).ConfigureAwait(false);
 
         if (inventory == null)
         {
@@ -142,30 +142,28 @@ public class PlayerInventoryService
 
         if (itemToMove == null)
         {
-            return false; // No hay ítem en el slot de origen
+            return false;
         }
 
         var destinationItem = inventory.Items.FirstOrDefault(i => i.Slot == toSlot);
 
+        var now = TimeProvider.UtcNow(); // Almacenar TimeProvider.now() en una variable local
+
         if (destinationItem != null)
         {
-            // Hay un ítem en el destino → intercambio de posiciones
             int tempSlot = itemToMove.Slot;
             itemToMove.Slot = destinationItem.Slot;
             destinationItem.Slot = tempSlot;
         }
         else
         {
-            // El slot de destino está vacío → mover directamente
             itemToMove.Slot = toSlot;
         }
 
-        itemToMove.UpdatedAt = DateTime.Now;
+        itemToMove.UpdatedAt = now;
 
-        // Actualizar en la base de datos
-        await _inventoryDAO.UpsertAsync(inventory);
+        await _inventoryDAO.UpsertAsync(inventory).ConfigureAwait(false);
 
         return true;
     }
-
 }

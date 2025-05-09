@@ -15,11 +15,11 @@ namespace VentusServer.Services
 
         protected override async Task<PlayerSpellsModel?> LoadModelAsync(int playerId)
         {
-            return await _playerSpellsDAO.GetByPlayerId(playerId);
+            return await _playerSpellsDAO.GetByPlayerId(playerId).ConfigureAwait(false);
         }
         public async Task<PlayerSpellsModel?> GetPlayerSpellsByIdAsync(int id)
         {
-            return await _playerSpellsDAO.GetByIdAsync(id);
+            return await _playerSpellsDAO.GetByIdAsync(id).ConfigureAwait(false);
         }
         public async Task<PlayerSpellsModel> CreateDefaultSpells(PlayerModel playerModel)
         {
@@ -32,38 +32,38 @@ namespace VentusServer.Services
                 Spells = new List<PlayerSpellModel>()
             };
 
-            await _playerSpellsDAO.CreateAsync(spellsModel);
+            await _playerSpellsDAO.CreateAsync(spellsModel).ConfigureAwait(false);
             Set(playerModel.Id, spellsModel); // Agregar al caché
             return spellsModel;
         }
 
         public async Task<PlayerSpellsModel?> GetPlayerSpellsByPlayerIdAsync(int playerId)
         {
-            return await GetOrLoadAsync(playerId);
+            return await GetOrLoadAsync(playerId).ConfigureAwait(false);
         }
 
 
         public async Task CreateSpellsAsync(PlayerSpellsModel spellsModel)
         {
-            await _playerSpellsDAO.CreateAsync(spellsModel);
+            await _playerSpellsDAO.CreateAsync(spellsModel).ConfigureAwait(false);
             Set(spellsModel.PlayerId, spellsModel); //agregar al cache
         }
 
         public async Task UpsertSpellAsync(PlayerSpellsModel spellsModel)
         {
-            await _playerSpellsDAO.UpsertAsync(spellsModel);
+            await _playerSpellsDAO.UpsertAsync(spellsModel).ConfigureAwait(false);
             Set(spellsModel.PlayerId, spellsModel);
         }
 
         public async Task DeleteSpellsByPlayerIdAsync(int playerId)
         {
-            await _playerSpellsDAO.DeleteByPlayerId(playerId);
+            await _playerSpellsDAO.DeleteByPlayerId(playerId).ConfigureAwait(false);
             Invalidate(playerId); // Invalida la entrada de caché
         }
 
         public async Task AddSpellAsync(int playerId, PlayerSpellModel spell)
         {
-            var inventory = await GetOrLoadAsync(playerId); // Obtener del cache
+            var inventory = await GetOrLoadAsync(playerId).ConfigureAwait(false); // Obtener del cache
 
             if (inventory == null)
             {
@@ -75,7 +75,7 @@ namespace VentusServer.Services
                     UpdatedAt = DateTime.UtcNow,
                     MaxSlots = 10
                 };
-                await CreateSpellsAsync(inventory);
+                await CreateSpellsAsync(inventory).ConfigureAwait(false);
             }
 
             var existingSpell = inventory.Spells.Find(s => s.SpellId == spell.SpellId);
@@ -88,12 +88,12 @@ namespace VentusServer.Services
                 inventory.Spells.Add(spell);
             }
             inventory.UpdatedAt = DateTime.UtcNow;
-            await UpsertSpellAsync(inventory);
+            await UpsertSpellAsync(inventory).ConfigureAwait(false);
         }
 
         public async Task RemoveSpellAsync(int playerId, string spellId)
         {
-            var spells = await GetOrLoadAsync(playerId); //obtener del cache
+            var spells = await GetOrLoadAsync(playerId).ConfigureAwait(false); //obtener del cache
             if (spells == null)
             {
                 return;
@@ -104,7 +104,7 @@ namespace VentusServer.Services
             {
                 spells.Spells.Remove(spellToRemove);
                 spells.UpdatedAt = DateTime.UtcNow;
-                await UpsertSpellAsync(spells);
+                await UpsertSpellAsync(spells).ConfigureAwait(false);
             }
             else
             {
@@ -112,7 +112,7 @@ namespace VentusServer.Services
         }
         public async Task<PlayerSpellsModel?> LoadPlayerSpellsInModel(PlayerModel playerModel)
         {
-            var spell = await GetPlayerSpellsByIdAsync(playerModel.Id);
+            var spell = await GetPlayerSpellsByIdAsync(playerModel.Id).ConfigureAwait(false);
 
             playerModel.PlayerSpells = spell;
             return spell;

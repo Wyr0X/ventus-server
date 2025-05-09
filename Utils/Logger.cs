@@ -1,3 +1,4 @@
+using System.Text;
 
 public static class LoggerUtil
 {
@@ -92,17 +93,28 @@ public static class LoggerUtil
         { LogTag.SessionSystem, (true, ConsoleColor.Blue, false) },
         { LogTag.WorldManager, (false, ConsoleColor.Blue, false) },
         { LogTag.GameServer, (false, ConsoleColor.Blue, false) },
-        { LogTag.TaskScheduler, (false, ConsoleColor.Blue, false) },
+        { LogTag.TaskScheduler, (true, ConsoleColor.Blue, false) },
         { LogTag.SessionTasks, (true, ConsoleColor.Blue, false) },
         { LogTag.GameEventHandler, (false, ConsoleColor.Blue, false) },
         { LogTag.JwtAuthRequired, (false, ConsoleColor.Magenta, false) },
         { LogTag.PlayerEntity, (false, ConsoleColor.Magenta, false) },
-
-
     };
 
-    public static void EnableTag(LogTag tag) => SetTagEnabled(tag, false);
+    private static readonly Dictionary<LogTag, LogConfig> cachedTagConfig = new();
+
+    public struct LogConfig
+    {
+        public bool Enabled { get; set; }
+        public ConsoleColor Color { get; set; }
+        public bool SaveToFile { get; set; }
+    }
+    private static HashSet<LogTag> enabledTagsCache = new HashSet<LogTag>();
+
+    public static void EnableTag(LogTag tag) => SetTagEnabled(tag, true);
     public static void DisableTag(LogTag tag) => SetTagEnabled(tag, false);
+
+    public static void EnableFileLogging(LogTag tag) => SetFileLogging(tag, true);
+    public static void DisableFileLogging(LogTag tag) => SetFileLogging(tag, false);
 
     public static void SetTagEnabled(LogTag tag, bool enabled)
     {
@@ -113,9 +125,6 @@ public static class LoggerUtil
         }
     }
 
-    public static void EnableFileLogging(LogTag tag) => SetFileLogging(tag, false);
-    public static void DisableFileLogging(LogTag tag) => SetFileLogging(tag, false);
-
     private static void SetFileLogging(LogTag tag, bool saveToFile)
     {
         if (TagConfig.ContainsKey(tag))
@@ -125,43 +134,89 @@ public static class LoggerUtil
         }
     }
 
-    public static void Log(LogTag tag, string message, string? subTag = null, bool isError = false)
+    private static bool TryGetTagConfig(LogTag tag, out LogConfig config)
     {
-        if (TagConfig.TryGetValue(tag, out var config) && config.Enabled)
+        config = new LogConfig(); // Inicializamos con valores predeterminados
+
+        // Si encontramos la configuración en TagConfig
+        if (TagConfig.TryGetValue(tag, out var tagConfig))
         {
-            Console.ForegroundColor = isError ? ConsoleColor.Red : config.Color;
-
-            string prefix = !string.IsNullOrWhiteSpace(subTag)
-                ? $"[{tag}/{subTag}]"
-                : $"[{tag}]";
-
-            Console.WriteLine($"{prefix} {message}");
-            Console.ResetColor();
-
-            if (config.SaveToFile || isError)
+            // Asignamos la configuración
+            config = new LogConfig
             {
-                SaveLogToFile(tag, prefix, message);
+                Enabled = tagConfig.Enabled,
+                Color = tagConfig.Color,
+                SaveToFile = tagConfig.SaveToFile
+            };
+
+            // Si el tag está habilitado, lo cacheamos
+            if (config.Enabled)
+            {
+                enabledTagsCache.Add(tag);  // Cacheamos el tag
             }
+            if (!config.Enabled) return false;
+
+            return true;  // Configuración encontrada y asignada
         }
+
+        // Si no se encuentra la configuración, devolvemos false
+        return false;
     }
 
+    public static void Log(LogTag tag, string message, string? subTag = null, bool isError = false)
+    {
+        if (!enabledTagsCache.Contains(tag))
+        {
+            if (!TryGetTagConfig(tag, out var tagConfig))
+                return;
+
+            if (!tagConfig.Enabled && !isError)
+                return;
+        }
+
+        // Almacenar la configuración en una variable local
+        var config = TagConfig[tag];
+
+        if (!config.Enabled && !isError)
+            return;
+
+        Console.ForegroundColor = isError ? ConsoleColor.Red : config.Color;
+
+        string prefix = !string.IsNullOrWhiteSpace(subTag)
+            ? $"[{tag}/{subTag}]"
+            : $"[{tag}]";
+
+        string logLine = $"{prefix} {message}";
+
+        Console.WriteLine(logLine);
+        Console.ResetColor();
+
+        if (config.SaveToFile || isError)
+            SaveLogToFile(tag, prefix, message);
+    }
     public static void LogCustom(LogTag tag, string message, ConsoleColor overrideColor, string? subTag = null, bool isError = false)
     {
-        if (TagConfig.TryGetValue(tag, out var config) && config.Enabled)
+        if (!TagConfig.TryGetValue(tag, out var config))
+            return;
+        if (!config.Enabled && !isError)
+            return;
+        Console.ForegroundColor = isError ? ConsoleColor.Red : overrideColor;
+
+        string prefix = !string.IsNullOrWhiteSpace(subTag)
+            ? $"[{tag}/{subTag}]"
+            : $"[{tag}]";
+        var logBuilder = new StringBuilder();
+        logBuilder.Append(prefix);
+        logBuilder.Append(" ");
+        logBuilder.Append(message);
+        string logLine = logBuilder.ToString();
+
+        Console.WriteLine(logLine);
+        Console.ResetColor();
+
+        if (config.SaveToFile || isError)
         {
-            Console.ForegroundColor = isError ? ConsoleColor.Red : overrideColor;
-
-            string prefix = !string.IsNullOrWhiteSpace(subTag)
-                ? $"[{tag}/{subTag}]"
-                : $"[{tag}]";
-
-            Console.WriteLine($"{prefix} {message}");
-            Console.ResetColor();
-
-            if (config.SaveToFile || isError)
-            {
-                SaveLogToFile(tag, prefix, message);
-            }
+            SaveLogToFile(tag, prefix, message);
         }
     }
 
@@ -169,13 +224,13 @@ public static class LoggerUtil
     {
         try
         {
-            string date = DateTime.Now.ToString("yyyy-MM-dd");
+            string date = TimeProvider.UtcNow().ToString("yyyy-MM-dd");
             string folderPath = Path.Combine("Logs", tag.ToString());
             string filePath = Path.Combine(folderPath, $"{date}.log");
 
             Directory.CreateDirectory(folderPath);
 
-            string time = DateTime.Now.ToString("HH:mm:ss");
+            string time = TimeProvider.UtcNow().ToString("HH:mm:ss");
             File.AppendAllText(filePath, $"[{time}] {prefix} {message}{Environment.NewLine}");
         }
         catch (Exception ex)

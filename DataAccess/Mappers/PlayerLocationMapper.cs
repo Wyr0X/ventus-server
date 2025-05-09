@@ -8,6 +8,11 @@ namespace VentusServer.DataAccess.Mappers
         // Desde fila dinámica (por ejemplo, de Dapper) a modelo completo
         public static PlayerLocationModel Map(dynamic dbRow, PlayerModel player, WorldModel world, MapModel map)
         {
+            if (dbRow == null) throw new ArgumentNullException(nameof(dbRow));
+            if (player == null) throw new ArgumentNullException(nameof(player));
+            if (world == null) throw new ArgumentNullException(nameof(world));
+            if (map == null) throw new ArgumentNullException(nameof(map));
+
             return new PlayerLocationModel
             {
                 PosX = dbRow.pos_x,
@@ -49,11 +54,11 @@ namespace VentusServer.DataAccess.Mappers
         {
             return new
             {
-                PlayerId = location.PlayerId,
-                WorldId = location.WorldId,
-                MapId = location.MapId,
-                PosX = location.PosX,
-                PosY = location.PosY,
+                location.PlayerId,
+                location.WorldId,
+                location.MapId,
+                location.PosX,
+                location.PosY,
             };
         }
     }

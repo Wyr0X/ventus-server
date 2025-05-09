@@ -38,14 +38,14 @@ namespace VentusServer.Services
                 return BuyItemResult.FailBuild("Cantidad inválida.");
             }
 
-            var item = await _itemService.GetItemByIdAsync(itemId);
+            var item = await _itemService.GetItemByIdAsync(itemId).ConfigureAwait(false);
             if (item == null)
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.StoreService, $"Ítem no encontrado. ItemID: {itemId}", "BuyItemAsync", true);
                 return BuyItemResult.FailBuild("Ítem no encontrado.");
             }
 
-            var inventory = await _inventoryService.GetInventoryByPlayerId(player.Id);
+            var inventory = await _inventoryService.GetInventoryByPlayerId(player.Id).ConfigureAwait(false);
             if (inventory == null)
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.StoreService, $"Inventario no encontrado para el jugador {player.Id}", "BuyItemAsync", true);
@@ -60,7 +60,7 @@ namespace VentusServer.Services
             }
 
             inventory.Gold -= totalCost;
-            await _inventoryService.SaveInventoryAsync(inventory);
+            await _inventoryService.SaveInventoryAsync(inventory).ConfigureAwait(false);
 
             LoggerUtil.Log(LoggerUtil.LogTag.StoreService, $"Compra completada. Ítem {itemId} x{quantity} para jugador {player.Id}.", "BuyItemAsync");
             return BuyItemResult.SuccessBuild("Compra realizada correctamente.");
@@ -74,7 +74,7 @@ namespace VentusServer.Services
 
             foreach (var cartItem in items)
             {
-                var item = await _itemService.GetItemByIdAsync(cartItem.ItemId);
+                var item = await _itemService.GetItemByIdAsync(cartItem.ItemId).ConfigureAwait(false);
                 if (item == null)
                 {
                     LoggerUtil.Log(LoggerUtil.LogTag.StoreService, $"Ítem no encontrado en carrito: {cartItem.ItemId}", "BuyCartAsync", true);
@@ -87,7 +87,7 @@ namespace VentusServer.Services
 
             foreach (var cartSpell in spells)
             {
-                var spell = await _spellService.GetSpellByIdAsync(cartSpell.SpellId);
+                var spell = await _spellService.GetSpellByIdAsync(cartSpell.SpellId).ConfigureAwait(false);
                 if (spell == null)
                 {
                     LoggerUtil.Log(LoggerUtil.LogTag.StoreService, $"Hechizo no encontrado en carrito: {cartSpell.SpellId}", "BuyCartAsync", true);
@@ -98,7 +98,7 @@ namespace VentusServer.Services
                 totalCost += spell.Price * cartSpell.Quantity;
             }
 
-            var inventory = await _inventoryService.GetInventoryByPlayerId(player.Id);
+            var inventory = await _inventoryService.GetInventoryByPlayerId(player.Id).ConfigureAwait(false);
             if (inventory == null)
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.StoreService, $"Inventario no encontrado para jugador {player.Id}", "BuyCartAsync", true);
@@ -122,7 +122,7 @@ namespace VentusServer.Services
 
             foreach (var cartItem in items)
             {
-                var item = await _itemService.GetItemByIdAsync(cartItem.ItemId);
+                var item = await _itemService.GetItemByIdAsync(cartItem.ItemId).ConfigureAwait(false);
                 if (item != null)
                 {
                     var existingItem = inventory.Items.FirstOrDefault(i => i.ItemId == cartItem.ItemId);
@@ -144,6 +144,7 @@ namespace VentusServer.Services
                     }
                     else
                     {
+                        var dateTimeNow = TimeProvider.UtcNow();
 
                         int nextSlot = GetNextAvailableInventorySlot(inventory);
                         var newItem = new PlayerInventoryItemModel
@@ -152,8 +153,8 @@ namespace VentusServer.Services
                             Quantity = cartItem.Quantity,
                             Slot = nextSlot,
                             isEquipped = false,
-                            CreatedAt = DateTime.Now,
-                            UpdatedAt = DateTime.Now,
+                            CreatedAt = dateTimeNow,
+                            UpdatedAt = dateTimeNow,
                             Name = item.Name.Es,
                             Icon = item.IconPath,
                         };
@@ -167,7 +168,7 @@ namespace VentusServer.Services
                 }
             }
 
-            var spellInventory = await _playerSpellInventoryService.GetPlayerSpellsByIdAsync(player.Id);
+            var spellInventory = await _playerSpellInventoryService.GetPlayerSpellsByIdAsync(player.Id).ConfigureAwait(false);
             if (spellInventory == null)
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.StoreService, $"Creando nuevo inventario de hechizos para jugador {player.Id}", "BuyCartAsync");
@@ -188,7 +189,7 @@ namespace VentusServer.Services
             }
             foreach (var cartSpell in spells)
             {
-                var spell = await _spellService.GetSpellByIdAsync(cartSpell.SpellId);
+                var spell = await _spellService.GetSpellByIdAsync(cartSpell.SpellId).ConfigureAwait(false);
                 if (spell != null)
                 {
                     var existingSpell = spellInventory.Spells.FirstOrDefault(s => s.SpellId == cartSpell.SpellId);
@@ -219,8 +220,8 @@ namespace VentusServer.Services
                 }
             }
 
-            await _inventoryService.SaveInventoryAsync(inventory);
-            await _playerSpellInventoryService.UpsertSpellAsync(spellInventory);
+            await _inventoryService.SaveInventoryAsync(inventory).ConfigureAwait(false);
+            await _playerSpellInventoryService.UpsertSpellAsync(spellInventory).ConfigureAwait(false);
 
             LoggerUtil.Log(LoggerUtil.LogTag.StoreService, $"Carrito comprado exitosamente para jugador {player.Id}", "BuyCartAsync");
             return BuyResult.CreateSuccess();

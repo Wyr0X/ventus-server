@@ -1,6 +1,9 @@
 using System.ComponentModel;
 using Newtonsoft.Json;
-
+public static class TimeProvider
+{
+    public static Func<DateTime> UtcNow = () => DateTime.UtcNow;
+}
 public enum NotificationLevel
 {
     [Description("INFO")]
