@@ -1,5 +1,0 @@
-syntax = "proto3";
-
-message LoginResponse {
-    bool success = 1;
-}

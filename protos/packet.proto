@@ -1,6 +1,0 @@
-syntax = "proto3";
-
-message Packet {
-    uint32 type = 1;    // ID del tipo de mensaje
-    bytes payload = 2;  // Mensaje binario codificado
-}
