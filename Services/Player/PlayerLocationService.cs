@@ -30,7 +30,7 @@ namespace VentusServer.Services
             try
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"Cargando ubicación del jugador con ID: {playerId}...");
-                var location = await _playerLocationDAO.GetPlayerLocationAsync(playerId);
+                var location = await _playerLocationDAO.GetPlayerLocationAsync(playerId).ConfigureAwait(false);
                 if (location == null)
                 {
                     LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"No se encontró ubicación para el jugador con ID: {playerId}.");
@@ -47,12 +47,12 @@ namespace VentusServer.Services
         public async Task<PlayerLocationModel?> GetPlayerLocationAsync(int playerId)
         {
             LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"Obteniendo ubicación del jugador con ID: {playerId}...");
-            return await GetOrLoadAsync(playerId);
+            return await GetOrLoadAsync(playerId).ConfigureAwait(false);
         }
 
         public async Task<PlayerLocationModel?> LoadPlayerLocationInModel(PlayerModel playerModel)
         {
-            var playerLocation = await GetPlayerLocationAsync(playerModel.Id);
+            var playerLocation = await GetPlayerLocationAsync(playerModel.Id).ConfigureAwait(false);
 
             playerModel.Location = playerLocation;
             return playerLocation;
@@ -63,7 +63,7 @@ namespace VentusServer.Services
             try
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"Guardando ubicación del jugador con ID: {location.PlayerId}...");
-                await _playerLocationDAO.SavePlayerLocationAsync(location);
+                await _playerLocationDAO.SavePlayerLocationAsync(location).ConfigureAwait(false);
                 Set(location.PlayerId, location); // Refrescar cache
                 LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"✅ Ubicación del jugador con ID: {location.PlayerId} guardada correctamente.");
             }
@@ -78,7 +78,7 @@ namespace VentusServer.Services
             try
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"Creando ubicación para el jugador con ID: {playerLocation.PlayerId}...");
-                await _playerLocationDAO.CreatePlayerLocationAsync(playerLocation);
+                await _playerLocationDAO.CreatePlayerLocationAsync(playerLocation).ConfigureAwait(false);
                 Set(playerLocation.PlayerId, playerLocation); // Agregar a la cache
                 LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"✅ Ubicación del jugador con ID: {playerLocation.PlayerId} creada correctamente.");
             }
@@ -93,8 +93,9 @@ namespace VentusServer.Services
 
             LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"Creando ubicación predeterminada para el jugador con ID: {player.Id}...");
 
-            MapModel? map = await _mapService.GetMapByIdAsync(INITIAL_WORLD);
-            WorldModel? world = await _worldService.GetWorldByIdAsync(INITIAL_MAP);
+            MapModel? map = await _mapService.GetMapByIdAsync(INITIAL_MAP).ConfigureAwait(false);
+            WorldModel? world = await _worldService.GetWorldByIdAsync(INITIAL_WORLD).ConfigureAwait(false);
+
 
             if (world != null && map != null)
             {
@@ -110,7 +111,7 @@ namespace VentusServer.Services
                 };
 
                 LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"Ubicación predeterminada para el jugador con ID: {player.Id} creada correctamente.");
-                await CreatePlayerLocation(playerLocation);
+                await CreatePlayerLocation(playerLocation).ConfigureAwait(false);
 
                 return playerLocation;
             }
@@ -123,13 +124,10 @@ namespace VentusServer.Services
         {
             LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"Eliminando ubicación para el jugador con ID: {playerId}...");
 
-            PlayerLocationModel? playerLocation = await GetPlayerLocationAsync(playerId);
+            PlayerLocationModel? playerLocation = await GetPlayerLocationAsync(playerId).ConfigureAwait(false);
             if (playerLocation != null)
             {
-
-
-
-                await _playerLocationDAO.DeletePlayerLocationAsync(playerId);
+                await _playerLocationDAO.DeletePlayerLocationAsync(playerId).ConfigureAwait(false);
                 Invalidate(playerId); // Eliminar de la cache
                 LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"🗑️ Ubicación del jugador con ID: {playerId} eliminada correctamente.");
             }
@@ -143,7 +141,7 @@ namespace VentusServer.Services
             try
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"Obteniendo jugadores para el mundo con ID: {worldId}...");
-                return await _playerLocationDAO.GetPlayesrIdsByWorldIdAsync(worldId);
+                return await _playerLocationDAO.GetPlayesrIdsByWorldIdAsync(worldId).ConfigureAwait(false);
 
             }
             catch (Exception ex)
@@ -152,17 +150,17 @@ namespace VentusServer.Services
                 return new List<int>(); // Retorna una lista vacía en caso de error
             }
         }
-        public async Task<List<int>> GetPlayersIdByMapIdAsync(int worldId)
+        public async Task<List<int>> GetPlayersIdByMapIdAsync(int mapId)
         {
             try
             {
-                LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"Obteniendo jugadores para el mundo con ID: {worldId}...");
-                return await _playerLocationDAO.GetPlayesrIdsByMapIdAsync(worldId);
+                LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"Obteniendo jugadores para el mundo con ID: {mapId}...");
+                return await _playerLocationDAO.GetPlayesrIdsByMapIdAsync(mapId).ConfigureAwait(false);
 
             }
             catch (Exception ex)
             {
-                LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"❌ Error al obtener jugadores para el mundo con ID: {worldId}. {ex.Message}");
+                LoggerUtil.Log(LoggerUtil.LogTag.PlayerLocationService, $"❌ Error al obtener jugadores para el mundo con ID: {mapId}. {ex.Message}");
                 return new List<int>(); // Retorna una lista vacía en caso de error
             }
         }

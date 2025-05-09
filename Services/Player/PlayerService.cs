@@ -272,7 +272,7 @@ namespace VentusServer.Services
             try
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.PlayerService, $"📤 Cargando modelo del jugador ID {playerId}...");
-                var player = await _playerDAO.GetPlayerByIdAsync(playerId);
+                var player = await _playerDAO.GetPlayerByIdAsync(playerId).ConfigureAwait(false);
                 if (player != null)
                 {
                     _nameToIdCache[player.Name] = player.Id;

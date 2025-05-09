@@ -24,8 +24,8 @@ namespace VentusServer.Services
         private async void createDefaultWorld()
         {
             LoggerUtil.Log(LoggerUtil.LogTag.WorldService, "Verificando existencia del mundo predeterminado...");
-            WorldModel? existDefaultWorld = await this.GetWorldByIdAsync(1);
-            MapModel? existDefaultMap = await _mapService.GetMapByIdAsync(1);
+            WorldModel? existDefaultWorld = await this.GetWorldByIdAsync(1).ConfigureAwait(false);
+            MapModel? existDefaultMap = await _mapService.GetMapByIdAsync(1).ConfigureAwait(false);
 
             if (existDefaultWorld == null)
             {
@@ -44,7 +44,7 @@ namespace VentusServer.Services
                         WorldId = defaultWorld.Id
                     };
 
-                    MapModel? defaultMap = await _mapService.CreateMapAsync(map);
+                    MapModel? defaultMap = await _mapService.CreateMapAsync(map).ConfigureAwait(false);
                     LoggerUtil.Log(LoggerUtil.LogTag.WorldService, $"Mapa predeterminado creado exitosamente ${existDefaultMap}.");
                 }
                 else
@@ -64,7 +64,7 @@ namespace VentusServer.Services
             try
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.WorldService, "Creando un nuevo mundo...");
-                return await _worldDAO.CreateWorldAsync(name, description, maxMaps, maxPlayers, levelRequirements);
+                return await _worldDAO.CreateWorldAsync(name, description, maxMaps, maxPlayers, levelRequirements).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -78,9 +78,9 @@ namespace VentusServer.Services
             try
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.WorldService, $"Obteniendo el mundo con ID {worldId}...");
-                List<MapModel> mapsOfWorld = (await _mapService.GetMapsByWorldIdAsync(worldId)).ToList();
+                List<MapModel> mapsOfWorld = (await _mapService.GetMapsByWorldIdAsync(worldId).ConfigureAwait(false)).ToList();
 
-                WorldModel? worldModel = await _worldDAO.GetWorldByIdAsync(worldId);
+                WorldModel? worldModel = await _worldDAO.GetWorldByIdAsync(worldId).ConfigureAwait(false);
                 if (worldModel == null) return null;
                 worldModel.AddMaps(mapsOfWorld);
 
@@ -100,13 +100,13 @@ namespace VentusServer.Services
                 LoggerUtil.Log(LoggerUtil.LogTag.WorldService, "Obteniendo todos los mundos...");
 
                 // Obtener todos los mundos
-                List<WorldModel> worlds = await _worldDAO.GetAllWorldsAsync();
+                List<WorldModel> worlds = await _worldDAO.GetAllWorldsAsync().ConfigureAwait(false);
 
                 // Iterar sobre cada mundo
                 foreach (var world in worlds)
                 {
                     // Obtener los mapas asociados a cada mundo
-                    List<MapModel> mapsOfWorld = (await _mapService.GetMapsByWorldIdAsync(world.Id)).ToList();
+                    List<MapModel> mapsOfWorld = (await _mapService.GetMapsByWorldIdAsync(world.Id).ConfigureAwait(false)).ToList();
                     world.AddMaps(mapsOfWorld); // Agregar los mapas al mundo
 
                 }
@@ -125,7 +125,7 @@ namespace VentusServer.Services
             try
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.WorldService, $"Guardando mundo con ID {world.Id}...");
-                await _worldDAO.SaveWorldAsync(world);
+                await _worldDAO.SaveWorldAsync(world).ConfigureAwait(false);
                 LoggerUtil.Log(LoggerUtil.LogTag.WorldService, $"Mundo con ID {world.Id} guardado correctamente.");
             }
             catch (Exception ex)
@@ -139,7 +139,7 @@ namespace VentusServer.Services
             try
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.WorldService, $"Eliminando mundo con ID {worldId}...");
-                await _worldDAO.DeleteWorldAsync(worldId);
+                await _worldDAO.DeleteWorldAsync(worldId).ConfigureAwait(false);
                 LoggerUtil.Log(LoggerUtil.LogTag.WorldService, $"Mundo con ID {worldId} eliminado correctamente.");
             }
             catch (Exception ex)
@@ -153,11 +153,11 @@ namespace VentusServer.Services
             try
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.WorldService, $"Removiendo jugador con ID {playerId} del mundo con ID {worldId}...");
-                WorldModel? world = await GetWorldByIdAsync(worldId);
+                WorldModel? world = await GetWorldByIdAsync(worldId).ConfigureAwait(false);
                 if (world != null)
                 {
                     world.RemovePlayer(playerId);
-                    await _worldDAO.SaveWorldAsync(world);
+                    await _worldDAO.SaveWorldAsync(world).ConfigureAwait(false);
                     LoggerUtil.Log(LoggerUtil.LogTag.WorldService, $"Jugador con ID {playerId} removido del mundo con ID {worldId}.");
                 }
                 else

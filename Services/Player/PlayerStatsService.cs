@@ -24,7 +24,7 @@ namespace VentusServer.Services
             }
 
             // Si no está en caché, lo cargamos desde la base de datos
-            playerStats = await _playerStatsDAO.GetPlayerStatsByIdAsync(playerId);
+            playerStats = await _playerStatsDAO.GetPlayerStatsByIdAsync(playerId).ConfigureAwait(false);
             if (playerStats != null)
             {
                 _cache[playerId] = playerStats; // Guardamos en caché
@@ -36,11 +36,11 @@ namespace VentusServer.Services
 
         public async Task<PlayerStatsModel?> GetPlayerStatsAsync(int playerId)
         {
-            return await GetOrLoadPlayerStatsAsync(playerId);
+            return await GetOrLoadPlayerStatsAsync(playerId).ConfigureAwait(false);
         }
         public async Task<PlayerStatsModel?> LoadPlayerStatsInModel(PlayerModel player)
         {
-            var playerStats = await GetPlayerStatsAsync(player.Id);
+            var playerStats = await GetPlayerStatsAsync(player.Id).ConfigureAwait(false);
             player.Stats = playerStats;
             return playerStats;
         }
@@ -49,7 +49,7 @@ namespace VentusServer.Services
             try
             {
                 Console.WriteLine($"LAST UPDATED {playerStats.LastUpdated}");
-                await _playerStatsDAO.SavePlayerStatsAsync(playerStats);
+                await _playerStatsDAO.SavePlayerStatsAsync(playerStats).ConfigureAwait(false);
                 _cache[playerStats.PlayerId] = playerStats; // Actualizamos la cache
             }
             catch (Exception ex)
@@ -66,14 +66,14 @@ namespace VentusServer.Services
 
             // Guardar las estadísticas del jugador recién creado
 
-            await SavePlayerStatsAsync(playerStats);
+            await SavePlayerStatsAsync(playerStats).ConfigureAwait(false);
             return playerStats;
         }
 
         // Métodos para actualizar las estadísticas del jugador...
         public async Task UpdateGoldAsync(int playerId, int goldDelta)
         {
-            var playerStats = await GetOrLoadPlayerStatsAsync(playerId);
+            var playerStats = await GetOrLoadPlayerStatsAsync(playerId).ConfigureAwait(false);
             if (playerStats == null) return;
 
             playerStats.Gold += goldDelta;
@@ -82,7 +82,7 @@ namespace VentusServer.Services
 
         public async Task UpdateBankGoldAsync(int playerId, int bankGoldDelta)
         {
-            var playerStats = await GetOrLoadPlayerStatsAsync(playerId);
+            var playerStats = await GetOrLoadPlayerStatsAsync(playerId).ConfigureAwait(false);
             if (playerStats == null) return;
 
             playerStats.BankGold += bankGoldDelta;
@@ -91,16 +91,16 @@ namespace VentusServer.Services
 
         public async Task UpdateFreeSkillPointsAsync(int playerId, int skillPointsDelta)
         {
-            var playerStats = await GetOrLoadPlayerStatsAsync(playerId);
+            var playerStats = await GetOrLoadPlayerStatsAsync(playerId).ConfigureAwait(false);
             if (playerStats == null) return;
 
             playerStats.FreeSkillPoints += skillPointsDelta;
-            await SavePlayerStatsAsync(playerStats);
+            await SavePlayerStatsAsync(playerStats).ConfigureAwait(false);
         }
 
         public async Task UpdateHpAsync(int playerId, int hpDelta)
         {
-            var playerStats = await GetOrLoadPlayerStatsAsync(playerId);
+            var playerStats = await GetOrLoadPlayerStatsAsync(playerId).ConfigureAwait(false);
             if (playerStats == null) return;
 
             // Aseguramos que la salud no sea mayor que el máximo
@@ -110,37 +110,37 @@ namespace VentusServer.Services
 
         public async Task UpdateMpAsync(int playerId, int mpDelta)
         {
-            var playerStats = await GetOrLoadPlayerStatsAsync(playerId);
+            var playerStats = await GetOrLoadPlayerStatsAsync(playerId).ConfigureAwait(false);
             if (playerStats == null) return;
 
             // Aseguramos que el maná no sea mayor que el máximo
             playerStats.Mp = Math.Clamp(playerStats.Mp + mpDelta, 0, playerStats.MaxMp); // Evita que el maná exceda el máximo
-            await SavePlayerStatsAsync(playerStats);
+            await SavePlayerStatsAsync(playerStats).ConfigureAwait(false);
         }
 
         public async Task UpdateSpAsync(int playerId, int spDelta)
         {
-            var playerStats = await GetOrLoadPlayerStatsAsync(playerId);
+            var playerStats = await GetOrLoadPlayerStatsAsync(playerId).ConfigureAwait(false);
             if (playerStats == null) return;
 
             // Aseguramos que los puntos de acción no sean mayores que el máximo
             playerStats.Sp = Math.Clamp(playerStats.Sp + spDelta, 0, playerStats.MaxSp); // Evita que los puntos de acción excedan el máximo
-            await SavePlayerStatsAsync(playerStats);
+            await SavePlayerStatsAsync(playerStats).ConfigureAwait(false);
         }
 
         public async Task UpdateHungerAsync(int playerId, int hungerDelta)
         {
-            var playerStats = await GetOrLoadPlayerStatsAsync(playerId);
+            var playerStats = await GetOrLoadPlayerStatsAsync(playerId).ConfigureAwait(false);
             if (playerStats == null) return;
 
             // Aseguramos que el hambre no sea negativa, si quieres un máximo puedes agregar un límite
             playerStats.Hunger = Math.Max(0, playerStats.Hunger + hungerDelta);
-            await SavePlayerStatsAsync(playerStats);
+            await SavePlayerStatsAsync(playerStats).ConfigureAwait(false);
         }
 
         public async Task UpdateThirstAsync(int playerId, int thirstDelta)
         {
-            var playerStats = await GetOrLoadPlayerStatsAsync(playerId);
+            var playerStats = await GetOrLoadPlayerStatsAsync(playerId).ConfigureAwait(false);
             if (playerStats == null) return;
 
             // Aseguramos que la sed no sea negativa, si quieres un máximo puedes agregar un límite
@@ -150,37 +150,37 @@ namespace VentusServer.Services
 
         public async Task UpdateKilledNpcsAsync(int playerId, int killedNpcsDelta)
         {
-            var playerStats = await GetOrLoadPlayerStatsAsync(playerId);
+            var playerStats = await GetOrLoadPlayerStatsAsync(playerId).ConfigureAwait(false);
             if (playerStats == null) return;
 
             playerStats.KilledNpcs += killedNpcsDelta;
-            await SavePlayerStatsAsync(playerStats);
+            await SavePlayerStatsAsync(playerStats).ConfigureAwait(false);
         }
 
         public async Task UpdateKilledUsersAsync(int playerId, int killedUsersDelta)
         {
-            var playerStats = await GetOrLoadPlayerStatsAsync(playerId);
+            var playerStats = await GetOrLoadPlayerStatsAsync(playerId).ConfigureAwait(false);
             if (playerStats == null) return;
 
             playerStats.KilledUsers += killedUsersDelta;
-            await SavePlayerStatsAsync(playerStats);
+            await SavePlayerStatsAsync(playerStats).ConfigureAwait(false);
         }
 
         public async Task UpdateDeathsAsync(int playerId, int deathsDelta)
         {
-            var playerStats = await GetOrLoadPlayerStatsAsync(playerId);
+            var playerStats = await GetOrLoadPlayerStatsAsync(playerId).ConfigureAwait(false);
             if (playerStats == null) return;
 
             playerStats.Deaths += deathsDelta;
-            await SavePlayerStatsAsync(playerStats);
+            await SavePlayerStatsAsync(playerStats).ConfigureAwait(false);
         }
 
         public async Task DeletePlayerStatsAsync(int playerId)
         {
-            var playerStats = await GetOrLoadPlayerStatsAsync(playerId);
+            var playerStats = await GetOrLoadPlayerStatsAsync(playerId).ConfigureAwait(false);
             if (playerStats == null) return;
 
-            await _playerStatsDAO.DeletePlayerStatsAsync(playerId);
+            await _playerStatsDAO.DeletePlayerStatsAsync(playerId).ConfigureAwait(false);
             _cache.TryRemove(playerId, out _); // Elimina de la cache
         }
 

@@ -1,9 +1,41 @@
 syntax = "proto3";
 
+
+message PlayerSpell {
+  string spellId = 1;
+  int32 slot = 2;
+}
 message PlayerSpawn {
     int32 player_id = 1;
     //Informacion extra del MAP - COMPLETAR
     float x = 2;  // Posición X del jugador en el mapa
     float y = 3;  // Posición Y del jugador en el mapa
+    string name = 4;
+
+}
+message PlayerSpawnError {
+    int32 player_id = 1;
+}
+message PlayerUpdateData {
+    int32 player_id = 1;
+    string name = 2;
+    float x = 3;  
+    float y = 4;  
 }
 
+message  SelfSpawn {
+  int32 player_id = 1;
+  //Informacion extra del MAP - COMPLETAR
+  float x = 2;  // Posición X del jugador en el mapa
+  float y = 3;  // Posición Y del jugador en el mapa
+  string name = 4;
+  repeated PlayerSpell spells = 5;
+  repeated PlayerUpdateData players = 6;
+}
+
+
+// Enviado del servidor al cliente
+message TimeSyncResponse {
+  int64 server_time = 1;        // Timestamp del servidor en ms (Date.now() o performance.now() si usa Node)
+  int64 client_send_time = 2;   // Timestamp original del cliente, eco del request
+}

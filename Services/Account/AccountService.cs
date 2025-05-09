@@ -25,12 +25,12 @@ namespace VentusServer.Services
         public async Task<List<AccountDTO>> GetAllAccountsAsync()
         {
             LoggerUtil.Log(LoggerUtil.LogTag.IAccountService, "Obteniendo todas las cuentas desde la base de datos...");
-            var accounts = await _accountDao.GetAllAccountsAsync();
+            var accounts = await _accountDao.GetAllAccountsAsync().ConfigureAwait(false);
 
             var result = new List<AccountDTO>();
             foreach (var account in accounts)
             {
-                var role = await _roleService.GetRoleByIdAsync(account.RoleId);
+                var role = await _roleService.GetRoleByIdAsync(account.RoleId).ConfigureAwait(false);
                 result.Add(new AccountDTO
                 {
                     AccountId = account.AccountId,
@@ -49,7 +49,7 @@ namespace VentusServer.Services
         {
             LoggerUtil.Log(LoggerUtil.LogTag.IAccountService, $"Cargando cuenta con ID {accountId} desde la base de datos...");
 
-            var account = await _accountDao.GetAccountByAccountIdAsync(accountId);
+            var account = await _accountDao.GetAccountByAccountIdAsync(accountId).ConfigureAwait(false);
 
             if (account != null)
             {
@@ -69,10 +69,10 @@ namespace VentusServer.Services
             return account;
         }
 
-        public Task<AccountModel?> GetOrCreateAccountInCacheAsync(Guid accountId)
+        public async Task<AccountModel?> GetOrCreateAccountInCacheAsync(Guid accountId)
         {
             LoggerUtil.Log(LoggerUtil.LogTag.IAccountService, $"Obteniendo o creando en caché la cuenta con ID {accountId}.");
-            return GetOrLoadAsync(accountId);
+            return await GetOrLoadAsync(accountId).ConfigureAwait(false);
         }
 
         public async Task<AccountModel?> GetAccountByEmailAsync(string email)
@@ -82,10 +82,10 @@ namespace VentusServer.Services
             if (_emailToIdCache.TryGetValue(email, out var id))
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.IAccountService, $"Email encontrado en caché con ID: {id}");
-                return await GetOrLoadAsync(id);
+                return await GetOrLoadAsync(id).ConfigureAwait(false);
             }
 
-            var account = await _accountDao.GetAccountByEmailAsync(email);
+            var account = await _accountDao.GetAccountByEmailAsync(email).ConfigureAwait(false);
 
             if (account != null)
             {
@@ -108,10 +108,10 @@ namespace VentusServer.Services
             if (_nameToIdCache.TryGetValue(name, out var id))
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.IAccountService, $"Nombre encontrado en caché con ID: {id}");
-                return await GetOrLoadAsync(id);
+                return await GetOrLoadAsync(id).ConfigureAwait(false);
             }
 
-            var account = await _accountDao.GetAccountByNameAsync(name);
+            var account = await _accountDao.GetAccountByNameAsync(name).ConfigureAwait(false);
             if (account != null)
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.IAccountService, $"Cuenta encontrada en DB para nombre: {name}, ID: {account.AccountId}");
@@ -131,7 +131,7 @@ namespace VentusServer.Services
             LoggerUtil.Log(LoggerUtil.LogTag.IAccountService, $"Guardando cuenta: {accountModel.AccountId}");
 
             var existingByEmail = !string.IsNullOrEmpty(accountModel.Email)
-                ? await GetAccountByEmailAsync(accountModel.Email)
+                ? await GetAccountByEmailAsync(accountModel.Email).ConfigureAwait(false)
                 : null;
 
             if (existingByEmail != null && existingByEmail.AccountId != accountModel.AccountId)
@@ -141,7 +141,7 @@ namespace VentusServer.Services
             }
 
             var existingByName = !string.IsNullOrEmpty(accountModel.AccountName)
-                ? await GetAccountByNameAsync(accountModel.AccountName)
+                ? await GetAccountByNameAsync(accountModel.AccountName).ConfigureAwait(false)
                 : null;
 
             if (existingByName != null && existingByName.AccountId != accountModel.AccountId)
@@ -150,7 +150,7 @@ namespace VentusServer.Services
                 throw new Exception("Nombre de cuenta ya está en uso.");
             }
 
-            await _accountDao.UpdateAccountAsync(accountModel);
+            await _accountDao.UpdateAccountAsync(accountModel).ConfigureAwait(false);
             Set(accountModel.AccountId, accountModel);
 
             LoggerUtil.Log(LoggerUtil.LogTag.IAccountService, $"Cuenta actualizada: {accountModel.AccountId}");
@@ -172,7 +172,7 @@ namespace VentusServer.Services
         {
             LoggerUtil.Log(LoggerUtil.LogTag.IAccountService, $"Actualizando nombre para cuenta {accountId} a '{newName}'");
 
-            var updated = await _accountDao.UpdateAccountNameAsync(accountId, newName);
+            var updated = await _accountDao.UpdateAccountNameAsync(accountId, newName).ConfigureAwait(false);
             if (updated)
             {
                 var account = await GetOrLoadAsync(accountId);

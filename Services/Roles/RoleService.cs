@@ -21,7 +21,7 @@ namespace VentusServer.Services
         protected override async Task<RoleModel?> LoadModelAsync(string roleId)
         {
             LoggerUtil.Log(LoggerUtil.LogTag.RoleService, $"Cargando rol con ID {roleId} desde la base de datos...");
-            var role = await _roleDao.GetRoleByIdAsync(roleId);
+            var role = await _roleDao.GetRoleByIdAsync(roleId).ConfigureAwait(false);
 
             if (role != null)
             {
@@ -37,10 +37,10 @@ namespace VentusServer.Services
             return role;
         }
 
-        public Task<RoleModel?> GetOrCreateRoleInCacheAsync(string roleId)
+        public async Task<RoleModel?> GetOrCreateRoleInCacheAsync(string roleId)
         {
             LoggerUtil.Log(LoggerUtil.LogTag.RoleService, $"Obteniendo o creando en caché el rol con ID {roleId}");
-            return GetOrLoadAsync(roleId);
+            return await GetOrLoadAsync(roleId).ConfigureAwait(false);
         }
 
         public async Task<RoleModel?> GetRoleByDisplayNameAsync(string name)
@@ -50,10 +50,10 @@ namespace VentusServer.Services
             if (_nameToIdCache.TryGetValue(name, out var cachedId))
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.RoleService, $"Nombre encontrado en caché : {cachedId}");
-                return await GetOrLoadAsync(cachedId);
+                return await GetOrLoadAsync(cachedId).ConfigureAwait(false);
             }
 
-            var role = await _roleDao.GetRoleByDisplayNameAsync(name);
+            var role = await _roleDao.GetRoleByDisplayNameAsync(name).ConfigureAwait(false);
             if (role != null)
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.RoleService, $"Rol encontrado en DB para nombre: {name}, ID: {role.RoleId}");
@@ -73,12 +73,12 @@ namespace VentusServer.Services
             LoggerUtil.Log(LoggerUtil.LogTag.RoleService, $"Buscando rol por Id: {roleId}");
 
 
-            return await GetOrLoadAsync(roleId);
+            return await GetOrLoadAsync(roleId).ConfigureAwait(false);
         }
         public async Task<List<RoleModel>> GetAllRolesAsync()
         {
             LoggerUtil.Log(LoggerUtil.LogTag.RoleService, "Obteniendo todos los roles...");
-            var roles = await _roleDao.GetAllRolesAsync();
+            var roles = await _roleDao.GetAllRolesAsync().ConfigureAwait(false);
 
             foreach (var role in roles)
             {
@@ -94,14 +94,14 @@ namespace VentusServer.Services
         {
             LoggerUtil.Log(LoggerUtil.LogTag.RoleService, $"Creando nuevo rol: {role.DisplayName} (ID: {role.RoleId})");
 
-            var existing = await GetRoleByDisplayNameAsync(role.DisplayName);
+            var existing = await GetRoleByDisplayNameAsync(role.DisplayName).ConfigureAwait(false);
             if (existing != null)
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.RoleService, $"Ya existe un rol con el nombre: {role.DisplayName}", isError: true);
                 throw new Exception($"El rol '{role.DisplayName}' ya existe.");
             }
 
-            var created = await _roleDao.CreateRoleAsync(role);
+            var created = await _roleDao.CreateRoleAsync(role).ConfigureAwait(false);
             if (!created)
             {
                 LoggerUtil.Log(LoggerUtil.LogTag.RoleService, $"Error al crear el rol {role.DisplayName}", isError: true);

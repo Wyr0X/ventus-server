@@ -20,27 +20,27 @@ namespace VentusServer.Services
         // Cargar el modelo de hechizo desde la fuente externa (base de datos)
         protected override async Task<SpellModel?> LoadModelAsync(string spellId)
         {
-            var spell = await _spellDAO.GetSpellByIdAsync(spellId);
+            var spell = await _spellDAO.GetSpellByIdAsync(spellId).ConfigureAwait(false);
             return spell;
         }
 
         public async Task<IEnumerable<SpellModel>> GetAllSpellsAsync()
         {
-            var spells = await _spellDAO.GetAllSpellsAsync();
+            var spells = await _spellDAO.GetAllSpellsAsync().ConfigureAwait(false);
             return spells;
         }
 
         public async Task<SpellModel?> GetSpellByIdAsync(string spellId)
         {
             // Intentar cargar desde la caché
-            var spell = await GetOrLoadAsync(spellId);
+            var spell = await GetOrLoadAsync(spellId).ConfigureAwait(false);
             return spell;
         }
 
         public async Task CreateSpellAsync(SpellModel spellModel)
         {
 
-            await _spellDAO.CreateSpellAsync(spellModel);
+            await _spellDAO.CreateSpellAsync(spellModel).ConfigureAwait(false);
 
             // Después de crear el hechizo, almacenarlo en caché
             Set(spellModel.Id, spellModel);
@@ -50,7 +50,7 @@ namespace VentusServer.Services
         {
 
 
-            await _spellDAO.SaveSpellAsync(spellModel);
+            await _spellDAO.SaveSpellAsync(spellModel).ConfigureAwait(false);
 
             // Actualizar el hechizo en caché después de actualizar
             Set(spellModel.Id, spellModel);
@@ -58,13 +58,13 @@ namespace VentusServer.Services
 
         public async Task DeleteSpellAsync(string spellId)
         {
-            var exists = await _spellDAO.SpellExistsAsync(spellId);
+            var exists = await _spellDAO.SpellExistsAsync(spellId).ConfigureAwait(false);
             if (!exists)
             {
                 throw new Exception($"Spell with ID {spellId} does not exist.");
             }
 
-            await _spellDAO.DeleteSpellAsync(spellId);
+            await _spellDAO.DeleteSpellAsync(spellId).ConfigureAwait(false);
 
             // Invalidar el caché de este hechizo después de eliminar
             Invalidate(spellId);
