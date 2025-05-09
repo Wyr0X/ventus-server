@@ -1,7 +1,0 @@
-[14:25:55] [WebSocketServerController] ✅ WebSocket iniciado en ws://localhost:5331
-[14:27:35] [WebSocketServerController] 🆔 Conexión iniciada: 71370f50-063c-46ee-ae63-178b964658c6
-[14:27:35] [WebSocketServerController] 🆔 Conexión iniciada: 2e4bdeca-a11f-4c29-80d7-b626c55d9a98
-[14:27:35] [WebSocketServerController] Bytes :System.Byte[]
-[14:27:35] [WebSocketServerController] Paquete recibido - Tipo :AuthRequest
-[14:27:35] [WebSocketServerController] ❌ Token inválido recibido de 2e4bdeca-a11f-4c29-80d7-b626c55d9a98
-[14:27:38] [WebSocketServerController] 🆔 Conexión iniciada: ae995f0f-df7d-4ac3-aa3e-8c2decf56d13
