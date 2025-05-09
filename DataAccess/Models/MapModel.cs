@@ -37,6 +37,7 @@ namespace Game.Models
         {
             // if (playerLevel < MinLevel || !HasSpace())
             //     return false;
+            Console.WriteLine($"[AddPlayer] Jugadores actuales: {string.Join(", ", _spawnedPlayerIds)}");
 
             if (_spawnedPlayerIds.Contains(playerId) || !HasSpawnSpace())
                 return false;

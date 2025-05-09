@@ -13,6 +13,7 @@ public class PlayerObject : Character
     public bool IsMoving { get; set; }
     public long LastProcessedInputTimestamp { get; set; } = 0;
     public PlayerModel PlayerModel { get; set; }
+    public bool IsActiviyConfirmed { get; set; } = false;
 
     public int LastSequenceNumberProcessed = 0;
     private Queue<MovementPlayerInput> inputsToProcess = new Queue<MovementPlayerInput>();
@@ -22,6 +23,7 @@ public class PlayerObject : Character
         : base(id, position, name)
     {
         PlayerModel = playerModel;
+        IsActiviyConfirmed = true;
     }
 
     private bool CheckCollision()

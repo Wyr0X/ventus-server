@@ -16,6 +16,9 @@ public class SpawnPlayerData
 public class SessionHandler
 {
     private readonly GameServer _gameServer;
+    private readonly TimeSpan _activityCheckInterval = TimeSpan.FromSeconds(30); // Intervalo para comprobar la actividad de los jugadores
+    private readonly TimeSpan _playerTimeout = TimeSpan.FromSeconds(10); // Tiempo máximo para que el jugador responda
+
 
     public SessionHandler(GameServer gameServer, GameEventHandler gameEventHandler)
     {
@@ -26,15 +29,72 @@ public class SessionHandler
 
     }
 
+    public async Task MonitorPlayerActivityAsync(CancellationToken externalToken)
+    {
+        LoggerUtil.Log(LoggerUtil.LogTag.GameServer, "Iniciando monitoreo de actividad de jugadores...");
+        var tasks = new List<Task>();
+
+        while (!externalToken.IsCancellationRequested)
+        {
+            // Itera sobre todos los jugadores activos
+            foreach (var player in _gameServer.playersInTheGame.Values)
+            {
+                // Enviar un paquete de solicitud de actividad al jugador
+                SendActivityRequest(player);
+                player.IsActiviyConfirmed = false;
+                // Espera la respuesta del jugador
+                tasks.Add(MonitorPlayerActivityForSinglePlayerAsync(player, externalToken));
+
+
+            }
+
+            // Esperar el siguiente ciclo
+            await Task.Delay(_activityCheckInterval, externalToken);
+        }
+    }
+
+    /// <summary>
+    /// Envía una solicitud de actividad al jugador.
+    /// </summary>
+    private void SendActivityRequest(PlayerObject player)
+    {
+        LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"Enviando solicitud de actividad al jugador {player.PlayerModel.Id}...");
+        VerifyPlayerConnection verifyPlayerConnection = new();
+        _gameServer._webSocketServerController._outgoingQueue.Enqueue(player.PlayerModel.AccountId, verifyPlayerConnection, ServerPacket.VerifyPlayerConnection);
+
+    }
+
+    /// <summary>
+    /// Espera la respuesta de actividad del jugador dentro del tiempo límite.
+    /// </summary>
+    public async Task MonitorPlayerActivityForSinglePlayerAsync(PlayerObject player, CancellationToken externalToken)
+    {
+        LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"Esperando confirmación del jugador {player.PlayerModel.Id}...");
+
+        // Esperamos el tiempo determinado (por ejemplo, 10 segundos)
+        await Task.Delay(_playerTimeout, externalToken);
+
+        // Comprobamos si la propiedad 'IsConfirmed' sigue siendo falsa después del tiempo
+        if (!player.IsActiviyConfirmed)
+        {
+            // Si el jugador no ha confirmado dentro del tiempo, eliminarlo
+            _gameServer.RemovePlayerFromGame(player.PlayerModel.Id);
+            LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"Jugador {player.PlayerModel.Id} despawneado por inactividad.");
+        }
+        else
+        {
+            LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"Jugador {player.PlayerModel.Id} confirmado.");
+        }
+    }
     public async Task HandleSpawnPlayer(dynamic gameDataPacket)
     {
-        LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem, $"[HandleSpawnPlayer] Incoming event: {gameDataPacket.ToString()}");
+        LoggerUtil.Log(LoggerUtil.LogTag.SessionHandler, $"[HandleSpawnPlayer] Incoming event: {gameDataPacket.ToString()}");
 
 
         var data = gameDataPacket as SpawnPlayerData;
         if (data == null)
         {
-            LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem, "Invalid event data type (expected SpawnPlayerData)");
+            LoggerUtil.Log(LoggerUtil.LogTag.SessionHandler, "Invalid event data type (expected SpawnPlayerData)");
             return;
         }
         // Validar que los datos del evento sean correctos
@@ -43,16 +103,16 @@ public class SessionHandler
         (data.PlayerSpawnedModel != null && data.PlayerSpawnedModel is not PlayerModel) ||
             !(data.AccountModel is AccountModel accountModel))
         {
-            LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem, "Invalid event data for PlayerSpawn");
+            LoggerUtil.Log(LoggerUtil.LogTag.SessionHandler, "Invalid event data for PlayerSpawn");
             return;
         }
-        LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem, $"[HandleSpawnPlayer] PlayerModel: {playerModel.ToString()}");
+        LoggerUtil.Log(LoggerUtil.LogTag.SessionHandler, $"[HandleSpawnPlayer] PlayerModel: {playerModel.ToString()}");
 
 
         // Evitar doble spawn
         if (playerModel.isSpawned)
         {
-            LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem,
+            LoggerUtil.Log(LoggerUtil.LogTag.SessionHandler,
                 $"[HandleSpawnPlayer] Player {playerModel.Id} is already spawned, removing from world...");
             _gameServer.RemovePlayerFromGame(playerModel.Id);
             playerModel.isSpawned = false;
@@ -60,7 +120,7 @@ public class SessionHandler
         }
         if (playerSpawnedModel != null)
         {
-            LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem,
+            LoggerUtil.Log(LoggerUtil.LogTag.SessionHandler,
                 $"[HandleSpawnPlayer] Player {accountModel.ActivePlayerId} is already spawned, removing from world...");
             _gameServer.RemovePlayerFromGame(playerSpawnedModel.Id);
 
@@ -72,7 +132,7 @@ public class SessionHandler
         var loc = playerModel.Location;
         if (loc == null)
         {
-            LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem, "[HandleSpawnPlayer] PlayerLocation is null");
+            LoggerUtil.Log(LoggerUtil.LogTag.SessionHandler, "[HandleSpawnPlayer] PlayerLocation is null");
             return;
         }
 
@@ -81,7 +141,7 @@ public class SessionHandler
         {
             if (!canSpawn)
             {
-                LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem,
+                LoggerUtil.Log(LoggerUtil.LogTag.SessionHandler,
                     $"[HandleSpawnPlayer] Failed to spawn player {playerModel.Id} in world {loc.WorldId}, map {loc.MapId}");
 
                 PlayerSpawnError playerSpawnError = new()
@@ -129,7 +189,7 @@ public class SessionHandler
                     _gameServer._webSocketServerController._outgoingQueue.Enqueue(player.AccountId, playerSpawn, ServerPacket.PlayerSpawn);
                 }
             }
-            LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem,
+            LoggerUtil.Log(LoggerUtil.LogTag.SessionHandler,
                 $"[HandleSpawnPlayer] Player {playerModel.Id} spawned successfully in world {loc.WorldId}, map {loc.MapId}, current player active {accountModel.ActivePlayerId}");
         });
     }
@@ -141,16 +201,26 @@ public class SessionHandler
             var despawnPlayerPacket = userMessagePair.ClientMessage as TryToDespawnPlayer;
             if (despawnPlayerPacket == null)
             {
-                LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem, "Invalid event data type (expected TryToDespawnPlayer)");
+                LoggerUtil.Log(LoggerUtil.LogTag.SessionHandler, "Invalid event data type (expected TryToDespawnPlayer)");
                 return Task.CompletedTask;
             }
-            var playerObject = _gameServer.playersByAccountId[userMessagePair.AccountId];
+            LoggerUtil.Log(LoggerUtil.LogTag.SessionHandler, $"[HandleUnspawnPlayer] Incoming AccountId: {userMessagePair.AccountId}");
+
+
+            if (!_gameServer.playersByAccountId.TryGetValue(userMessagePair.AccountId, out var playerObject))
+            {
+                LoggerUtil.Log(LoggerUtil.LogTag.SessionHandler, $"[HandleUnspawnPlayer] Player not found for account ID {userMessagePair.AccountId}");
+                return Task.CompletedTask;
+            }
+
 
             if (playerObject == null)
             {
-                LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem, $"[HandleUnspawnPlayer] Player not found for ID {userMessagePair.AccountId}");
+                LoggerUtil.Log(LoggerUtil.LogTag.SessionHandler, $"[HandleUnspawnPlayer] Player not found for ID {userMessagePair.AccountId}");
                 return Task.CompletedTask;
             }
+            LoggerUtil.Log(LoggerUtil.LogTag.SessionHandler, $"[HandleUnspawnPlayer] Try to remove from the game ID: {playerObject.Id}");
+
             _gameServer.RemovePlayerFromGame(playerObject.Id); // Eliminar el jugador del juego
 
             return Task.CompletedTask;
@@ -158,7 +228,7 @@ public class SessionHandler
         }
         catch (Exception ex)
         {
-            LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem,
+            LoggerUtil.Log(LoggerUtil.LogTag.SessionHandler,
                 $"[HandleUnspawnPlayer] Exception occurred: {ex.Message}\n{ex.StackTrace}");
             return Task.CompletedTask;
 
@@ -171,7 +241,7 @@ public class SessionHandler
         TimeSyncRequest? request = userMessagePair.ClientMessage as TimeSyncRequest;
         if (request == null)
         {
-            LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem, "Invalid TimeSyncRequest packet received.");
+            LoggerUtil.Log(LoggerUtil.LogTag.SessionHandler, "Invalid TimeSyncRequest packet received.");
             return;
         }
         var clientSendTime = request.ClientSendTime;

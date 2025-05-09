@@ -153,34 +153,59 @@ namespace Game.Server
             return Task.CompletedTask;
         }
 
-
         public void RemovePlayerFromGame(int playerId)
         {
+            LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"[RemovePlayerFromGame] Intentando eliminar jugador {playerId}...");
+            worldManager.RemovePlayerFromWorld(playerId);
+
             if (playersInTheGame.TryRemove(playerId, out var player))
             {
-                LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"Jugador {playerId} eliminado de playersInTheGame.");
+                LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"[RemovePlayerFromGame] Jugador {playerId} eliminado de playersInTheGame.");
 
-                // Eliminar de playersByAccountId si está mapeado
-                var accountId = player.PlayerModel.AccountId; // Asumo que existe esta propiedad en PlayerObject
-                if (accountId != Guid.Empty && playersByAccountId.TryRemove(accountId, out _))
+                // Verifica el contenido de player por si viene null por error
+                if (player == null)
                 {
-                    LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"Jugador con accountId {accountId} eliminado de playersByAccountId.");
+                    LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"[RemovePlayerFromGame] Advertencia: PlayerObject de {playerId} es null tras TryRemove.", isError: true);
                 }
-
-                // Eliminar también el modelo si aplica
-                if (PlayerModels.TryRemove(playerId, out _))
+                else
                 {
-                    LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"Modelo del jugador {playerId} eliminado de PlayerModels.");
-                }
+                    var accountId = player.PlayerModel.AccountId;
+                    LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"[RemovePlayerFromGame] AccountId asociado: {accountId}");
 
-                // Limpieza adicional si se requiere
-                worldManager.RemovePlayerFromWorld(playerId); // Asumiendo que tienes un método para esto
+                    if (accountId != Guid.Empty)
+                    {
+                        if (playersByAccountId.TryRemove(accountId, out _))
+                        {
+                            LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"[RemovePlayerFromGame] Jugador con accountId {accountId} eliminado de playersByAccountId.");
+                        }
+                        else
+                        {
+                            LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"[RemovePlayerFromGame] No se encontró el accountId {accountId} en playersByAccountId.", isError: true);
+                        }
+                    }
+                    else
+                    {
+                        LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"[RemovePlayerFromGame] AccountId está vacío para el jugador {playerId}.", isError: true);
+                    }
+
+                    if (PlayerModels.TryRemove(playerId, out _))
+                    {
+                        LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"[RemovePlayerFromGame] Modelo del jugador {playerId} eliminado de PlayerModels.");
+                    }
+                    else
+                    {
+                        LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"[RemovePlayerFromGame] No se encontró modelo del jugador {playerId} en PlayerModels.", isError: true);
+                    }
+
+                    // Limpieza del mundo
+                    LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"[RemovePlayerFromGame] Intentando eliminar al jugador {playerId} del mundo...");
+                }
 
                 player = null;
             }
             else
             {
-                LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"No se encontró al jugador {playerId} en playersInTheGame.", isError: true);
+                LoggerUtil.Log(LoggerUtil.LogTag.GameServer, $"[RemovePlayerFromGame] No se encontró al jugador {playerId} en playersInTheGame.", isError: true);
             }
         }
 

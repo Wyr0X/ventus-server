@@ -90,7 +90,7 @@ namespace Game.Models
 
             Console.WriteLine(_spawnedPlayerIds.Count);
             Console.WriteLine(MaxPlayers);
-            LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem,
+            LoggerUtil.Log(LoggerUtil.LogTag.SessionHandler,
               $"[SpawnedPlayerIds] Current list: {string.Join(", ", _spawnedPlayerIds)}");
             if (_spawnedPlayerIds.Count >= MaxPlayers || _spawnedPlayerIds.Contains(playerId))
                 return false;

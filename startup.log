@@ -190,7 +190,7 @@
 [23:35:32] ⏳ Validando y construyendo conexión...
 [23:35:32] ✅ Conexión y credenciales listas.
 [23:35:32] ⏳ Configurando contenedor de dependencias...
-[23:35:32] ❌ Error durante la inicialización: Unable to resolve service for type 'SystemHandler' while attempting to activate 'SessionSystem'.
+[23:35:32] ❌ Error durante la inicialización: Unable to resolve service for type 'SystemHandler' while attempting to activate 'SessionHandler'.
 [23:35:32] StackTrace:    at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
    at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
    at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)

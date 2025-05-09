@@ -41,7 +41,7 @@ public static class LoggerUtil
 
         // Game
         WorldManager,
-        SessionSystem,
+        SessionHandler,
         GameServer,
         SessionTasks,
         TaskScheduler,
@@ -90,12 +90,12 @@ public static class LoggerUtil
         { LogTag.DapperPlayerInventoryDAO, (false, ConsoleColor.Green, false) },
         { LogTag.DapperPlayerSpellsDAO, (false, ConsoleColor.Green, false) },
         { LogTag.RequirePermissionAttribute, (false, ConsoleColor.Blue, false) },
-        { LogTag.SessionSystem, (true, ConsoleColor.Blue, false) },
-        { LogTag.WorldManager, (false, ConsoleColor.Blue, false) },
-        { LogTag.GameServer, (false, ConsoleColor.Blue, false) },
+        { LogTag.SessionHandler, (true, ConsoleColor.Blue, false) },
+        { LogTag.WorldManager, (true, ConsoleColor.Blue, false) },
+        { LogTag.GameServer, (true, ConsoleColor.Blue, false) },
         { LogTag.TaskScheduler, (true, ConsoleColor.Blue, false) },
         { LogTag.SessionTasks, (true, ConsoleColor.Blue, false) },
-        { LogTag.GameEventHandler, (false, ConsoleColor.Blue, false) },
+        { LogTag.GameEventHandler, (true, ConsoleColor.Blue, false) },
         { LogTag.JwtAuthRequired, (false, ConsoleColor.Magenta, false) },
         { LogTag.PlayerEntity, (false, ConsoleColor.Magenta, false) },
     };

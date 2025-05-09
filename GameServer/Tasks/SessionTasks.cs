@@ -1,4 +1,5 @@
 using System.Net.WebSockets;
+using Game.Server;
 using Ventus.Network.Packets;
 using VentusServer.Services;
 using static LoggerUtil;
@@ -9,9 +10,11 @@ public class SessionTasks
     PlayerService _playerService;
     PlayerLocationService _playerLocationService;
     IAccountService _IAccountService;
+    GameServer _gameServer;
 
     public SessionTasks(
         TaskScheduler taskScheduler,
+        GameServer gameServer,
         PlayerService playerService,
         PlayerLocationService playerLocationService,
         IAccountService IAccountService
@@ -26,6 +29,7 @@ public class SessionTasks
         taskScheduler.Subscribe(ClientPacket.PlayerExit, async (messagePair) => await HandlePlayerExit(messagePair));
 
     }
+
     private async Task<(AccountModel? Account, PlayerModel? Player)> LoadSessionContextAsync(UserMessagePair messagePair)
     {
         try
@@ -72,8 +76,23 @@ public class SessionTasks
         }
     }
 
+    private Task HandleClienAlive(UserMessagePair userMessagePair)
+    {
+        if (!_gameServer.playersByAccountId.TryGetValue(userMessagePair.AccountId, out var playerObject))
+        {
+            LoggerUtil.Log(LoggerUtil.LogTag.SessionHandler, $"[HandleUnspawnPlayer] Player not found for account ID {userMessagePair.AccountId}");
+            return Task.CompletedTask;
+        }
+        if (playerObject == null)
+        {
+            LoggerUtil.Log(LoggerUtil.LogTag.SessionHandler, $"[HandleUnspawnPlayer] Player not found for ID {userMessagePair.AccountId}");
+            return Task.CompletedTask;
+        }
+        playerObject.IsActiviyConfirmed = true;
+        return Task.CompletedTask;
 
-    public async Task HandlePlayerJoin(UserMessagePair messagePair)
+    }
+    private async Task HandlePlayerJoin(UserMessagePair messagePair)
     {
         Log(LogTag.SessionTasks, $"Handling PlayerJoin for AccountId={messagePair.AccountId}");
 

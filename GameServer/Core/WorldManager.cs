@@ -207,29 +207,50 @@ namespace Game.Server
 
         private bool TrySpawnPlayerInWorldAndMap(PlayerModel player, WorldModel world)
         {
-            var loc = player.Location!;
-            var map = world.Maps.FirstOrDefault(m => m.Id == loc.MapId);
+            LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[TrySpawnPlayer] Intentando spawnear al jugador {player.Id} en el mundo {world.Id}...");
 
-            //Borrar codigo este
+            var loc = player.Location;
+            if (loc == null)
+            {
+                LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[TrySpawnPlayer] Error: El jugador {player.Id} no tiene una ubicación definida.", isError: true);
+                return false;
+            }
+
+            LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[TrySpawnPlayer] Ubicación del jugador: MapId={loc.MapId}, Pos=({loc.PosX}, {loc.PosY})");
+
+            var map = world.Maps.FirstOrDefault(m => m.Id == loc.MapId);
+            if (map == null)
+            {
+                LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[TrySpawnPlayer] Error: No se encontró el mapa con Id {loc.MapId} en el mundo {world.Id}.", isError: true);
+                return false;
+            }
+
+            if (player.Stats == null)
+            {
+                LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[TrySpawnPlayer] Error: El jugador {player.Id} no tiene estadísticas cargadas.", isError: true);
+                return false;
+            }
 
             if (world.ContainsPlayer(player.Id))
             {
-                LoggerUtil.Log(LoggerUtil.LogTag.WorldManager,
-                    $"[TrySpawnPlayer] Player {player.Id} already in World {world.Id}.");
+                LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[TrySpawnPlayer] Jugador {player.Id} ya estaba presente en el mundo {world.Id}. Se eliminará antes de intentar spawnear de nuevo.");
                 world.RemovePlayer(player.Id);
             }
-            if (map == null || player.Stats == null)
-                return false;
 
             if (!world.TrySpawnPlayer(player.Id))
+            {
+                LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[TrySpawnPlayer] Falló el intento de spawnear al jugador {player.Id} en el mundo {world.Id}.", isError: true);
                 return false;
+            }
 
             if (!map.AddPlayer(player.Id, player.Stats.Level))
             {
+                LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[TrySpawnPlayer] Falló el intento de agregar al jugador {player.Id} al mapa {map.Id}. Se eliminará del mundo.", isError: true);
                 world.RemovePlayer(player.Id);
                 return false;
             }
 
+            LoggerUtil.Log(LoggerUtil.LogTag.WorldManager, $"[TrySpawnPlayer] Jugador {player.Id} correctamente spawneado en el mapa {map.Id} del mundo {world.Id}.");
             return true;
         }
 

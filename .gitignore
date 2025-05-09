@@ -4,6 +4,7 @@ Config/
 bin/
 obj/
 out/
+Generated/
 
 # Archivos de usuario y configuraciones de Visual Studio
 .vs/

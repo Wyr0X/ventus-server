@@ -14,7 +14,7 @@ public class TaskScheduler
             type,
             (_) =>
             {
-                LoggerUtil.Log(LoggerUtil.LogTag.SessionSystem, $"Created new handler list for packet: {type}");
+                LoggerUtil.Log(LoggerUtil.LogTag.SessionHandler, $"Created new handler list for packet: {type}");
                 return new List<Func<UserMessagePair, Task>> { handler };
             },
             (_, existingList) =>
