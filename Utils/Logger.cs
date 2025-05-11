@@ -42,15 +42,20 @@ public static class LoggerUtil
         // Game
         WorldManager,
         SessionHandler,
+        KeyPressHandler,
+        SpellHandler,
         GameServer,
         SessionTasks,
         TaskScheduler,
         GameEventHandler,
 
+        AttackSystem,
+        SpellSystem,
         //Entitys
-        PlayerEntity,
+        PlayerObject,
         //otros
-        JwtAuthRequired
+        JwtAuthRequired,
+        ActionExecutor
     }
 
     // Configuración del tag: habilitado, color, guardar en archivo
@@ -91,13 +96,18 @@ public static class LoggerUtil
         { LogTag.DapperPlayerSpellsDAO, (false, ConsoleColor.Green, false) },
         { LogTag.RequirePermissionAttribute, (false, ConsoleColor.Blue, false) },
         { LogTag.SessionHandler, (true, ConsoleColor.Blue, false) },
+        { LogTag.SpellHandler, (true, ConsoleColor.Blue, false) },
+        { LogTag.KeyPressHandler, (true, ConsoleColor.Blue, false) },
         { LogTag.WorldManager, (true, ConsoleColor.Blue, false) },
         { LogTag.GameServer, (true, ConsoleColor.Blue, false) },
         { LogTag.TaskScheduler, (true, ConsoleColor.Blue, false) },
         { LogTag.SessionTasks, (true, ConsoleColor.Blue, false) },
         { LogTag.GameEventHandler, (true, ConsoleColor.Blue, false) },
         { LogTag.JwtAuthRequired, (false, ConsoleColor.Magenta, false) },
-        { LogTag.PlayerEntity, (false, ConsoleColor.Magenta, false) },
+        { LogTag.PlayerObject, (true, ConsoleColor.Magenta, false) },
+        { LogTag.AttackSystem, (true, ConsoleColor.Magenta, false) },
+        { LogTag.SpellSystem, (true, ConsoleColor.Magenta, false) },
+        { LogTag.ActionExecutor, (true, ConsoleColor.Magenta, false) },
     };
 
     private static readonly Dictionary<LogTag, LogConfig> cachedTagConfig = new();

@@ -67,7 +67,9 @@ namespace VentusServer.Controllers
                     Name = createPlayerRequest.Name,
                     Gender = (Gender)createPlayerRequest.Gender, // Conversión de int a enum
                     Race = (Race)createPlayerRequest.Race,         // Conversión de int a enum
-                    Class = (CharacterClass)createPlayerRequest.Class
+                    Class = (CharacterClass)createPlayerRequest.Class,
+                    Hotbar = DefaultHotbarActions.DefaultActions,
+                    InputBindings = DefaultInputBindings.DefaultBindings
                 };
 
                 var newPlayer = await _playerService.CreatePlayer(accountId, createPlayerDTO);

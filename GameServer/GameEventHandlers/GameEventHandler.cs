@@ -3,6 +3,7 @@ using Ventus.Network.Packets;
 using static LoggerUtil;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using VentusServer.Domain.Objects;
 
 public class GameEventHandler
 {
@@ -116,4 +117,16 @@ public class GameEventHandler
                 break;
         }
     }
+    public static PlayerObject? GetPlayerIfPacketIs(UserMessagePair userMessagePair, GameServer gameServer, ClientPacket expectedPacket)
+    {
+        if (userMessagePair.PacketType != expectedPacket)
+            return null;
+
+        if (!gameServer.playersByAccountId.TryGetValue(userMessagePair.AccountId, out var player))
+            return null;
+
+        return player;
+    }
+
+
 }

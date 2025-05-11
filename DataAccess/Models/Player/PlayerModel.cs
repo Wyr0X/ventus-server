@@ -21,7 +21,11 @@ public class PlayerModel : BaseModel
 
 
     public string Status { get; set; } = "Offline"; // Estado: "Online", "Offline", "Banned"
+    // Nueva propiedad para la Hotbar
+    public HotbarBindings Hotbar { get; set; } = HotbarBindings.CreateDefault(); // Hotbar vacía por defecto
 
+    // Nueva propiedad para los InputBindings
+    public UserKeyBindings KeyBindings { get; set; } = UserKeyBindings.CreateDefault(); // Definición de teclas de entrada
 
 
 

@@ -14,5 +14,7 @@ namespace VentusServer.DataAccess.Entities
         public DateTime CreatedAt { get; set; }
         public DateTime LastLogin { get; set; }
         public string Status { get; set; } = "active";
+        public string InputBindings { get; set; } = "[]";  // Usando JSONB en la base de datos
+        public string Hotbar { get; set; } = "[]";  // Usando JSONB en la base de datos
     }
 }

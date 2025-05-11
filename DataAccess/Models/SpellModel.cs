@@ -1,58 +1,148 @@
-public enum CastMode { Instant, Channeled, Charge }
-public enum TargetType { Self, Ally, Enemy, Area }
-public class SpellEffect
+using System.Collections.Generic;
+
+namespace Ventus.GameModel.Spells
 {
-    public string Type { get; set; } = string.Empty;  // Siempre tiene un valor por defecto
-    public string? Element { get; set; } = null;      // Se puede dejar como null si no se usa
-    public string? Status { get; set; } = null;       // Lo mismo aquí
-    public string? Target { get; set; } = null;       // Lo mismo para Target
-    public float Value { get; set; } = 0.0f;          // Asegúrate de que tenga valor
-    public float Duration { get; set; } = 0.0f;       // Al igual que Duration, lo mismo
-    public Dictionary<string, float>? Scaling { get; set; } = null;  // Esto puede ser null si no se usa
-}
+    // --- Interfaces base para los distintos tipos de efectos ---
 
+    /// <summary>
+    /// Efecto que aplica algo a unidades (jugadores, NPCs, etc.).
+    /// </summary>
+    public interface ISpellEffect { }
 
-public class AreaOfEffect
-{
-    public string Shape { get; set; } = "circle"; // "circle", "cone", etc.
-    public float Radius { get; set; }
-}
+    /// <summary>
+    /// Efecto que modifica el terreno (crea fuego, niebla, etc.).
+    /// </summary>
+    public interface ITerrainEffect { }
 
-public class SpellModel
-{
-    public string Id { get; set; } = string.Empty;
-    public string Name { get; set; } = string.Empty;
-    public int Price { get; set; } = 0;
-    public string Description { get; set; } = string.Empty;
-    public string Icon { get; set; } = string.Empty;
-    public string Animation { get; set; } = string.Empty;
+    /// <summary>
+    /// Efecto que invoca criaturas u objetos (por ejemplo, invocar una criatura).
+    /// </summary>
+    public interface ISummonEffect { }
 
-    public int ManaCost { get; set; }
-    public float Cooldown { get; set; }
-    public float CastTime { get; set; }
-    public float Range { get; set; }
-    public AreaOfEffect? Area { get; set; }
-    public string School { get; set; } = string.Empty;
-    public int RequiredLevel { get; set; }
-    public string? RequiredClass { get; set; }
+    /// <summary>
+    /// Define cómo se seleccionan los objetivos del hechizo (área, en línea recta, objetivo único, etc.).
+    /// </summary>
+    public interface ITargetingStrategy { }
 
-    public TargetType TargetType { get; set; }
-    public CastMode CastMode { get; set; }
+    // --- Modelo principal del hechizo ---
 
-    public List<SpellEffect> Effects { get; set; } = new();
-    public bool? CanCrit { get; set; }
-    public bool? IsReflectable { get; set; }
-    public bool? RequiresLineOfSight { get; set; }
-    public bool? Interruptible { get; set; }
+    /// <summary>
+    /// Representa un hechizo dentro del juego.
+    /// </summary>
+    public class SpellModel
+    {
+        // --- Propiedades básicas ---
 
-    public string CastSound { get; set; } = string.Empty;
-    public string ImpactSound { get; set; } = string.Empty;
-    public string VfxCast { get; set; } = string.Empty;
-    public string VfxImpact { get; set; } = string.Empty;
+        /// <summary>
+        /// Identificador único del hechizo.
+        /// </summary>
+        public string Id { get; }
 
-    public List<string> Tags { get; set; } = new();
-    public bool IsUltimate { get; set; }
-    public string? UnlockedByQuest { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;  // Fecha de creación
-    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;  //
+        /// <summary>
+        /// Nombre del hechizo.
+        /// </summary>
+        public string Name { get; }
+
+        /// <summary>
+        /// Costo de maná para lanzar el hechizo.
+        /// </summary>
+        public int ManaCost { get; }
+
+        /// <summary>
+        /// Tiempo de lanzamiento del hechizo (en milisegundos).
+        /// </summary>
+        public int CastTime { get; }
+
+        /// <summary>
+        /// Tiempo de reutilización del hechizo (en milisegundos).
+        /// </summary>
+        public int Cooldown { get; }
+
+        /// <summary>
+        /// Rango del hechizo (en unidades de distancia).
+        /// </summary>
+        public int Range { get; }
+
+        /// <summary>
+        /// Indica si el hechizo es canalizado (requiere mantener la tecla presionada o estar en un estado de canalización).
+        /// </summary>
+        public bool IsChanneled { get; }
+
+        /// <summary>
+        /// Duración del hechizo (en segundos), si aplica.
+        /// </summary>
+        public int Duration { get; }
+
+        // --- Estrategia de selección de objetivos ---
+
+        /// <summary>
+        /// Estrategia para seleccionar los objetivos del hechizo (área, en línea recta, objetivo único, etc.).
+        /// </summary>
+        public ITargetingStrategy Targeting { get; }
+
+        // --- Efectos del hechizo ---
+
+        /// <summary>
+        /// Lista de efectos que afectan a las unidades (jugadores, NPCs, etc.).
+        /// </summary>
+        public List<ISpellEffect> UnitEffects { get; }
+
+        /// <summary>
+        /// Lista de efectos que modifican el terreno (como crear fuego, niebla, etc.).
+        /// </summary>
+        public List<ITerrainEffect> TerrainEffects { get; }
+
+        /// <summary>
+        /// Lista de efectos que invocan criaturas u objetos.
+        /// </summary>
+        public List<ISummonEffect> SummonEffects { get; }
+        public bool RequiresLineOfSight { get; }
+        // --- Constructor ---
+
+        /// <summary>
+        /// Constructor para inicializar un nuevo hechizo.
+        /// </summary>
+        /// <param name="id">Identificador único del hechizo.</param>
+        /// <param name="name">Nombre del hechizo.</param>
+        /// <param name="manaCost">Costo de maná.</param>
+        /// <param name="castTime">Tiempo de lanzamiento.</param>
+        /// <param name="cooldown">Tiempo de reutilización.</param>
+        /// <param name="range">Rango del hechizo.</param>
+        /// <param name="isChanneled">Indica si es canalizado.</param>
+        /// <param name="duration">Duración del hechizo.</param>
+        /// <param name="targeting">Estrategia de selección de objetivos.</param>
+        /// <param name="unitEffects">Lista de efectos que afectan a las unidades.</param>
+        /// <param name="terrainEffects">Lista de efectos que afectan al terreno.</param>
+        /// <param name="summonEffects">Lista de efectos que invocan criaturas u objetos.</param>
+        public SpellModel(
+            string id,
+            string name,
+            int manaCost,
+            int castTime,
+            int cooldown,
+            int range,
+            bool isChanneled,
+            int duration,
+            ITargetingStrategy targeting,
+            List<ISpellEffect> unitEffects = null,
+            List<ITerrainEffect> terrainEffects = null,
+            List<ISummonEffect> summonEffects = null
+        )
+        {
+            Id = id;
+            Name = name;
+            ManaCost = manaCost;
+            CastTime = castTime;
+            Cooldown = cooldown;
+            Range = range;
+            IsChanneled = isChanneled;
+            Duration = duration;
+            Targeting = targeting;
+
+            // Si no se pasa ninguna lista de efectos, se inicializa como lista vacía
+            UnitEffects = unitEffects ?? new List<ISpellEffect>();
+            TerrainEffects = terrainEffects ?? new List<ITerrainEffect>();
+            SummonEffects = summonEffects ?? new List<ISummonEffect>();
+        }
+    }
 }

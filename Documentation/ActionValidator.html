@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resumen del Sistema de Acciones</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        header {
+            background: #333;
+            color: #fff;
+            padding: 10px 20px;
+            text-align: center;
+        }
+        section {
+            padding: 20px;
+            margin: 20px;
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2, h3 {
+            color: #444;
+        }
+        pre {
+            background: #272822;
+            color: #f8f8f2;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: Consolas, "Courier New", monospace;
+        }
+        a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        ul {
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Resumen del Sistema de Acciones</h1>
+        <p>Descripción general del sistema de acciones, helpers y validadores</p>
+    </header>
+
+    <section id="introduccion">
+        <h2>Introducción</h2>
+        <p>El sistema de acciones está diseñado para manejar las interacciones del jugador con el mundo del juego, como lanzar hechizos, atacar, usar ítems o equipar objetos. Utiliza validadores, helpers y objetos específicos para garantizar que las acciones sean válidas antes de ejecutarse.</p>
+    </section>
+
+    <section id="componentes">
+        <h2>1. Componentes Principales</h2>
+
+        <h3>1.1. Validadores de Acciones (<code>IActionValidator</code>)</h3>
+        <p>Los validadores son responsables de verificar si una acción puede ser <strong>intentada</strong> o <strong>ejecutada</strong>. Cada tipo de acción tiene su propio validador que implementa la interfaz <code>IActionValidator</code>.</p>
+        <pre><code>public interface IActionValidator
+{
+    ValidationResult CanAttemptAction(PlayerObject player, object target = null, SpellObject spell = null);
+    ValidationResult CanExecuteAction(PlayerObject player, object target = null, SpellObject spell = null);
+}</code></pre>
+
+        <h4>Ejemplo: <code>SpellActionValidator</code></h4>
+        <pre><code>public class SpellActionValidator : IActionValidator
+{
+    private readonly SpellObject _spell;
+
+    public SpellActionValidator(SpellObject spell)
+    {
+        _spell = spell;
+    }
+
+    public ValidationResult CanAttemptAction(PlayerObject player, object target = null, SpellObject spell = null)
+    {
+        if (_spell == null)
+            return ValidationResult.Fail("Hechizo no válido.");
+
+        if (!ActionValidationHelper.CanCastSpell(player, _spell))
+            return ValidationResult.Fail("No puedes lanzar este hechizo.");
+
+        return ValidationResult.Success();
+    }
+
+    public ValidationResult CanExecuteAction(PlayerObject player, object target = null, SpellObject spell = null)
+    {
+        if (_spell == null)
+            return ValidationResult.Fail("Hechizo no válido.");
+
+        return ValidationResult.Success();
+    }
+}</code></pre>
+
+        <h3>1.2. Helpers de Validación</h3>
+        <p>Los helpers son funciones auxiliares que encapsulan lógica común para validaciones. Se dividen en:</p>
+        <ul>
+            <li><strong>Helpers Comunes:</strong> Validaciones generales aplicables a todas las acciones.</li>
+            <li><strong>Helpers para Intentar Acciones:</strong> Validaciones previas al intento de ejecutar una acción.</li>
+            <li><strong>Helpers para Ejecutar Acciones:</strong> Validaciones específicas para la ejecución de una acción.</li>
+        </ul>
+
+        <h4>Helpers Comunes</h4>
+        <pre><code>public static class ActionValidationHelper
+{
+    public static bool CanPerformActions(PlayerObject player)
+    {
+        return !player.Stats.IsDead
+            && !player.Stats.IsStunned
+            && !player.Stats.IsRooted
+            && !player.Stats.IsSilenced
+            && !player.Stats.IsChanneling;
+    }
+
+    public static bool IsTargetValid(object target)
+    {
+        if (target is PlayerObject targetPlayer)
+        {
+            return !targetPlayer.Stats.IsDead && targetPlayer.IsOnline;
+        }
+        return false;
+    }
+
+    public static bool HasSufficientResources(PlayerObject player, int manaCost, int energyCost)
+    {
+        return player.Stats.Mana >= manaCost && player.Stats.Energy >= energyCost;
+    }
+}</code></pre>
+
+        <h4>Helpers para Intentar Acciones</h4>
+        <pre><code>public static class AttemptActionHelper
+{
+    public static ValidationResult CanAttemptCastSpell(PlayerObject player, SpellObject spell)
+    {
+        if (!ActionValidationHelper.CanPerformActions(player))
+            return ValidationResult.Fail("No puedes realizar acciones en este momento.");
+
+        if (!ActionValidationHelper.HasSufficientResources(player, spell.Model.ManaCost, 0))
+            return ValidationResult.Fail("No tienes suficiente maná para lanzar este hechizo.");
+
+        return ValidationResult.Success();
+    }
+}</code></pre>
+
+        <h4>Helpers para Ejecutar Acciones</h4>
+        <pre><code>public static class ExecuteActionHelper
+{
+    public static ValidationResult CanExecuteCastSpell(PlayerObject player, SpellObject spell, object target)
+    {
+        if (!ActionValidationHelper.IsTargetValid(target))
+            return ValidationResult.Fail("El objetivo no es válido.");
+
+        return ValidationResult.Success();
+    }
+}</code></pre>
+    </section>
+
+    <section id="objetos-validables">
+        <h2>2. Objetos Validables (<code>IValidatableObject</code>)</h2>
+        <p>Objetos como hechizos, ítems y equipos implementan la interfaz <code>IValidatableObject</code> para asociar un validador específico.</p>
+
+        <h3>Definición de la Interfaz</h3>
+        <pre><code>public interface IValidatableObject
+{
+    IActionValidator GetValidator();
+}</code></pre>
+
+        <h3>Ejemplo: <code>SpellObject</code></h3>
+        <pre><code>public class SpellObject : GameObject, IValidatableObject
+{
+    public SpellModel Model { get; }
+    public float CurrentCooldown { get; private set; } = 0f;
+
+    public SpellObject(string id, Vec2 position, SpellModel model)
+        : base(id, position)
+    {
+        Model = model ?? throw new ArgumentNullException(nameof(model));
+    }
+
+    public IActionValidator GetValidator()
+    {
+        return new SpellActionValidator(this);
+    }
+}</code></pre>
+    </section>
+
+    <section id="flujo">
+        <h2>3. Flujo General del Sistema</h2>
+        <ol>
+            <li><strong>Recepción del Paquete:</strong> Validar el paquete y determinar el tipo de acción (hechizo, golpe, ítem, equipar).</li>
+            <li><strong>Intentar la Acción:</strong> Usar el validador asociado al objeto para verificar si la acción puede ser intentada.</li>
+            <li><strong>Ejecutar la Acción:</strong> Usar el validador para verificar si la acción puede ser ejecutada y aplicar sus efectos.</li>
+            <li><strong>Logs y Notificaciones:</strong> Generar logs de combate y enviar un paquete <code>CombatInfo</code> a los jugadores involucrados.</li>
+        </ol>
+    </section>
+</body>
+</html>

@@ -21,32 +21,32 @@ namespace VentusServer.Seeders
 
         public async Task SeedAsync()
         {
-            var email = "pedronicolasabba@gmail.com";
-            var account = await _accountDAO.GetAccountByEmailAsync(email);
-            if (account == null)
-            {
-                Console.WriteLine("[Seeder] Cuenta no encontrada.");
-                return;
-            }
+            // var email = "pedronicolasabba@gmail.com";
+            // var account = await _accountDAO.GetAccountByEmailAsync(email);
+            // if (account == null)
+            // {
+            //     Console.WriteLine("[Seeder] Cuenta no encontrada.");
+            //     return;
+            // }
 
-            var createPlayerDTO = new CreatePlayerDTO
-            {
-                Name = "SirPedro",
-                Gender = Gender.Male,
-                Race = Race.Elfo,
-                Class = CharacterClass.Warrior
-            };
+            // var createPlayerDTO = new CreatePlayerDTO
+            // {
+            //     Name = "SirPedro",
+            //     Gender = Gender.Male,
+            //     Race = Race.Elfo,
+            //     Class = CharacterClass.Warrior
+            // };
 
-            var player = await _playerDAO.CreatePlayerAsync(account.AccountId, createPlayerDTO);
+            // var player = await _playerDAO.CreatePlayerAsync(account.AccountId, createPlayerDTO);
 
-            if (player != null)
-            {
-                Console.WriteLine($"[Seeder] Personaje '{player.Name}' creado para la cuenta {account.Email}");
-            }
-            else
-            {
-                Console.WriteLine("[Seeder] Error al crear el personaje.");
-            }
+            // if (player != null)
+            // {
+            //     Console.WriteLine($"[Seeder] Personaje '{player.Name}' creado para la cuenta {account.Email}");
+            // }
+            // else
+            // {
+            //     Console.WriteLine("[Seeder] Error al crear el personaje.");
+            // }
         }
     }
 }

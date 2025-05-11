@@ -1,4 +1,4 @@
-public class PlayerStatsModel  : BaseModel
+public class PlayerStatsModel : BaseModel
 {
     public int PlayerId { get; set; }
     public int Level { get; set; }

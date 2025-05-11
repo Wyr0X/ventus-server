@@ -1,6 +1,7 @@
 using Game.Server;
 using Google.Protobuf;
 using Ventus.Network.Packets;
+using VentusServer.Domain.Objects;
 public class SpawnPlayerData
 {
     public required PlayerModel PlayerModel { get; set; }
