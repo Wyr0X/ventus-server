@@ -12,6 +12,7 @@ namespace Game.Models
         public int Id { get; set; }
         public required string Name { get; set; }
         public int MinLevel { get; set; }
+        public bool IsSafeZone { get; set; }
         public int MaxPlayers { get; set; }
         public int WorldId { get; set; } // Relación con el mundo al que pertenece
 

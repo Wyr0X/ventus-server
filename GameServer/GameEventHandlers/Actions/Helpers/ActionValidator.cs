@@ -23,23 +23,6 @@ namespace Server.Logic.Validators
             return ValidationResult.Success();
         }
 
-        /// <summary>
-        /// Valida si el jugador puede atacar físicamente.
-        /// </summary>
-        public static ValidationResult CanAttack(PlayerObject attacker, PlayerObject target)
-        {
-            var generalValidation = CanPerformGeneralAction(attacker);
-            if (!generalValidation.IsValid)
-                return generalValidation;
-
-            if (target == null || target.Stats.IsDead)
-                return ValidationResult.Fail("El objetivo no es válido o está muerto.");
-
-            if (!IsTargetInRange(attacker, target))
-                return ValidationResult.Fail("El objetivo está fuera de rango.");
-
-            return ValidationResult.Success();
-        }
 
         /// <summary>
         /// Valida si el jugador puede lanzar un hechizo.
@@ -67,13 +50,13 @@ namespace Server.Logic.Validators
         /// </summary>
         public static ValidationResult CanUseItem(PlayerObject player, string itemId)
         {
-            var generalValidation = CanPerformGeneralAction(player);
-            if (!generalValidation.IsValid)
-                return generalValidation;
+            // var generalValidation = CanPerformGeneralAction(player);
+            // if (!generalValidation.IsValid)
+            //     return generalValidation;
 
-            var item = player.Inventory.GetItem(itemId);
-            if (item == null || item.Quantity <= 0)
-                return ValidationResult.Fail("El ítem no es válido o no tienes suficientes cargas.");
+            // var item = player.Inventory.GetItem(itemId);
+            // if (item == null || item.Quantity <= 0)
+            //     return ValidationResult.Fail("El ítem no es válido o no tienes suficientes cargas.");
 
             return ValidationResult.Success();
         }
@@ -83,25 +66,26 @@ namespace Server.Logic.Validators
         /// </summary>
         public static ValidationResult CanEquipItem(PlayerObject player, string itemId)
         {
-            var generalValidation = CanPerformGeneralAction(player);
-            if (!generalValidation.IsValid)
-                return generalValidation;
+            // var generalValidation = CanPerformGeneralAction(player);
+            // if (!generalValidation.IsValid)
+            //     return generalValidation;
 
-            if (string.IsNullOrEmpty(itemId))
-                return ValidationResult.Fail("El ID del ítem no es válido.");
+            // if (string.IsNullOrEmpty(itemId))
+            //     return ValidationResult.Fail("El ID del ítem no es válido.");
 
-            var item = player.Inventory.GetItem(itemId);
-            if (item == null)
-                return ValidationResult.Fail("El ítem no existe en el inventario.");
+            // var item = player.Inventory.GetItem(itemId);
+            // if (item == null)
+            //     return ValidationResult.Fail("El ítem no existe en el inventario.");
 
-            if (!item.ItemModel.IsEquippable)
-                return ValidationResult.Fail("El ítem no es equipable.");
+            // if (!item.ItemModel.IsEquippable)
+            //     return ValidationResult.Fail("El ítem no es equipable.");
 
-            var slot = item.ItemModel.EquipLocation;
-            var currentlyEquipped = player.Inventory.GetEquippedItem(slot);
-            if (currentlyEquipped != null && !player.Inventory.CanReplaceEquipped(slot))
-                return ValidationResult.Fail("No puedes reemplazar el ítem equipado en esta ranura.");
+            // var slot = item.ItemModel.EquipLocation;
+            // var currentlyEquipped = player.Inventory.GetEquippedItem(slot);
+            // if (currentlyEquipped != null && !player.Inventory.CanReplaceEquipped(slot))
+            //     return ValidationResult.Fail("No puedes reemplazar el ítem equipado en esta ranura.");
 
+            // return ValidationResult.Success();
             return ValidationResult.Success();
         }
 
@@ -119,23 +103,7 @@ namespace Server.Logic.Validators
             return ValidationResult.Success();
         }
 
-        /// <summary>
-        /// Verifica si el objetivo está dentro del rango de ataque.
-        /// </summary>
-        public static bool IsTargetInRange(PlayerObject attacker, PlayerObject target)
-        {
-            var distance = CalculateDistance(attacker.Position, target.Position);
-            return distance <= attacker.Stats.AttackRange;
-        }
 
-        /// <summary>
-        /// Calcula la distancia entre dos posiciones.
-        /// </summary>
-        public static float CalculateDistance(Vec2 a, Vec2 b)
-        {
-            var dx = a.X - b.X;
-            var dy = a.Y - b.Y;
-            return MathF.Sqrt(dx * dx + dy * dy);
-        }
+
     }
 }

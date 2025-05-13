@@ -4,7 +4,6 @@ using Game.Models;
 using Game.Server;
 using Ventus.Network.Packets;
 using VentusServer.Domain.Objects;
-using VentusServer.GameExecution;
 
 namespace VentusServer.GameEventHandlers
 {
@@ -70,7 +69,7 @@ namespace VentusServer.GameEventHandlers
                     }
 
                     LoggerUtil.Log(LoggerUtil.LogTag.KeyPressHandler, $"[KeyPressHandler] Ejecutando acción '{hotbarAction.ActionId}' desde la hotbar {hotbarIndex} para el jugador {playerObject.Id}.");
-                    _actionExecutor.Execute(playerObject, hotbarAction);
+                    _actionExecutor.TryToExecuteAction(hotbarAction, playerObject);
                 }
                 else
                 {

@@ -16,7 +16,7 @@ public static class ActionValidationHelper
     // Verifica si el jugador está en una zona segura
     public static bool IsInSafeZone(PlayerObject player)
     {
-        return player.CurrentZoneContext.IsSafeZone;
+        return player.CurrentMap.IsInSafeZone(player.Position);
     }
 
     // Verifica si el target está dentro del rango de visión
@@ -24,7 +24,7 @@ public static class ActionValidationHelper
     {
         if (target is PlayerObject targetPlayer)
         {
-            return ActionValidator.CalculateDistance(player.Position, targetPlayer.Position) <= player.Stats.VisionRange;
+            return CalculateDistance(player.Position, targetPlayer.Position) <= player.Stats.VisionRange;
         }
         return false;
     }
@@ -44,7 +44,37 @@ public static class ActionValidationHelper
     {
         return player.Stats.Mana >= manaCost && player.Stats.Stamina >= energyCost;
     }
+    /// <summary>
+    /// Calcula la distancia entre dos posiciones.
+    /// </summary>
+    public static float CalculateDistance(Vec2 a, Vec2 b)
+    {
+        var dx = a.X - b.X;
+        var dy = a.Y - b.Y;
+        return MathF.Sqrt(dx * dx + dy * dy);
+    }
+    /// <summary>
+    /// Verifica si el objetivo está dentro del rango de ataque.
+    /// </summary>
+    public static bool IsTargetInRange(PlayerObject attacker, PlayerObject target)
+    {
+        var distance = CalculateDistance(attacker.Position, target.Position);
+        return distance <= attacker.Stats.AttackRange;
+    }
 
+    /// <summary>
+    /// Valida si el jugador puede atacar físicamente.
+    /// </summary>
+    public static ValidationResult CanAttack(PlayerObject attacker, PlayerObject target)
+    {
 
+        if (target == null || target.Stats.IsDead)
+            return ValidationResult.Fail("El objetivo no es válido o está muerto.");
+
+        if (!IsTargetInRange(attacker, target))
+            return ValidationResult.Fail("El objetivo está fuera de rango.");
+
+        return ValidationResult.Success();
+    }
 
 }

@@ -17,111 +17,89 @@ namespace VentusServer.Seeders
         public async Task SeedAsync()
         {
             var spells = new List<SpellModel>
-
             {
-                new SpellModel
-                {
-                    Id = "heal_light",
-                    Name = "Curar Heridas Leves",
-                    Price = 100,
-                    Description = "Restaura una pequeña cantidad de salud.",
-                    ManaCost = 15,
-                    Cooldown = 3f,
-                    CastTime = 1f,
-                    Range = 6,
-                    TargetType = TargetType.Ally,
-                    CastMode = CastMode.Instant,
-                    Effects = new List<SpellEffect>
+                new SpellModel(
+                    id: "heal_light",
+                    name: "Curar Heridas Leves",
+                    manaCost: 15,
+                    castTime: 1000,
+                    cooldown: 3000,
+                    range: 6,
+                    isChanneled: false,
+                    duration: 0,
+                    targeting: new SingleTargetStrategy(),
+                    unitEffects: new List<ISpellEffect>
                     {
-                        new SpellEffect
-                        {
-                            Type = "heal",
-                            Value = 40,
-                            Duration = 0
-                        }
+                        new HealEffect { Amount = 40 }
                     },
-                    School = "Restauración",
-                    RequiredLevel = 1,
-                    Icon ="/images/spells/icons/heal_light.webp",
-                    CastSound = "sounds/heal.wav",
-                    ImpactSound = "sounds/impact_heal.wav",
-                    VfxCast = "vfx/heal_cast.vfx",
-                    VfxImpact = "vfx/heal_impact.vfx"
-                },
-                new SpellModel
-                {
-                    Id = "lightning_storm",
-                    Price = 150,
-
-                    Name = "Tormenta Eléctrica",
-                    Description = "Inflige daño eléctrico en un área.",
-                    ManaCost = 40,
-                    Cooldown = 10f,
-                    CastTime = 2.5f,
-                    Range = 8,
-                    TargetType = TargetType.Area,
-                    CastMode = CastMode.Channeled,
-                    Area = new AreaOfEffect
+                    terrainEffects: new List<ITerrainEffect>(),
+                    summonEffects: new List<ISummonEffect>(),
+                    requiresLineOfSight: true,
+                    requiredLevel: 1,
+                    targetType: TargetType.Ally,
+                    description: "Restaura una pequeña cantidad de salud.",
+                    castSound: "sounds/heal.wav",
+                    impactSound: "sounds/impact_heal.wav",
+                    vfxCast: "vfx/heal_cast.vfx",
+                    vfxImpact: "vfx/heal_impact.vfx"
+                ),
+                new SpellModel(
+                    id: "lightning_storm",
+                    name: "Tormenta Eléctrica",
+                    manaCost: 40,
+                    castTime: 2500,
+                    cooldown: 10000,
+                    range: 8,
+                    isChanneled: true,
+                    duration: 0,
+                    targeting: new AreaOfEffectStrategy(),
+                    unitEffects: new List<ISpellEffect>
                     {
-                        Shape = "circle",
-                        Radius = 3
+                        new DamageEffect { Element = "electric", Amount = 80 }
                     },
-                    Effects = new List<SpellEffect>
-                    {
-                        new SpellEffect
-                        {
-                            Type = "damage",
-                            Element = "electric",
-                            Value = 80,
-                            Duration = 0
-                        }
-                    },
-                    School = "Magia",
-                    RequiredLevel = 8,
-                    Icon = "/images/spells/icons/lightning_storm.webp",
-                    CastSound = "sounds/storm.wav",
-                    VfxCast = "vfx/storm_cast.vfx",
-                    VfxImpact = "vfx/storm_impact.vfx"
-                },
-
-                new SpellModel
-                {
-                    Id = "invisibility",
-                    Name = "Invisibilidad",
-                    Description = "Vuelve invisible al objetivo temporalmente.",
-                    ManaCost = 25,
-                    Price = 250,
-
-                    Cooldown = 20f,
-                    CastTime = 1.2f,
-                    Range = 6,
-                    TargetType = TargetType.Self,
-                    CastMode = CastMode.Instant,
-                    Effects = new List<SpellEffect>
-                    {
-                        new SpellEffect
-                        {
-                            Type = "status",
-                            Status = "invisible",
-                            Duration = 10f
-                        }
-                    },
-                    School = "Ilusión",
-                    RequiredLevel = 5,
-                    Icon = "/images/spells/icons/invisibility.webp",
-                    CastSound = "sounds/invisibility.wav",
-                    VfxCast = "vfx/invisible_cast.vfx"
-                }
+                    terrainEffects: new List<ITerrainEffect>(),
+                    summonEffects: new List<ISummonEffect>(),
+                    requiresLineOfSight: true,
+                    requiredLevel: 8,
+                    targetType: TargetType.Area,
+                    description: "Inflige daño eléctrico en un área.",
+                    castSound: "sounds/storm.wav",
+                    impactSound: null,
+                    vfxCast: "vfx/storm_cast.vfx",
+                    vfxImpact: "vfx/storm_impact.vfx"
+                ),
+                new SpellModel(
+                    id: "invisibility",
+                    name: "Invisibilidad",
+                    manaCost: 25,
+                    castTime: 1200,
+                    cooldown: 20000,
+                    range: 6,
+                    isChanneled: false,
+                    duration: 10,
+                    targeting: new SingleTargetStrategy(),
+                   unitEffects: new List<ISpellEffect>
+{
+    new InvisibleEffect(10)
+},
+                    terrainEffects: new List<ITerrainEffect>(),
+                    summonEffects: new List<ISummonEffect>(),
+                    requiresLineOfSight: false,
+                    requiredLevel: 5,
+                    targetType: TargetType.Self,
+                    description: "Vuelve invisible al objetivo temporalmente.",
+                    castSound: "sounds/invisibility.wav",
+                    impactSound: null,
+                    vfxCast: "vfx/invisible_cast.vfx",
+                    vfxImpact: null
+                )
             };
-            Console.WriteLine("Llega");
 
             foreach (var spell in spells)
             {
                 var exists = await _spellDao.SpellExistsAsync(spell.Id);
                 if (!exists)
                 {
-                    Console.WriteLine("Llega 3");
-
                     await _spellDao.CreateSpellAsync(spell);
                 }
             }

@@ -58,7 +58,7 @@ namespace VentusServer.Controllers.Admin
 
         // Endpoint protegido para crear un nuevo hechizo
         [HttpPost]
-        public async Task<IActionResult> CreateSpell([FromBody] SpellModel request)
+        public async Task<IActionResult> CreateSpell([FromBody] SpellDTO request)
         {
             Log(LogTag.SpellController, $"Intentando crear nuevo hechizo: {request.Name}");
 
@@ -69,31 +69,39 @@ namespace VentusServer.Controllers.Admin
                     .Select(e => new
                     {
                         Field = e.Key,
-                        Errors = e.Value != null ? e.Value.Errors?.Select(err => err.ErrorMessage).ToList() ?? new List<string>() : new List<string>()
+                        Errors = e.Value?.Errors?.Select(err => err.ErrorMessage).ToList() ?? new List<string>()
                     });
 
                 Log(LogTag.SpellController, $"ModelState inválido: {System.Text.Json.JsonSerializer.Serialize(errors)}", isError: true);
-
                 return BadRequest(ModelState);
             }
 
-            var spell = new SpellModel
-            {
-                Id = Guid.NewGuid().ToString(),  // Generamos un nuevo ID para el hechizo
-                Name = request.Name,
-                Description = request.Description,
-                ManaCost = request.ManaCost,
-                Cooldown = request.Cooldown,
-                CastTime = request.CastTime,
-                Range = request.Range,
-                TargetType = request.TargetType,
-                CastMode = request.CastMode,
-                Effects = request.Effects,
-                School = request.School,
-                RequiredLevel = request.RequiredLevel,
-                IsUltimate = request.IsUltimate,
-                Tags = request.Tags
-            };
+            // Validación extra: asegúrate de que los efectos no sean nulos y tengan sentido
+            if (request.Effects == null || !request.Effects.Any())
+                return BadRequest("El hechizo debe tener al menos un efecto.");
+
+            var spell = new SpellModel(
+                id: Guid.NewGuid().ToString(),
+                name: request.Name,
+                manaCost: request.ManaCost,
+                castTime: request.CastTime,
+                cooldown: request.Cooldown,
+                range: request.Range,
+                isChanneled: request.IsChanneled,
+                duration: request.Duration,
+                targeting: request.Targeting,
+                unitEffects: request.Effects,
+                terrainEffects: request.TerrainEffects ?? new List<ITerrainEffect>(),
+                summonEffects: request.SummonEffects ?? new List<ISummonEffect>(),
+                requiresLineOfSight: request.RequiresLineOfSight,
+                requiredLevel: request.RequiredLevel,
+                targetType: request.TargetType,
+                description: request.Description,
+                castSound: request.CastSound,
+                impactSound: request.ImpactSound,
+                vfxCast: request.VfxCast,
+                vfxImpact: request.VfxImpact
+            );
 
             await _spellService.CreateSpellAsync(spell);
 

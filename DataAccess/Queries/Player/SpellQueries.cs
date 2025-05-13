@@ -3,73 +3,78 @@ namespace VentusServer.DataAccess.Queries
     public static class SpellQueries
     {
         public const string CreateTableQuery = @"
-            CREATE TABLE IF NOT EXISTS spells (
-                id TEXT PRIMARY KEY,
-                name TEXT NOT NULL,
-                price INT DEFAULT 0,
-                description TEXT,
-                mana_cost INT DEFAULT 0,
-                cooldown REAL DEFAULT 0,
-                cast_time REAL DEFAULT 0,
-                range REAL DEFAULT 0,
-                school TEXT,
-                effects JSONB DEFAULT '[]',
-                tags TEXT[],
-                required_level INT DEFAULT 1,
-                required_class TEXT,
-                icon TEXT,
-                animation TEXT,
-                cast_mode TEXT,  -- 'cast_mode' como TEXT
-                target_type TEXT,  -- 'target_type' como TEXT
-                area JSONB,
-                can_crit BOOLEAN DEFAULT FALSE,
-                is_reflectable BOOLEAN DEFAULT FALSE,
-                requires_line_of_sight BOOLEAN DEFAULT TRUE,
-                interruptible BOOLEAN DEFAULT TRUE,
-                created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
-            );";
+        CREATE TABLE IF NOT EXISTS spells (
+            id TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            mana_cost INT NOT NULL,
+            cast_time INT NOT NULL,
+            cooldown INT NOT NULL,
+            range INT NOT NULL,
+            price INT DEFAULT 0,
+            is_channeled BOOLEAN DEFAULT FALSE,
+            duration INT DEFAULT 0,
+            targeting JSONB,
+            unit_effects JSONB DEFAULT '[]',
+            terrain_effects JSONB DEFAULT '[]',
+            summon_effects JSONB DEFAULT '[]',
+            target_type TEXT,
+            required_class TEXT,
+            required_level INT DEFAULT 0,
+            requires_line_of_sight BOOLEAN DEFAULT FALSE,
+            description TEXT,
+            cast_sound TEXT,
+            impact_sound TEXT,
+            vfx_cast TEXT,
+            vfx_impact TEXT,
+            cast_mode TEXT,
+            created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        );";
 
         public const string Insert = @"
             INSERT INTO spells (
-                id, name, price, description, mana_cost, cooldown, cast_time, range,
-                school, effects, tags, required_level, required_class,
-                icon, animation, cast_mode, target_type, area,
-                can_crit, is_reflectable, requires_line_of_sight, interruptible,
-                created_at, updated_at
+                id, name, mana_cost, cast_time, cooldown, range, price,
+                is_channeled, duration, targeting,
+                unit_effects, terrain_effects, summon_effects,
+                target_type, required_class, required_level,
+                requires_line_of_sight, description,
+                cast_sound, impact_sound, vfx_cast, vfx_impact,
+                cast_mode, created_at, updated_at
             ) VALUES (
-                @Id, @Name, @Price, @Description, @ManaCost, @Cooldown, @CastTime, @Range,
-                @School, @Effects::jsonb, @Tags, @RequiredLevel, @RequiredClass,
-                @Icon, @Animation, @CastMode, @TargetType, @Area::jsonb,
-                @CanCrit, @IsReflectable, @RequiresLineOfSight, @Interruptible,
-                @CreatedAt, @UpdatedAt
+                @Id, @Name, @ManaCost, @CastTime, @Cooldown, @Range, @Price,
+                @IsChanneled, @Duration, @Targeting::jsonb,
+                @UnitEffects::jsonb, @TerrainEffects::jsonb, @SummonEffects::jsonb,
+                @TargetType, @RequiredClass, @RequiredLevel,
+                @RequiresLineOfSight, @Description,
+                @CastSound, @ImpactSound, @VfxCast, @VfxImpact,
+                @CastMode, @CreatedAt, @UpdatedAt
             )
             RETURNING id;";
 
         public const string Update = @"
             UPDATE spells SET
-                id = @Id,
                 name = @Name,
-                price = @Price,
-                description = @Description,
                 mana_cost = @ManaCost,
-                cooldown = @Cooldown,
                 cast_time = @CastTime,
+                cooldown = @Cooldown,
                 range = @Range,
-                school = @School,
-                effects = @Effects::jsonb,
-                tags = @Tags,
-                required_level = @RequiredLevel,
-                required_class = @RequiredClass,
-                icon = @Icon,
-                animation = @Animation,
-                cast_mode = @CastMode,
+                price = @Price,
+                is_channeled = @IsChanneled,
+                duration = @Duration,
+                targeting = @Targeting::jsonb,
+                unit_effects = @UnitEffects::jsonb,
+                terrain_effects = @TerrainEffects::jsonb,
+                summon_effects = @SummonEffects::jsonb,
                 target_type = @TargetType,
-                area = @Area::jsonb,
-                can_crit = @CanCrit,
-                is_reflectable = @IsReflectable,
+                required_class = @RequiredClass,
+                required_level = @RequiredLevel,
                 requires_line_of_sight = @RequiresLineOfSight,
-                interruptible = @Interruptible,
+                description = @Description,
+                cast_sound = @CastSound,
+                impact_sound = @ImpactSound,
+                vfx_cast = @VfxCast,
+                vfx_impact = @VfxImpact,
+                cast_mode = @CastMode,
                 updated_at = @UpdatedAt
             WHERE id = @Id;";
 

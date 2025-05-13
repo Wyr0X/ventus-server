@@ -1,6 +1,7 @@
 using System.Net.WebSockets;
 using Game.Server;
 using Ventus.Network.Packets;
+using VentusServer.Domain.Objects;
 using VentusServer.Services;
 using static LoggerUtil;
 

@@ -4,5 +4,6 @@ public enum CharacterClass
     Mage = 1,
     Thief = 2,
     Archer = 3,
-    Priest = 4
+    Priest = 4,
+    None = 5,
 }

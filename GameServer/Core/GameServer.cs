@@ -22,8 +22,6 @@ namespace Game.Server
         public readonly GameEventHandler _gameEventHandler;
         public ConcurrentDictionary<int, PlayerModel> PlayerModels { get; } = new();
         public readonly GameServiceMediator _gameServiceMediator;
-        public readonly AttackSystem attackSystem;
-        public readonly SpellSystem spellSystem;
         public readonly WorldManager worldManager;
         public readonly WebSocketServerController _webSocketServerController;
         public ConcurrentDictionary<int, PlayerObject> playersInTheGame { get; } = new();
@@ -41,8 +39,6 @@ namespace Game.Server
             _gameServiceMediator = gameServiceMediator;
             _webSocketServerController = webSocketServerController;
             worldManager = new WorldManager(this);
-            spellSystem = new SpellSystem(this);
-            attackSystem = new AttackSystem(this);
             LoggerUtil.Log(LoggerUtil.LogTag.GameServer, "GameServer inicializado correctamente.");
         }
 
@@ -64,7 +60,6 @@ namespace Game.Server
                     ProcessEvents();
                     _ = ProcessPlayerInputs();
                     _ = worldManager.UpdateWorlds();
-                    _ = attackSystem.ProcessAttacksAsync();
 
                     // El tiempo 0 , 60 , 120, 
 

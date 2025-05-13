@@ -1,6 +1,3 @@
-using Game.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace VentusServer.DataAccess.Interfaces
 {

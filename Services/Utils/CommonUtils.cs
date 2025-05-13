@@ -38,4 +38,12 @@ public static class CommonUtils
             return default;
         }
     }
+    private static T? DeserializeJsonField<T>(ExpandoObject expando, string fieldName)
+    {
+        if (!expando.TryGetValue(fieldName, out var rawValue) || rawValue is not string json || string.IsNullOrWhiteSpace(json))
+            return default;
+
+        return JsonConvert.DeserializeObject<T>(json);
+    }
+
 }

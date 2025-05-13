@@ -53,6 +53,8 @@ public static class LoggerUtil
         SpellSystem,
         //Entitys
         PlayerObject,
+        SpellObject,
+        validationResult,
         //otros
         JwtAuthRequired,
         ActionExecutor
@@ -105,6 +107,7 @@ public static class LoggerUtil
         { LogTag.GameEventHandler, (true, ConsoleColor.Blue, false) },
         { LogTag.JwtAuthRequired, (false, ConsoleColor.Magenta, false) },
         { LogTag.PlayerObject, (true, ConsoleColor.Magenta, false) },
+        { LogTag.SpellObject, (true, ConsoleColor.Magenta, false) },
         { LogTag.AttackSystem, (true, ConsoleColor.Magenta, false) },
         { LogTag.SpellSystem, (true, ConsoleColor.Magenta, false) },
         { LogTag.ActionExecutor, (true, ConsoleColor.Magenta, false) },

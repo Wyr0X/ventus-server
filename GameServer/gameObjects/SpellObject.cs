@@ -1,4 +1,3 @@
-using Ventus.GameModel.Spells;
 
 namespace VentusServer.Domain.Objects
 {
@@ -8,40 +7,42 @@ namespace VentusServer.Domain.Objects
         public new string Id { get; private set; }
         public SpellModel Model { get; }
 
-        public float CurrentCooldown { get; private set; } = 0f;
-        public bool IsOnCooldown => CurrentCooldown > 0f;
         public DateTime LastCastTime { get; private set; } = DateTime.MinValue;
+        private CooldownManager CooldownManager { get; } = new CooldownManager();
 
-
+        private SpellActionValidator validator = new SpellActionValidator();
+        public bool IsOnCooldown => !CooldownManager.IsOffCooldown(Id);
         public SpellObject(string id, Vec2 position, SpellModel model)
-         : base(id, position)               // ← Aquí inicializa `Id` y `Position`
+      : base(id, position)
         {
-            Id = id ?? throw new ArgumentNullException(nameof(id));
-            Model = model ?? throw new ArgumentNullException(nameof(model));
+            if (string.IsNullOrWhiteSpace(id))
+                throw new ArgumentException("Spell ID cannot be null or empty.", nameof(id));
+
+            if (position == null)
+                throw new ArgumentNullException(nameof(position), "Position cannot be null.");
+
+            if (model == null)
+                throw new ArgumentNullException(nameof(model), "Spell model cannot be null.");
+
+            Id = id;
+            Model = model;
         }
-        public bool CanCast(float currentMana)
+
+        public bool CanTryToCast(PlayerObject player)
         {
-            return currentMana >= Model.ManaCost && !IsOnCooldown;
+            ValidationResult validationResult = validator.CanAttemptAction(this, player);
+            if (!validationResult.IsValid)
+                LoggerUtil.Log(LoggerUtil.LogTag.SpellObject, $"[CanTryToCast] Spell {Id} cannot be cast: {validationResult.Reason}");
+
+
+            return validationResult.IsValid;
         }
 
         public void StartCooldown()
         {
-            CurrentCooldown = Model.Cooldown;
-            LastCastTime = DateTime.UtcNow;
-        }
-        public bool IsInCooldown()
-        {
-            return CurrentCooldown > 0f;
+            this.CooldownManager.SetCooldown(Id, TimeSpan.FromSeconds(Model.Cooldown));
         }
 
-        public void UpdateCooldown(float deltaTime)
-        {
-            if (CurrentCooldown > 0)
-                CurrentCooldown = Math.Max(0, CurrentCooldown - deltaTime);
-        }
-        public IActionValidator GetValidator()
-        {
-            return new SpellActionValidator(this);
-        }
+
     }
 }

@@ -5,7 +5,8 @@ public enum ItemType
     Armor,       // Armadura
     Potion,      // Poción
     Accessory,   // Accesorio
-    Material     // Material para crafting
+    Material,     // Material para crafting,
+    Consumable
 }
 
 public enum ItemRarity

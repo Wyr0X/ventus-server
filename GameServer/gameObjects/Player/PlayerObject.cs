@@ -1,6 +1,14 @@
+using Game.World;
 using Google.Type;
-using Ventus.GameModel.Spells;
 using VentusServer.Domain.Models;
+public enum PlayerActionState
+{
+    Idle,            // Jugador no está realizando ninguna acción
+    CastingSpell,    // Jugador está lanzando un hechizo
+    UsingItem,       // Jugador está usando un ítem
+    Attacking,       // Jugador está atacando
+    EquippingItem    // Jugador está equipando un ítem
+}
 
 namespace VentusServer.Domain.Objects
 {
@@ -27,21 +35,29 @@ namespace VentusServer.Domain.Objects
         private Queue<MovementPlayerInput> inputsToProcess = new Queue<MovementPlayerInput>();
         private readonly object _inputLock = new object();
 
-        public required PlayerStatsObject Stats;
-        public required PlayerInventory Inventory { get; set; }  // Inventario del jugador
+        public PlayerStatsObject Stats;
+        // public PlayerInventory Inventory { get; set; }  // Inventario del jugador
 
-        public required ZoneContext CurrentZoneContext { get; set; }
-        public required CooldownManager CooldownManager { get; set; }
+        public CooldownManager CooldownManager { get; set; } = new CooldownManager();
+        public GameMapObject CurrentMap { get; set; }
         private IEnumerable<SpellObject> spells = Enumerable.Empty<SpellObject>();
-
-        public PlayerObject(int id, Vec2 position, string name, PlayerModel playerModel, ZoneContext currentZoneContext, CooldownManager cooldownManager)
+        private PlayerActionState PlayerActionState = PlayerActionState.Idle;
+        public SpellObject? currentCastingSpell { get; set; }
+        public PlayerObject(int id, Vec2 position, string name, PlayerModel playerModel
+       )
             : base(id, position, name)
         {
+            if (position == null)
+                throw new ArgumentNullException(nameof(position), "Position cannot be null.");
+
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Name cannot be null or empty.", nameof(name));
+
+            if (playerModel == null)
+                throw new ArgumentNullException(nameof(playerModel), "PlayerModel cannot be null.");
             PlayerModel = playerModel;
             IsActiviyConfirmed = true;
-            Inventory = new PlayerInventory(); // Inicialización del inventario
-            CurrentZoneContext = currentZoneContext;
-            CooldownManager = cooldownManager;
+            // Inventory = new PlayerInventory(); // Inicialización del inventario
 
             // if (playerModel.PlayerSpells?.Spells != null)
             // {
@@ -83,34 +99,7 @@ namespace VentusServer.Domain.Objects
 
             LoggerUtil.Log(LoggerUtil.LogTag.PlayerObject, $"[AddSpell] Spell '{spellModel.Name}' added to Player {Id}");
         }
-        private bool CheckCollision()
-        {
-            bool collision = IsPositionBlocked(X, Y);
-            if (collision)
-            {
-                LoggerUtil.Log(LoggerUtil.LogTag.PlayerObject,
-                    $"[CheckCollision] Collision detected for Player {Id} at position ({X}, {Y})");
-            }
-            return collision;
-        }
 
-        private void RevertMovement(Direction direction)
-        {
-            float moveDistance = Speed;
-            float prevX = X;
-            float prevY = Y;
-
-            switch (direction)
-            {
-                case Direction.Up: Y += moveDistance; break;
-                case Direction.Down: Y -= moveDistance; break;
-                case Direction.Left: X += moveDistance; break;
-                case Direction.Right: X -= moveDistance; break;
-            }
-
-            LoggerUtil.Log(LoggerUtil.LogTag.PlayerObject,
-                $"[RevertMovement] Player {Id} reverted movement from ({prevX}, {prevY}) back to ({X}, {Y}) due to collision.");
-        }
 
         private bool IsPositionBlocked(float x, float y)
         {
@@ -179,54 +168,30 @@ namespace VentusServer.Domain.Objects
         {
             return spells.FirstOrDefault(s => s.Model.Id == spellId);
         }
-        public bool CanCastSpell(SpellObject spell)
+        public bool TryToCastSpell(string spellId)
         {
             // Ejemplo básico de condiciones
+            if (PlayerActionState != PlayerActionState.Idle)
+            {
+                LoggerUtil.Log(LoggerUtil.LogTag.PlayerObject, $"[TryToCastSpell] Player {Id} is not idle.");
+                return false;
+            }
+            var spell = GetSpellById(spellId);
             if (spell == null)
-                return false;
-
-            if (!this.Stats.CanUseMana(spell.Model.ManaCost))
             {
-                LoggerUtil.Log(LoggerUtil.LogTag.PlayerObject, $"[CanCastSpell] Player {Id} does not have enough mana.");
+                LoggerUtil.Log(LoggerUtil.LogTag.PlayerObject, $"[TryToCastSpell] Spell with ID {spellId} not found for Player {Id}.");
                 return false;
             }
-
-            if (spell.IsInCooldown())
+            if (!spell.CanTryToCast(this))
             {
-                LoggerUtil.Log(LoggerUtil.LogTag.PlayerObject, $"[CanCastSpell] Spell '{spell.Model.Name}' is on cooldown for Player {Id}.");
-                return false;
-            }
-
-            if (this.Stats.IsSilencedOrCannotCast())
-            {
-                LoggerUtil.Log(LoggerUtil.LogTag.PlayerObject, $"[CanCastSpell] Player {Id} is silenced.");
-                return false;
+                LoggerUtil.Log(LoggerUtil.LogTag.PlayerObject, $"[TryToCastSpell] Spell {spell.Id} cannot be cast.");
+                PlayerActionState = PlayerActionState.CastingSpell;
+                currentCastingSpell = spell;
+                return true;
             }
 
             return true;
         }
 
-        public bool CanPerformActions()
-        {
-            // Verificar si el jugador está aturdido o incapacitado
-            if (this.Stats.IsStunned)
-            {
-                return false;
-            }
-
-            // Verificar si el jugador está muerto
-            if (this.Stats.IsDead)
-            {
-                return false;
-            }
-
-            if (this.Stats.IsSilencedOrCannotCast())
-            {
-                return false;
-            }
-
-            // Si ninguna de las condiciones anteriores se cumple, el jugador puede realizar acciones
-            return true;
-        }
     }
 }

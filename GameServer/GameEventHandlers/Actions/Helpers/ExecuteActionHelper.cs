@@ -23,12 +23,12 @@ public static class ExecuteActionHelper
         return ValidationResult.Success();
     }
 
-    // Verifica si se puede ejecutar el uso de un ítem
-    public static ValidationResult CanExecuteUseItem(PlayerObject player, ItemObject item)
-    {
-        if (item == null || item.Quantity <= 0)
-            return ValidationResult.Fail("El ítem no es válido o no tienes suficientes cargas.");
+    // // Verifica si se puede ejecutar el uso de un ítem
+    // public static ValidationResult CanExecuteUseItem(PlayerObject player, ItemObject item)
+    // {
+    //     if (item == null || item.Quantity <= 0)
+    //         return ValidationResult.Fail("El ítem no es válido o no tienes suficientes cargas.");
 
-        return ValidationResult.Success();
-    }
+    //     return ValidationResult.Success();
+    // }
 }

@@ -34,11 +34,6 @@ public class SpellHandler
 
         LoggerUtil.Log(LoggerUtil.LogTag.SpellHandler, $"Player {player.Id} tried to cast spell {spellId} at ({targetX}, {targetY})");
 
-        // TODO: Validar si puede lanzar el hechizo (CD, maná, etc.)
-        // TODO: Aplicar efectos (proyectil, AOE, instantáneo, etc.)
-        // TODO: Enviar animación o resultado a los jugadores cercanos
-        SpellAttack spellAttack = new SpellAttack(player.Id, new Vec2(targetX, targetY), spellId);
-        _gameServer.attackSystem.QueueAttack(spellAttack);
 
         return Task.CompletedTask;
     }

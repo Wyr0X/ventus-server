@@ -1,130 +1,102 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Data;
+using Dapper;
+using Newtonsoft.Json;
+using VentusServer.DataAccess.Interfaces;
+using VentusServer.DataAccess.Queries;
+using Game.Models;
 
-public static class SpellMapper
+#region Type Handler for JSON Fields
+/// <summary>
+/// Allows Dapper to automatically serialize/deserialize JSON fields.
+/// </summary>
+public class JsonTypeHandler<T> : SqlMapper.TypeHandler<T>
 {
-    public static SpellModel Map(dynamic dbEntity)
+    public override void SetValue(IDbDataParameter parameter, T value)
     {
-        Console.WriteLine($"[SpellMapper] Procesando spell ID: {dbEntity.id}, effects: {dbEntity.effects}");
-
-        // 1) Deserializar effects
-        var effects = new List<SpellEffect>();
-        if (dbEntity.effects != null)
-        {
-            var effectsString = dbEntity.effects.ToString();
-            if (!string.IsNullOrWhiteSpace(effectsString) && effectsString != "[]")
-            {
-                if (IsValidJson(effectsString))
-                {
-                    try
-                    {
-                        effects = JsonConvert.DeserializeObject<List<SpellEffect>>(effectsString)
-                                  ?? new List<SpellEffect>();
-                        Console.WriteLine("[SpellMapper] Deserialización exitosa de 'effects': "
-                                          + JsonConvert.SerializeObject(effects));
-                    }
-                    catch (JsonReaderException ex)
-                    {
-                        Console.WriteLine($"[SpellMapper] Error al deserializar 'effects' para spell ID {dbEntity.id}: {ex.Message}");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("[SpellMapper] 'effects' no es un JSON válido.");
-                }
-            }
-        }
-
-        // 2) Deserializar area
-        AreaOfEffect? area = null;
-        if (dbEntity.area != null)
-        {
-            var areaString = dbEntity.area.ToString();
-            if (!string.IsNullOrWhiteSpace(areaString) && IsValidJson(areaString))
-            {
-                try
-                {
-                    area = JsonConvert.DeserializeObject<AreaOfEffect>(areaString);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"[SpellMapper] Error al deserializar 'area' para spell ID {dbEntity.id}: {ex.Message}");
-                }
-            }
-        }
-
-        // 3) Deserializar tags
-        var tags = new List<string>();
-        if (dbEntity.tags != null)
-        {
-            try
-            {
-                var token = JToken.Parse(dbEntity.tags.ToString());
-                if (token.Type == JTokenType.Array)
-                    tags = token.ToObject<List<string>>() ?? new List<string>();
-            }
-            catch
-            {
-                try
-                {
-                    var arr = dbEntity.tags as IEnumerable<object>;
-                    if (arr != null)
-                        tags = arr.Select(o => o?.ToString() ?? string.Empty).ToList();
-                }
-                catch { }
-            }
-        }
-
-        // 4) Construir el modelo con valores predeterminados para bool
-        return new SpellModel
-        {
-            Id = dbEntity.id,
-            Name = dbEntity.name,
-            Price = dbEntity.price,
-            Description = dbEntity.description,
-            Icon = dbEntity.icon,
-            Animation = dbEntity.animation,
-            ManaCost = dbEntity.mana_cost,
-            Cooldown = dbEntity.cooldown,
-            CastTime = dbEntity.cast_time,
-            Range = dbEntity.range,
-            Area = area,
-            School = dbEntity.school,
-            RequiredLevel = dbEntity.required_level,
-            RequiredClass = dbEntity.required_class,
-            TargetType = Enum.TryParse<TargetType>(dbEntity.target_type?.ToString(), out TargetType t) ? t : TargetType.Self,
-            CastMode = Enum.TryParse<CastMode>(dbEntity.cast_mode?.ToString(), out CastMode c) ? c : CastMode.Instant,
-            Effects = effects,
-            CanCrit = (bool?)(dbEntity.can_crit) ?? false,
-            IsReflectable = (bool?)(dbEntity.is_reflectable) ?? false,
-            RequiresLineOfSight = (bool?)(dbEntity.requires_line_of_sight) ?? false,
-            Interruptible = (bool?)(dbEntity.interruptible) ?? false,
-            CastSound = dbEntity.cast_sound,
-            ImpactSound = dbEntity.impact_sound,
-            VfxCast = dbEntity.vfx_cast,
-            VfxImpact = dbEntity.vfx_impact,
-            Tags = tags,
-            IsUltimate = (bool?)(dbEntity.is_ultimate) ?? false,
-            UnlockedByQuest = dbEntity.unlocked_by_quest,
-            CreatedAt = dbEntity.created_at,
-            UpdatedAt = dbEntity.updated_at
-        };
+        parameter.Value = JsonConvert.SerializeObject(value);
+        parameter.DbType = DbType.String;
     }
 
-    private static bool IsValidJson(string str)
+    public override T Parse(object value)
     {
-        try
-        {
-            JToken.Parse(str);
-            return true;
-        }
-        catch (JsonReaderException)
-        {
-            return false;
-        }
+        return JsonConvert.DeserializeObject<T>(value.ToString())!;
+    }
+}
+#endregion
+
+#region DTO: Database Entity Representation
+/// <summary>
+/// Represents the raw fields of the 'spells' table.
+/// </summary>
+public class DbSpellEntity
+{
+    public string Id { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public int ManaCost { get; set; }
+    public int CastTime { get; set; }
+    public int Cooldown { get; set; }
+    public int Range { get; set; }
+    public int Price { get; set; }
+    public bool IsChanneled { get; set; }
+    public int Duration { get; set; }
+    public List<ISpellEffect> UnitEffects { get; set; } = new();
+    public List<ITerrainEffect> TerrainEffects { get; set; } = new();
+    public List<ISummonEffect> SummonEffects { get; set; } = new();
+    public string TargetType { get; set; } = string.Empty;
+    public string RequiredClass { get; set; } = string.Empty;
+    public int RequiredLevel { get; set; }
+    public bool RequiresLineOfSight { get; set; }
+    public string? Description { get; set; }
+    public string? CastSound { get; set; }
+    public string? ImpactSound { get; set; }
+    public string? VfxCast { get; set; }
+    public string? VfxImpact { get; set; }
+    public string CastMode { get; set; } = string.Empty;
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+}
+#endregion
+
+#region Mapper: DbSpellEntity ↔ SpellModel
+/// <summary>
+/// Maps between the database DTO and the domain SpellModel.
+/// </summary>
+public static class SpellMapper
+{
+    public static SpellModel Map(DbSpellEntity e)
+    {
+        // Parse enums
+        var targetType = Enum.Parse<TargetType>(e.TargetType);
+        var castMode = Enum.Parse<SpellCastType>(e.CastMode);
+        var reqClass = Enum.Parse<CharacterClass>(e.RequiredClass);
+
+        return new SpellModel(
+            id: e.Id,
+            name: e.Name,
+            manaCost: e.ManaCost,
+            castTime: e.CastTime,
+            cooldown: e.Cooldown,
+            range: e.Range,
+            isChanneled: e.IsChanneled,
+            duration: e.Duration,
+            castType: castMode,
+            targeting: null, // implement if serialized
+            unitEffects: e.UnitEffects,
+            terrainEffects: e.TerrainEffects,
+            summonEffects: e.SummonEffects,
+            targetType: targetType,
+            requiredLevel: e.RequiredLevel,
+            requiresLineOfSight: e.RequiresLineOfSight,
+            description: e.Description,
+            castSound: e.CastSound,
+            impactSound: e.ImpactSound,
+            vfxCast: e.VfxCast,
+            vfxImpact: e.VfxImpact,
+            price: e.Price,
+            requiredClass: reqClass
+        );
     }
 
     public static object ToDbParameters(SpellModel spell)
@@ -133,34 +105,67 @@ public static class SpellMapper
         {
             spell.Id,
             spell.Name,
-            spell.Price,
-            spell.Description,
-            spell.Icon,
-            spell.Animation,
             spell.ManaCost,
-            spell.Cooldown,
             spell.CastTime,
+            spell.Cooldown,
             spell.Range,
-            Area = spell.Area != null ? JsonConvert.SerializeObject(spell.Area) : null,
-            spell.School,
-            spell.RequiredLevel,
-            spell.RequiredClass,
+            spell.Price,
+            spell.IsChanneled,
+            spell.Duration,
+            UnitEffects = JsonConvert.SerializeObject(spell.UnitEffects),
+            TerrainEffects = JsonConvert.SerializeObject(spell.TerrainEffects),
+            SummonEffects = JsonConvert.SerializeObject(spell.SummonEffects),
             TargetType = spell.TargetType.ToString(),
-            CastMode = spell.CastMode.ToString(),
-            Effects = spell.Effects != null ? JsonConvert.SerializeObject(spell.Effects) : null,
-            spell.CanCrit,
-            spell.IsReflectable,
+            RequiredClass = spell.RequiredClass.ToString(),
+            spell.RequiredLevel,
             spell.RequiresLineOfSight,
-            spell.Interruptible,
+            spell.Description,
             spell.CastSound,
             spell.ImpactSound,
             spell.VfxCast,
             spell.VfxImpact,
-            Tags = spell.Tags != null && spell.Tags.Any() ? spell.Tags.ToArray() : null,
-            spell.IsUltimate,
-            spell.UnlockedByQuest,
+            CastMode = spell.CastType.ToString(),
             spell.CreatedAt,
             spell.UpdatedAt
         };
     }
 }
+#endregion
+
+#region Initialization: Register TypeHandlers
+/// <summary>
+/// Call this once at application startup.
+/// </summary>
+public static class DapperConfig
+{
+    public static void Configure()
+    {
+        SqlMapper.AddTypeHandler(new JsonTypeHandler<List<ISpellEffect>>());
+        SqlMapper.AddTypeHandler(new JsonTypeHandler<List<ITerrainEffect>>());
+        SqlMapper.AddTypeHandler(new JsonTypeHandler<List<ISummonEffect>>());
+        // Add other JSON-backed types as needed
+    }
+}
+#endregion
+
+#region DAO: Example Usage in DapperSpellDAO
+public class DapperSpellDAO : BaseDAO, ISpellDAO
+{
+    public DapperSpellDAO(IDbConnectionFactory connectionFactory) : base(connectionFactory) { }
+
+    public async Task<SpellModel?> GetSpellByIdAsync(string spellId)
+    {
+        using var conn = GetConnection();
+        var dto = await conn.QuerySingleOrDefaultAsync<DbSpellEntity>(SpellQueries.SelectById, new { Id = spellId });
+        return dto == null ? null : SpellMapper.Map(dto);
+    }
+
+    public async Task CreateSpellAsync(SpellModel spell)
+    {
+        using var conn = GetConnection();
+        await conn.ExecuteAsync(SpellQueries.Insert, SpellMapper.ToDbParameters(spell));
+    }
+
+    // ... implementar Update, Delete, etc. de forma similar ...
+}
+#endregion

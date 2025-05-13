@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Game.Models;
 using Ventus.Network.Packets;
+using VentusServer.Domain.Objects;
 
 namespace Game.Server
 {
