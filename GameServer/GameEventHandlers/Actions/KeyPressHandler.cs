@@ -69,7 +69,7 @@ namespace VentusServer.GameEventHandlers
                     }
 
                     LoggerUtil.Log(LoggerUtil.LogTag.KeyPressHandler, $"[KeyPressHandler] Ejecutando acción '{hotbarAction.ActionId}' desde la hotbar {hotbarIndex} para el jugador {playerObject.Id}.");
-                    _actionExecutor.TryToExecuteAction(hotbarAction, playerObject);
+                    _actionExecutor.TryToExecuteAction(hotbarAction, playerObject, keyPressedPacket.SequenceNumber, keyPressedPacket.Key);
                 }
                 else
                 {

@@ -1,0 +1,57 @@
+[01:14:54] [DapperSpellDAO] Error al mapear hechizo: The best overloaded method match for 'SpellMapper.ToModel(SpellDBEntity)' has some invalid arguments
+[01:14:54] [DapperSpellDAO] Error al mapear hechizo: The best overloaded method match for 'SpellMapper.ToModel(SpellDBEntity)' has some invalid arguments
+[01:14:54] [DapperSpellDAO] Error al mapear hechizo: The best overloaded method match for 'SpellMapper.ToModel(SpellDBEntity)' has some invalid arguments
+[01:18:11] [DapperSpellDAO] Error al mapear hechizo: The best overloaded method match for 'SpellMapper.ToModel(SpellDBEntity)' has some invalid arguments
+[01:18:11] [DapperSpellDAO] Error al mapear hechizo: The best overloaded method match for 'SpellMapper.ToModel(SpellDBEntity)' has some invalid arguments
+[01:18:11] [DapperSpellDAO] Error al mapear hechizo: The best overloaded method match for 'SpellMapper.ToModel(SpellDBEntity)' has some invalid arguments
+[01:20:20] [DapperSpellDAO] Error al mapear hechizo: The best overloaded method match for 'SpellMapper.ToModel(SpellDBEntity)' has some invalid arguments
+[01:20:20] [DapperSpellDAO] Error al mapear hechizo: The best overloaded method match for 'SpellMapper.ToModel(SpellDBEntity)' has some invalid arguments
+[01:20:21] [DapperSpellDAO] Error al mapear hechizo: The best overloaded method match for 'SpellMapper.ToModel(SpellDBEntity)' has some invalid arguments
+[01:38:10] [DapperSpellDAO] Error al crear el hechizo. Nombre: Curar Heridas Leves, ID: heal_light, Nivel requerido: 1, Clase requerida: None, Excepción: Object reference not set to an instance of an object., Stack Trace:    at SpellMapper.ToDBEntity(SpellModel model) in C:\Users\pedro\Desktop\Ventus AO Project\ventus-server\DataAccess\Mappers\SpellMapper.cs:line 53
+   at VentusServer.DataAccess.Dapper.DapperSpellDAO.CreateSpellAsync(SpellModel spell) in C:\Users\pedro\Desktop\Ventus AO Project\ventus-server\DataAccess\Dapper\DapperSpellDAO.cs:line 55
+[01:44:31] [DapperSpellDAO] Error al crear el hechizo. Nombre: Curar Heridas Leves, ID: heal_light, Nivel requerido: 1, Clase requerida: None, Excepción: 42703: no existe la columna «castmode»
+
+POSITION: 730, Stack Trace:    at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteNonQuery(Boolean async, CancellationToken cancellationToken)
+   at Dapper.SqlMapper.ExecuteImplAsync(IDbConnection cnn, CommandDefinition command, Object param) in /_/Dapper/SqlMapper.Async.cs:line 662
+   at VentusServer.DataAccess.Dapper.DapperSpellDAO.CreateSpellAsync(SpellModel spell) in C:\Users\pedro\Desktop\Ventus AO Project\ventus-server\DataAccess\Dapper\DapperSpellDAO.cs:line 55
+[01:45:44] [DapperSpellDAO] Error al crear el hechizo. Nombre: Curar Heridas Leves, ID: heal_light, Nivel requerido: 1, Clase requerida: None, Excepción: 42703: no existe la columna «casttype»
+
+POSITION: 730, Stack Trace:    at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteNonQuery(Boolean async, CancellationToken cancellationToken)
+   at Dapper.SqlMapper.ExecuteImplAsync(IDbConnection cnn, CommandDefinition command, Object param) in /_/Dapper/SqlMapper.Async.cs:line 662
+   at VentusServer.DataAccess.Dapper.DapperSpellDAO.CreateSpellAsync(SpellModel spell) in C:\Users\pedro\Desktop\Ventus AO Project\ventus-server\DataAccess\Dapper\DapperSpellDAO.cs:line 55
+[02:34:51] [DapperSpellDAO] Error al mapear hechizo: Unable to cast object of type 'SpellDBEntity' to type 'System.Collections.Generic.IDictionary`2[System.String,System.Object]'.
+[02:34:51] [DapperSpellDAO] Error al mapear hechizo: Unable to cast object of type 'SpellDBEntity' to type 'System.Collections.Generic.IDictionary`2[System.String,System.Object]'.
+[02:34:51] [DapperSpellDAO] Error al mapear hechizo: Unable to cast object of type 'SpellDBEntity' to type 'System.Collections.Generic.IDictionary`2[System.String,System.Object]'.
+[02:35:11] [DapperSpellDAO] Error al mapear hechizo: Unable to cast object of type 'SpellDBEntity' to type 'System.Collections.Generic.IDictionary`2[System.String,System.Object]'.
+[02:35:11] [DapperSpellDAO] Error al mapear hechizo: Unable to cast object of type 'SpellDBEntity' to type 'System.Collections.Generic.IDictionary`2[System.String,System.Object]'.
+[02:35:11] [DapperSpellDAO] Error al mapear hechizo: Unable to cast object of type 'SpellDBEntity' to type 'System.Collections.Generic.IDictionary`2[System.String,System.Object]'.
+[02:37:17] [DapperSpellDAO] Error al mapear hechizo ID heal_light: Unable to cast object of type 'SpellDBEntity' to type 'System.Collections.Generic.IDictionary`2[System.String,System.Object]'.
+[02:37:17] [DapperSpellDAO] Error al mapear hechizo ID lightning_storm: Unable to cast object of type 'SpellDBEntity' to type 'System.Collections.Generic.IDictionary`2[System.String,System.Object]'.
+[02:37:17] [DapperSpellDAO] Error al mapear hechizo ID invisibility: Unable to cast object of type 'SpellDBEntity' to type 'System.Collections.Generic.IDictionary`2[System.String,System.Object]'.
+[03:55:41] [DapperSpellDAO] Error al mapear hechizo ID heal_light: Unable to cast object of type 'SpellDBEntity' to type 'System.Collections.Generic.IDictionary`2[System.String,System.Object]'.
+[03:55:41] [DapperSpellDAO] Error al mapear hechizo ID lightning_storm: Unable to cast object of type 'SpellDBEntity' to type 'System.Collections.Generic.IDictionary`2[System.String,System.Object]'.
+[03:55:41] [DapperSpellDAO] Error al mapear hechizo ID invisibility: Unable to cast object of type 'SpellDBEntity' to type 'System.Collections.Generic.IDictionary`2[System.String,System.Object]'.
+[03:56:38] [DapperSpellDAO] Error al mapear hechizo ID heal_light: Could not create an instance of type ITargetingStrategy. Type is an interface or abstract class and cannot be instantiated. Path 'ValidTarget', line 1, position 15.
+[03:56:38] [DapperSpellDAO] Error al mapear hechizo ID lightning_storm: Could not create an instance of type ITargetingStrategy. Type is an interface or abstract class and cannot be instantiated. Path 'Radius', line 1, position 10.
+[03:56:38] [DapperSpellDAO] Error al mapear hechizo ID invisibility: Could not create an instance of type ITargetingStrategy. Type is an interface or abstract class and cannot be instantiated. Path 'ValidTarget', line 1, position 15.
+[03:57:55] [DapperSpellDAO] Error al mapear hechizo ID heal_light: Could not create an instance of type ITargetingStrategy. Type is an interface or abstract class and cannot be instantiated. Path 'ValidTarget', line 1, position 15.
+[03:57:55] [DapperSpellDAO] Error al mapear hechizo ID lightning_storm: Could not create an instance of type ITargetingStrategy. Type is an interface or abstract class and cannot be instantiated. Path 'Radius', line 1, position 10.
+[03:57:55] [DapperSpellDAO] Error al mapear hechizo ID invisibility: Could not create an instance of type ITargetingStrategy. Type is an interface or abstract class and cannot be instantiated. Path 'ValidTarget', line 1, position 15.
+[03:59:31] [DapperSpellDAO] Error al mapear hechizo ID : The best overloaded method match for 'SpellMapper.ToModel(SpellDBEntity)' has some invalid arguments
+[03:59:32] [DapperSpellDAO] Error al mapear hechizo ID : The best overloaded method match for 'SpellMapper.ToModel(SpellDBEntity)' has some invalid arguments
+[03:59:32] [DapperSpellDAO] Error al mapear hechizo ID : The best overloaded method match for 'SpellMapper.ToModel(SpellDBEntity)' has some invalid arguments
+[04:22:16] [DapperSpellDAO] Error al mapear hechizo ID heal_light: Unable to cast object of type 'SpellDBEntity' to type 'System.Collections.Generic.IDictionary`2[System.String,System.Object]'.
+[04:22:16] [DapperSpellDAO] Error al mapear hechizo ID lightning_storm: Unable to cast object of type 'SpellDBEntity' to type 'System.Collections.Generic.IDictionary`2[System.String,System.Object]'.
+[04:22:16] [DapperSpellDAO] Error al mapear hechizo ID invisibility: Unable to cast object of type 'SpellDBEntity' to type 'System.Collections.Generic.IDictionary`2[System.String,System.Object]'.

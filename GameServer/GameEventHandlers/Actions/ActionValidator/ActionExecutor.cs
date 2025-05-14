@@ -1,17 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Game.Server;
+using Ventus.Network.Packets;
 using VentusServer.Domain.Objects;
 
 public class ActionExecutor
 {
-
-    public ActionExecutor()
+    GameServer _gameServer;
+    public ActionExecutor(GameServer gameServer)
     {
+        GameServer _gameServer = gameServer;
     }
 
     // Ejecuta la acción según el tipo de la acción
-    public void TryToExecuteAction(HotbarAction action, PlayerObject player)
+    public Task TryToExecuteAction(HotbarAction action, PlayerObject player, int sequenceNumber, string Key)
     {
         var status = false;
         switch (action.ActionType)
@@ -39,6 +42,9 @@ public class ActionExecutor
             default:
                 throw new ArgumentOutOfRangeException();
         }
+        KeyPressAck keyPressAck = new KeyPressAck { Key = Key, SequenceNumber = sequenceNumber, Result = status };
+        _gameServer._webSocketServerController._outgoingQueue.Enqueue(player.PlayerModel.AccountId, keyPressAck, ServerPacket.KeyPressAck);
+        return Task.CompletedTask;
     }
 
     // Ejecutar acción de usar un ítem
@@ -51,6 +57,8 @@ public class ActionExecutor
     private bool ExecuteCastSpell(HotbarAction action, PlayerObject player)
     {
         return player.TryToCastSpell((string)action.ActionId);
+
+
     }
 
     // Ejecutar acción de golpear

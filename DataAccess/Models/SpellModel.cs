@@ -12,7 +12,6 @@ public class SpellModel
     public int Cooldown { get; }
     public bool IsChanneled { get; }
     public int Duration { get; }
-    public SpellCastType CastType { get; }
 
     // --- Alcance y targeting ---
     public int Range { get; }
@@ -38,7 +37,7 @@ public class SpellModel
     // --- Nuevos campos agregados ---
     public DateTime CreatedAt { get; }
     public DateTime UpdatedAt { get; }
-    public string? CastMode { get; } // Agregado para mapear el campo `cast_mode` en la base de datos
+    public SpellCastType? CastType { get; } // Agregado para mapear el campo `cast_mode` en la base de datos
 
     // --- Constructor ---
     public SpellModel(
@@ -66,8 +65,7 @@ public class SpellModel
         int price = 0,
         CharacterClass requiredClass = CharacterClass.None,
         DateTime createdAt = default,
-        DateTime updatedAt = default,
-        string? castMode = null
+        DateTime updatedAt = default
     )
     {
         Id = id;
@@ -78,7 +76,6 @@ public class SpellModel
         Range = range;
         IsChanneled = isChanneled;
         Duration = duration;
-        CastType = castType;
         Targeting = targeting;
         UnitEffects = unitEffects?.ToList() ?? new List<ISpellEffect>();
         TerrainEffects = terrainEffects?.ToList() ?? new List<ITerrainEffect>();
@@ -95,6 +92,6 @@ public class SpellModel
         RequiredClass = requiredClass;
         CreatedAt = createdAt == default ? DateTime.Now : createdAt;
         UpdatedAt = updatedAt == default ? DateTime.Now : updatedAt;
-        CastMode = castMode;
+        CastType = castType;
     }
 }

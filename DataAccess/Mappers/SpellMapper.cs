@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
+using VentusServer.DataAccess.Mappers;
 
-public static class SpellMapper
+public class SpellMapper : BaseMapper
 {
     // Mapea un SpellDBEntity a un SpellModel
     public static SpellModel ToModel(SpellDBEntity entity)
@@ -21,7 +22,7 @@ public static class SpellMapper
             range: entity.Range,
             isChanneled: entity.IsChanneled,
             duration: entity.Duration,
-            castType: (SpellCastType)Enum.Parse(typeof(SpellCastType), entity.CastMode ?? "Instant"),
+            castType: string.IsNullOrEmpty(entity.CastType) ? SpellCastType.Instant : (SpellCastType)Enum.Parse(typeof(SpellCastType), entity.CastType),
             targeting: targetingStrategy,
             unitEffects: unitEffects,
             terrainEffects: terrainEffects,
@@ -73,7 +74,7 @@ public static class SpellMapper
             ImpactSound = model.ImpactSound,
             VfxCast = model.VfxCast,
             VfxImpact = model.VfxImpact,
-            CastMode = model.CastType.ToString(),
+            CastType = model.CastType.ToString(),
             CreatedAt = DateTime.UtcNow, // Por ejemplo, si se está creando
             UpdatedAt = DateTime.UtcNow  // También se puede ajustar dependiendo de la lógica
         };

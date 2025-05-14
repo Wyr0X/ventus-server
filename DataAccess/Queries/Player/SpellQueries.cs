@@ -26,7 +26,7 @@ namespace VentusServer.DataAccess.Queries
             impact_sound TEXT,
             vfx_cast TEXT,
             vfx_impact TEXT,
-            castType TEXT,
+            cast_type TEXT,
             created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
         );";
@@ -39,7 +39,7 @@ namespace VentusServer.DataAccess.Queries
                 target_type, required_class, required_level,
                 requires_line_of_sight, description,
                 cast_sound, impact_sound, vfx_cast, vfx_impact,
-                cast_mode, created_at, updated_at
+                cast_type, created_at, updated_at
             ) VALUES (
                 @Id, @Name, @ManaCost, @CastTime, @Cooldown, @Range, @Price,
                 @IsChanneled, @Duration, @Targeting::jsonb,
@@ -47,7 +47,7 @@ namespace VentusServer.DataAccess.Queries
                 @TargetType, @RequiredClass, @RequiredLevel,
                 @RequiresLineOfSight, @Description,
                 @CastSound, @ImpactSound, @VfxCast, @VfxImpact,
-                @CastMode, @CreatedAt, @UpdatedAt
+                @CastType, @CreatedAt, @UpdatedAt
             )
             RETURNING id;";
 
@@ -74,17 +74,71 @@ namespace VentusServer.DataAccess.Queries
                 impact_sound = @ImpactSound,
                 vfx_cast = @VfxCast,
                 vfx_impact = @VfxImpact,
-                cast_mode = @CastMode,
+                cast_type = @CastType,
                 updated_at = @UpdatedAt
             WHERE id = @Id;";
 
         public const string SelectById = @"
-            SELECT * FROM spells
+            SELECT 
+                id, 
+                name, 
+                mana_cost, 
+                cast_time, 
+                cooldown, 
+                range, 
+                price, 
+                is_channeled, 
+                duration, 
+                cast_type, 
+                targeting::text AS TargetingJson, 
+                unit_effects::text AS EffectsJson, 
+                terrain_effects::text AS TerrainEffectsJson, 
+                summon_effects::text AS SummonEffectsJson, 
+                target_type, 
+                required_class, 
+                required_level, 
+                requires_line_of_sight, 
+                description, 
+                cast_sound, 
+                impact_sound, 
+                vfx_cast, 
+                vfx_impact, 
+                cast_type, 
+                created_at, 
+                updated_at 
+            FROM spells
             WHERE id = @Id
             LIMIT 1;";
 
         public const string SelectAll = @"
-            SELECT * FROM spells;";
+            SELECT 
+                id, 
+                name, 
+                mana_cost, 
+                cast_time, 
+                cooldown, 
+                range, 
+                price, 
+                is_channeled, 
+                duration, 
+                cast_type, 
+                targeting::text AS TargetingJson, 
+                unit_effects::text AS EffectsJson, 
+                terrain_effects::text AS TerrainEffectsJson, 
+                summon_effects::text AS SummonEffectsJson, 
+                target_type, 
+                required_class, 
+                required_level, 
+                requires_line_of_sight, 
+                description, 
+                cast_sound, 
+                impact_sound, 
+                vfx_cast, 
+                vfx_impact, 
+                cast_type, 
+                created_at, 
+                updated_at 
+            FROM spells;";
 
         public const string DeleteById = @"
             DELETE FROM spells

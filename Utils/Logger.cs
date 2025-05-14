@@ -20,6 +20,7 @@ public static class LoggerUtil
         DapperItemDAO,
         DapperPlayerDAO,
         DapperPlayerStatsDAO,
+        DapperSpellDAO,
         DapperPlayerInventoryDAO,
         DapperPlayerSpellsDAO,
         DapperRoleDAO,
@@ -65,11 +66,11 @@ public static class LoggerUtil
     {
         { LogTag.AuthController, (false, ConsoleColor.Cyan, false) },
         { LogTag.AdminAccountController, (false, ConsoleColor.Cyan, false) },
-        { LogTag.SpellController, (false, ConsoleColor.Cyan, false) },
+        { LogTag.SpellController, (true, ConsoleColor.Cyan, false) },
         { LogTag.StoreController, (false, ConsoleColor.Cyan, false) },
         { LogTag.AdminRolesController, (false, ConsoleColor.Cyan, false) },
         { LogTag.WebSocketAuthentificationService, (false, ConsoleColor.DarkMagenta, false) },
-        { LogTag.WebSocketServerController, (true, ConsoleColor.DarkMagenta, false) },
+        { LogTag.WebSocketServerController, (false, ConsoleColor.DarkMagenta, false) },
         { LogTag.WebSocketConnectionManager, (false, ConsoleColor.DarkMagenta, false) },
         { LogTag.MapModel, (false, ConsoleColor.DarkGreen, false) },
         { LogTag.BaseCachedService, (false, ConsoleColor.DarkBlue, false) },
@@ -83,7 +84,7 @@ public static class LoggerUtil
         { LogTag.RoleService, (false, ConsoleColor.DarkBlue, false) },
         { LogTag.StoreService, (false, ConsoleColor.DarkBlue, false) },
         { LogTag.PlayerService, (false, ConsoleColor.DarkBlue, false) },
-        { LogTag.PlayerSpellsService, (false, ConsoleColor.DarkBlue, false) },
+        { LogTag.PlayerSpellsService, (true, ConsoleColor.DarkBlue, false) },
         { LogTag.DB, (false, ConsoleColor.Yellow, false) },
         { LogTag.Init, (false, ConsoleColor.Yellow, false) },
         { LogTag.Game, (false, ConsoleColor.Yellow, false) },
@@ -92,25 +93,26 @@ public static class LoggerUtil
         { LogTag.DapperPlayerStatsDAO, (false, ConsoleColor.Green, false) },
         { LogTag.DapperRoleDAO, (false, ConsoleColor.Green, false) },
         { LogTag.DapperAccountDAO, (false, ConsoleColor.Green, false) },
+        { LogTag.DapperSpellDAO, (true, ConsoleColor.Green, false) },
         { LogTag.DapperWorldDAO, (false, ConsoleColor.Green, false) },
         { LogTag.DapperItemDAO, (false, ConsoleColor.Green, false) },
         { LogTag.DapperPlayerInventoryDAO, (false, ConsoleColor.Green, false) },
         { LogTag.DapperPlayerSpellsDAO, (false, ConsoleColor.Green, false) },
         { LogTag.RequirePermissionAttribute, (false, ConsoleColor.Blue, false) },
-        { LogTag.SessionHandler, (true, ConsoleColor.Blue, false) },
+        { LogTag.SessionHandler, (false, ConsoleColor.Blue, false) },
         { LogTag.SpellHandler, (true, ConsoleColor.Blue, false) },
-        { LogTag.KeyPressHandler, (true, ConsoleColor.Blue, false) },
-        { LogTag.WorldManager, (true, ConsoleColor.Blue, false) },
-        { LogTag.GameServer, (true, ConsoleColor.Blue, false) },
-        { LogTag.TaskScheduler, (true, ConsoleColor.Blue, false) },
-        { LogTag.SessionTasks, (true, ConsoleColor.Blue, false) },
-        { LogTag.GameEventHandler, (true, ConsoleColor.Blue, false) },
+        { LogTag.KeyPressHandler, (false, ConsoleColor.Blue, false) },
+        { LogTag.WorldManager, (false, ConsoleColor.Blue, false) },
+        { LogTag.GameServer, (false, ConsoleColor.Blue, false) },
+        { LogTag.TaskScheduler, (false, ConsoleColor.Blue, false) },
+        { LogTag.SessionTasks, (false, ConsoleColor.Blue, false) },
+        { LogTag.GameEventHandler, (false, ConsoleColor.Blue, false) },
         { LogTag.JwtAuthRequired, (false, ConsoleColor.Magenta, false) },
-        { LogTag.PlayerObject, (true, ConsoleColor.Magenta, false) },
+        { LogTag.PlayerObject, (false, ConsoleColor.Magenta, false) },
         { LogTag.SpellObject, (true, ConsoleColor.Magenta, false) },
-        { LogTag.AttackSystem, (true, ConsoleColor.Magenta, false) },
+        { LogTag.AttackSystem, (false, ConsoleColor.Magenta, false) },
         { LogTag.SpellSystem, (true, ConsoleColor.Magenta, false) },
-        { LogTag.ActionExecutor, (true, ConsoleColor.Magenta, false) },
+        { LogTag.ActionExecutor, (false, ConsoleColor.Magenta, false) },
     };
 
     private static readonly Dictionary<LogTag, LogConfig> cachedTagConfig = new();
@@ -123,10 +125,10 @@ public static class LoggerUtil
     }
     private static HashSet<LogTag> enabledTagsCache = new HashSet<LogTag>();
 
-    public static void EnableTag(LogTag tag) => SetTagEnabled(tag, true);
+    public static void EnableTag(LogTag tag) => SetTagEnabled(tag, false);
     public static void DisableTag(LogTag tag) => SetTagEnabled(tag, false);
 
-    public static void EnableFileLogging(LogTag tag) => SetFileLogging(tag, true);
+    public static void EnableFileLogging(LogTag tag) => SetFileLogging(tag, false);
     public static void DisableFileLogging(LogTag tag) => SetFileLogging(tag, false);
 
     public static void SetTagEnabled(LogTag tag, bool enabled)
@@ -169,7 +171,7 @@ public static class LoggerUtil
             }
             if (!config.Enabled) return false;
 
-            return true;  // Configuración encontrada y asignada
+            return false;  // Configuración encontrada y asignada
         }
 
         // Si no se encuentra la configuración, devolvemos false

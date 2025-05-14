@@ -132,24 +132,32 @@ namespace VentusServer
 
         private static void RegisterControllers(IServiceCollection services)
         {
-            services
-                .AddSingleton<WebSocketServerController>()
-                .AddSingleton<AccountController>()
-                .AddSingleton<AuthController>()
-                .AddSingleton<AdminAccountController>()
-                .AddSingleton<AdminRolesController>()
-                .AddSingleton<AdminLogController>()
-                .AddSingleton<AdminItemController>()
-                .AddSingleton<GameController>()
-                .AddSingleton<ItemController>()
-                .AddSingleton<StoreController>()
-                .AddSingleton<StoreController>()
-                .AddSingleton<SpellController>()
-                .AddSingleton(sp =>
-                    new Lazy<WebSocketServerController>(
-                        () => sp.GetRequiredService<WebSocketServerController>()
-                    )
-                );
+            try
+            {
+                services
+                 .AddSingleton<WebSocketServerController>()
+                 .AddSingleton<AccountController>()
+                 .AddSingleton<AuthController>()
+                 .AddSingleton<AdminAccountController>()
+                 .AddSingleton<AdminRolesController>()
+                 .AddSingleton<AdminLogController>()
+                 .AddSingleton<AdminItemController>()
+                 .AddSingleton<GameController>()
+                 .AddSingleton<ItemController>()
+                 .AddSingleton<StoreController>()
+                 .AddSingleton<StoreController>()
+                 .AddSingleton<SpellController>()
+                 .AddSingleton(sp =>
+                     new Lazy<WebSocketServerController>(
+                         () => sp.GetRequiredService<WebSocketServerController>()
+                     )
+                 );
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error al registrar los controladores.", ex.Message);
+                throw;
+            }
         }
     }
 }
