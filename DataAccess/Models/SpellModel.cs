@@ -1,94 +1,46 @@
-/// <summary>
-/// Representa un hechizo dentro del juego.
-/// </summary>
 public class SpellModel
 {
     // --- Identificación y requisitos ---
-
-    /// <summary>Identificador único del hechizo.</summary>
     public string Id { get; }
-
-    /// <summary>Nombre del hechizo mostrado al jugador.</summary>
     public string Name { get; }
-
-    /// <summary>Clase requerida para poder aprender/lanzar el hechizo.</summary>
     public CharacterClass RequiredClass { get; } = CharacterClass.None;
-
-    /// <summary>Nivel mínimo requerido para lanzar el hechizo.</summary>
     public int RequiredLevel { get; }
 
     // --- Costos y tiempos ---
-
-    /// <summary>Costo de maná para lanzar el hechizo.</summary>
     public int ManaCost { get; }
-
-    /// <summary>Tiempo que tarda en lanzarse el hechizo (en milisegundos o ticks).</summary>
     public int CastTime { get; }
-
-    /// <summary>Tiempo de reutilización antes de poder volver a usar el hechizo.</summary>
     public int Cooldown { get; }
-
-    /// <summary>Indica si el hechizo es canalizado (continúa aplicando mientras se mantiene).</summary>
     public bool IsChanneled { get; }
-
-    /// <summary>Duración total del efecto (en milisegundos o ticks, si aplica).</summary>
     public int Duration { get; }
-
-    /// <summary>Tipo de lanzamiento del hechizo (instantáneo, canalizado, con casteo, etc.).</summary>
     public SpellCastType CastType { get; }
 
     // --- Alcance y targeting ---
-
-    /// <summary>Rango máximo del hechizo en unidades del mundo.</summary>
     public int Range { get; }
-
-    /// <summary>Tipo de objetivo permitido (enemigo, aliado, área, etc.).</summary>
     public TargetType TargetType { get; }
-
-    /// <summary>Indica si el objetivo debe estar en línea de visión para lanzar el hechizo.</summary>
     public bool RequiresLineOfSight { get; }
-
-    /// <summary>Estrategia utilizada para seleccionar objetivos al lanzar el hechizo.</summary>
     public ITargetingStrategy? Targeting { get; }
 
     // --- Efectos del hechizo ---
-
-    /// <summary>Lista de efectos que se aplican a unidades (daño, curación, estados, etc.).</summary>
     public IReadOnlyList<ISpellEffect> UnitEffects { get; }
-
-    /// <summary>Lista de efectos que se aplican sobre el terreno (áreas persistentes, trampas, etc.).</summary>
     public IReadOnlyList<ITerrainEffect> TerrainEffects { get; }
-
-    /// <summary>Lista de efectos que invocan criaturas, tótems o entidades en el mundo.</summary>
     public IReadOnlyList<ISummonEffect> SummonEffects { get; }
 
     // --- Información visual y auditiva ---
-
-    /// <summary>Descripción del hechizo mostrada en la UI.</summary>
     public string? Description { get; }
-
-    /// <summary>Ruta o clave del efecto visual al lanzar el hechizo.</summary>
     public string? VfxCast { get; }
-
-    /// <summary>Ruta o clave del efecto visual al impactar el hechizo.</summary>
     public string? VfxImpact { get; }
-
-    /// <summary>Sonido reproducido al lanzar el hechizo.</summary>
     public string? CastSound { get; }
-
-    /// <summary>Sonido reproducido al impactar el hechizo.</summary>
     public string? ImpactSound { get; }
 
     // --- Otros datos ---
-
-    /// <summary>Precio en monedas para comprar o desbloquear el hechizo.</summary>
     public int Price { get; }
 
-    // --- Constructor ---
+    // --- Nuevos campos agregados ---
+    public DateTime CreatedAt { get; }
+    public DateTime UpdatedAt { get; }
+    public string? CastMode { get; } // Agregado para mapear el campo `cast_mode` en la base de datos
 
-    /// <summary>
-    /// Constructor para inicializar un nuevo hechizo.
-    /// </summary>
+    // --- Constructor ---
     public SpellModel(
         string id,
         string name,
@@ -112,7 +64,10 @@ public class SpellModel
         string? vfxCast = null,
         string? vfxImpact = null,
         int price = 0,
-        CharacterClass requiredClass = CharacterClass.None
+        CharacterClass requiredClass = CharacterClass.None,
+        DateTime createdAt = default,
+        DateTime updatedAt = default,
+        string? castMode = null
     )
     {
         Id = id;
@@ -138,5 +93,8 @@ public class SpellModel
         VfxImpact = vfxImpact;
         Price = price;
         RequiredClass = requiredClass;
+        CreatedAt = createdAt == default ? DateTime.Now : createdAt;
+        UpdatedAt = updatedAt == default ? DateTime.Now : updatedAt;
+        CastMode = castMode;
     }
 }

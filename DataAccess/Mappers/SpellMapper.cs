@@ -1,171 +1,81 @@
-using System;
-using System.Collections.Generic;
-using System.Data;
-using Dapper;
 using Newtonsoft.Json;
-using VentusServer.DataAccess.Interfaces;
-using VentusServer.DataAccess.Queries;
-using Game.Models;
 
-#region Type Handler for JSON Fields
-/// <summary>
-/// Allows Dapper to automatically serialize/deserialize JSON fields.
-/// </summary>
-public class JsonTypeHandler<T> : SqlMapper.TypeHandler<T>
-{
-    public override void SetValue(IDbDataParameter parameter, T value)
-    {
-        parameter.Value = JsonConvert.SerializeObject(value);
-        parameter.DbType = DbType.String;
-    }
-
-    public override T Parse(object value)
-    {
-        return JsonConvert.DeserializeObject<T>(value.ToString())!;
-    }
-}
-#endregion
-
-#region DTO: Database Entity Representation
-/// <summary>
-/// Represents the raw fields of the 'spells' table.
-/// </summary>
-public class DbSpellEntity
-{
-    public string Id { get; set; } = string.Empty;
-    public string Name { get; set; } = string.Empty;
-    public int ManaCost { get; set; }
-    public int CastTime { get; set; }
-    public int Cooldown { get; set; }
-    public int Range { get; set; }
-    public int Price { get; set; }
-    public bool IsChanneled { get; set; }
-    public int Duration { get; set; }
-    public List<ISpellEffect> UnitEffects { get; set; } = new();
-    public List<ITerrainEffect> TerrainEffects { get; set; } = new();
-    public List<ISummonEffect> SummonEffects { get; set; } = new();
-    public string TargetType { get; set; } = string.Empty;
-    public string RequiredClass { get; set; } = string.Empty;
-    public int RequiredLevel { get; set; }
-    public bool RequiresLineOfSight { get; set; }
-    public string? Description { get; set; }
-    public string? CastSound { get; set; }
-    public string? ImpactSound { get; set; }
-    public string? VfxCast { get; set; }
-    public string? VfxImpact { get; set; }
-    public string CastMode { get; set; } = string.Empty;
-    public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
-}
-#endregion
-
-#region Mapper: DbSpellEntity ↔ SpellModel
-/// <summary>
-/// Maps between the database DTO and the domain SpellModel.
-/// </summary>
 public static class SpellMapper
 {
-    public static SpellModel Map(DbSpellEntity e)
+    // Mapea un SpellDBEntity a un SpellModel
+    public static SpellModel ToModel(SpellDBEntity entity)
     {
-        // Parse enums
-        var targetType = Enum.Parse<TargetType>(e.TargetType);
-        var castMode = Enum.Parse<SpellCastType>(e.CastMode);
-        var reqClass = Enum.Parse<CharacterClass>(e.RequiredClass);
+        // Convertimos JSONB a objetos correspondientes
+        var targetingStrategy = string.IsNullOrEmpty(entity.Targeting) ? null : JsonConvert.DeserializeObject<ITargetingStrategy>(entity.Targeting);
+        var unitEffects = string.IsNullOrEmpty(entity.UnitEffects) ? new List<ISpellEffect>() : JsonConvert.DeserializeObject<List<ISpellEffect>>(entity.UnitEffects);
+        var terrainEffects = string.IsNullOrEmpty(entity.TerrainEffects) ? new List<ITerrainEffect>() : JsonConvert.DeserializeObject<List<ITerrainEffect>>(entity.TerrainEffects);
+        var summonEffects = string.IsNullOrEmpty(entity.SummonEffects) ? new List<ISummonEffect>() : JsonConvert.DeserializeObject<List<ISummonEffect>>(entity.SummonEffects);
 
+        // Creamos el modelo de dominio a partir de la entidad DB
         return new SpellModel(
-            id: e.Id,
-            name: e.Name,
-            manaCost: e.ManaCost,
-            castTime: e.CastTime,
-            cooldown: e.Cooldown,
-            range: e.Range,
-            isChanneled: e.IsChanneled,
-            duration: e.Duration,
-            castType: castMode,
-            targeting: null, // implement if serialized
-            unitEffects: e.UnitEffects,
-            terrainEffects: e.TerrainEffects,
-            summonEffects: e.SummonEffects,
-            targetType: targetType,
-            requiredLevel: e.RequiredLevel,
-            requiresLineOfSight: e.RequiresLineOfSight,
-            description: e.Description,
-            castSound: e.CastSound,
-            impactSound: e.ImpactSound,
-            vfxCast: e.VfxCast,
-            vfxImpact: e.VfxImpact,
-            price: e.Price,
-            requiredClass: reqClass
+            id: entity.Id,
+            name: entity.Name,
+            manaCost: entity.ManaCost,
+            castTime: entity.CastTime,
+            cooldown: entity.Cooldown,
+            range: entity.Range,
+            isChanneled: entity.IsChanneled,
+            duration: entity.Duration,
+            castType: (SpellCastType)Enum.Parse(typeof(SpellCastType), entity.CastMode ?? "Instant"),
+            targeting: targetingStrategy,
+            unitEffects: unitEffects,
+            terrainEffects: terrainEffects,
+            summonEffects: summonEffects,
+            targetType: string.IsNullOrEmpty(entity.TargetType) ? TargetType.None : (TargetType)Enum.Parse(typeof(TargetType), entity.TargetType),
+            requiredLevel: entity.RequiredLevel,
+            requiresLineOfSight: entity.RequiresLineOfSight,
+            description: entity.Description,
+            castSound: entity.CastSound,
+            impactSound: entity.ImpactSound,
+            vfxCast: entity.VfxCast,
+            vfxImpact: entity.VfxImpact,
+            price: entity.Price,
+            requiredClass: string.IsNullOrEmpty(entity.RequiredClass) ? CharacterClass.None : (CharacterClass)Enum.Parse(typeof(CharacterClass), entity.RequiredClass)
         );
     }
 
-    public static object ToDbParameters(SpellModel spell)
+    // Mapea un SpellModel a un SpellDBEntity
+    public static SpellDBEntity ToDBEntity(SpellModel model)
     {
-        return new
+        // Serializamos las listas de efectos y el targeting a JSONB
+        var targetingJson = model.Targeting != null ? JsonConvert.SerializeObject(model.Targeting) : null;
+        var unitEffectsJson = model.UnitEffects != null ? JsonConvert.SerializeObject(model.UnitEffects) : "[]";
+        var terrainEffectsJson = model.TerrainEffects != null ? JsonConvert.SerializeObject(model.TerrainEffects) : "[]";
+        var summonEffectsJson = model.SummonEffects != null ? JsonConvert.SerializeObject(model.SummonEffects) : "[]";
+
+        // Creamos la entidad de base de datos a partir del modelo
+        return new SpellDBEntity
         {
-            spell.Id,
-            spell.Name,
-            spell.ManaCost,
-            spell.CastTime,
-            spell.Cooldown,
-            spell.Range,
-            spell.Price,
-            spell.IsChanneled,
-            spell.Duration,
-            UnitEffects = JsonConvert.SerializeObject(spell.UnitEffects),
-            TerrainEffects = JsonConvert.SerializeObject(spell.TerrainEffects),
-            SummonEffects = JsonConvert.SerializeObject(spell.SummonEffects),
-            TargetType = spell.TargetType.ToString(),
-            RequiredClass = spell.RequiredClass.ToString(),
-            spell.RequiredLevel,
-            spell.RequiresLineOfSight,
-            spell.Description,
-            spell.CastSound,
-            spell.ImpactSound,
-            spell.VfxCast,
-            spell.VfxImpact,
-            CastMode = spell.CastType.ToString(),
-            spell.CreatedAt,
-            spell.UpdatedAt
+            Id = model.Id,
+            Name = model.Name,
+            ManaCost = model.ManaCost,
+            CastTime = model.CastTime,
+            Cooldown = model.Cooldown,
+            Range = model.Range,
+            Price = model.Price,
+            IsChanneled = model.IsChanneled,
+            Duration = model.Duration,
+            Targeting = targetingJson,
+            UnitEffects = unitEffectsJson,
+            TerrainEffects = terrainEffectsJson,
+            SummonEffects = summonEffectsJson,
+            TargetType = model.TargetType.ToString(),
+            RequiredClass = model.RequiredClass.ToString(),
+            RequiredLevel = model.RequiredLevel,
+            RequiresLineOfSight = model.RequiresLineOfSight,
+            Description = model.Description,
+            CastSound = model.CastSound,
+            ImpactSound = model.ImpactSound,
+            VfxCast = model.VfxCast,
+            VfxImpact = model.VfxImpact,
+            CastMode = model.CastType.ToString(),
+            CreatedAt = DateTime.UtcNow, // Por ejemplo, si se está creando
+            UpdatedAt = DateTime.UtcNow  // También se puede ajustar dependiendo de la lógica
         };
     }
 }
-#endregion
-
-#region Initialization: Register TypeHandlers
-/// <summary>
-/// Call this once at application startup.
-/// </summary>
-public static class DapperConfig
-{
-    public static void Configure()
-    {
-        SqlMapper.AddTypeHandler(new JsonTypeHandler<List<ISpellEffect>>());
-        SqlMapper.AddTypeHandler(new JsonTypeHandler<List<ITerrainEffect>>());
-        SqlMapper.AddTypeHandler(new JsonTypeHandler<List<ISummonEffect>>());
-        // Add other JSON-backed types as needed
-    }
-}
-#endregion
-
-#region DAO: Example Usage in DapperSpellDAO
-public class DapperSpellDAO : BaseDAO, ISpellDAO
-{
-    public DapperSpellDAO(IDbConnectionFactory connectionFactory) : base(connectionFactory) { }
-
-    public async Task<SpellModel?> GetSpellByIdAsync(string spellId)
-    {
-        using var conn = GetConnection();
-        var dto = await conn.QuerySingleOrDefaultAsync<DbSpellEntity>(SpellQueries.SelectById, new { Id = spellId });
-        return dto == null ? null : SpellMapper.Map(dto);
-    }
-
-    public async Task CreateSpellAsync(SpellModel spell)
-    {
-        using var conn = GetConnection();
-        await conn.ExecuteAsync(SpellQueries.Insert, SpellMapper.ToDbParameters(spell));
-    }
-
-    // ... implementar Update, Delete, etc. de forma similar ...
-}
-#endregion

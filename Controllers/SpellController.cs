@@ -89,6 +89,7 @@ namespace VentusServer.Controllers.Admin
                 range: request.Range,
                 isChanneled: request.IsChanneled,
                 duration: request.Duration,
+                castType: request.CastType, // <-- Add this line, ensure SpellDTO has CastType property of type SpellCastType
                 targeting: request.Targeting,
                 unitEffects: request.Effects,
                 terrainEffects: request.TerrainEffects ?? new List<ITerrainEffect>(),

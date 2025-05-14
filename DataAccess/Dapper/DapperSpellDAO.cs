@@ -26,14 +26,14 @@ namespace VentusServer.DataAccess.Dapper
 
             if (result == null) return null;
 
-            return SpellMapper.Map(result);
+            return SpellMapper.ToModel(result);
         }
 
         public async Task SaveSpellAsync(SpellModel spell)
         {
             using var connection = GetConnection();
             await connection.ExecuteAsync(SpellQueries.Update,
-                SpellMapper.ToDbParameters(spell));
+                SpellMapper.ToDBEntity(spell));
         }
 
         public async Task CreateSpellAsync(SpellModel spell)
@@ -43,7 +43,7 @@ namespace VentusServer.DataAccess.Dapper
                 Console.WriteLine("Llega 2");
                 using var connection = GetConnection();
 
-                await connection.ExecuteAsync(SpellQueries.Insert, SpellMapper.ToDbParameters(spell));
+                await connection.ExecuteAsync(SpellQueries.Insert, SpellMapper.ToDBEntity(spell));
             }
             catch (Exception ex)
             {
@@ -85,7 +85,7 @@ namespace VentusServer.DataAccess.Dapper
             {
                 try
                 {
-                    var mapped = SpellMapper.Map(spell);
+                    var mapped = SpellMapper.ToModel(spell);
                     spells.Add(mapped);
                 }
                 catch (Exception ex)

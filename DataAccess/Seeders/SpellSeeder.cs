@@ -27,6 +27,7 @@ namespace VentusServer.Seeders
                     range: 6,
                     isChanneled: false,
                     duration: 0,
+                    castType: SpellCastType.Instant,
                     targeting: new SingleTargetStrategy(),
                     unitEffects: new List<ISpellEffect>
                     {
@@ -34,14 +35,16 @@ namespace VentusServer.Seeders
                     },
                     terrainEffects: new List<ITerrainEffect>(),
                     summonEffects: new List<ISummonEffect>(),
-                    requiresLineOfSight: true,
-                    requiredLevel: 1,
                     targetType: TargetType.Ally,
+                    requiredLevel: 1,
+                    requiresLineOfSight: true,
                     description: "Restaura una pequeña cantidad de salud.",
                     castSound: "sounds/heal.wav",
                     impactSound: "sounds/impact_heal.wav",
                     vfxCast: "vfx/heal_cast.vfx",
-                    vfxImpact: "vfx/heal_impact.vfx"
+                    vfxImpact: "vfx/heal_impact.vfx",
+                    price: 0, // Aseguramos que todos los campos están definidos
+                    requiredClass: CharacterClass.None // Asegúrate que el CharacterClass esté definido correctamente
                 ),
                 new SpellModel(
                     id: "lightning_storm",
@@ -52,6 +55,7 @@ namespace VentusServer.Seeders
                     range: 8,
                     isChanneled: true,
                     duration: 0,
+                    castType: SpellCastType.CastTime,
                     targeting: new AreaOfEffectStrategy(),
                     unitEffects: new List<ISpellEffect>
                     {
@@ -59,14 +63,16 @@ namespace VentusServer.Seeders
                     },
                     terrainEffects: new List<ITerrainEffect>(),
                     summonEffects: new List<ISummonEffect>(),
-                    requiresLineOfSight: true,
-                    requiredLevel: 8,
                     targetType: TargetType.Area,
+                    requiredLevel: 8,
+                    requiresLineOfSight: true,
                     description: "Inflige daño eléctrico en un área.",
                     castSound: "sounds/storm.wav",
                     impactSound: null,
                     vfxCast: "vfx/storm_cast.vfx",
-                    vfxImpact: "vfx/storm_impact.vfx"
+                    vfxImpact: "vfx/storm_impact.vfx",
+                    price: 0, // Aseguramos que todos los campos están definidos
+                    requiredClass: CharacterClass.None
                 ),
                 new SpellModel(
                     id: "invisibility",
@@ -77,29 +83,34 @@ namespace VentusServer.Seeders
                     range: 6,
                     isChanneled: false,
                     duration: 10,
+                    castType: SpellCastType.CastTime,
                     targeting: new SingleTargetStrategy(),
-                   unitEffects: new List<ISpellEffect>
-{
-    new InvisibleEffect(10)
-},
+                    unitEffects: new List<ISpellEffect>
+                    {
+                        new InvisibleEffect(10)
+                    },
                     terrainEffects: new List<ITerrainEffect>(),
                     summonEffects: new List<ISummonEffect>(),
-                    requiresLineOfSight: false,
-                    requiredLevel: 5,
                     targetType: TargetType.Self,
+                    requiredLevel: 5,
+                    requiresLineOfSight: false,
                     description: "Vuelve invisible al objetivo temporalmente.",
                     castSound: "sounds/invisibility.wav",
                     impactSound: null,
                     vfxCast: "vfx/invisible_cast.vfx",
-                    vfxImpact: null
+                    vfxImpact: null,
+                    price: 0, // Aseguramos que todos los campos están definidos
+                    requiredClass: CharacterClass.None
                 )
             };
 
+            // Verificamos si cada hechizo existe en la base de datos
             foreach (var spell in spells)
             {
                 var exists = await _spellDao.SpellExistsAsync(spell.Id);
                 if (!exists)
                 {
+                    // Si no existe, lo creamos
                     await _spellDao.CreateSpellAsync(spell);
                 }
             }

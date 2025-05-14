@@ -26,7 +26,7 @@ namespace VentusServer.DataAccess.Queries
             impact_sound TEXT,
             vfx_cast TEXT,
             vfx_impact TEXT,
-            cast_mode TEXT,
+            castType TEXT,
             created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
         );";

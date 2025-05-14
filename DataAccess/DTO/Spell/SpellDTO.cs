@@ -24,6 +24,7 @@ public class SpellDTO
     [Range(0, int.MaxValue)]
     public int Duration { get; set; }
 
+    public SpellCastType CastType { get; set; }
     [Required]
     public ITargetingStrategy Targeting { get; set; }
 
